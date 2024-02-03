@@ -1,15 +1,16 @@
 @import './base.css';
 @import './font.css';
 
-#app {
+/* #app {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   font-weight: normal;
-}
+} */
 
 body {
-  background-color: rgba(64, 65, 65, 0.296) !important;
+  /* background-color: rgba(64, 65, 65, 0.296) !important; */
+  background-color: rgba(181, 174, 174, 0.805) !important;
   font-family: 'Pangea',sans-serif !important;
 }
 
@@ -32,6 +33,7 @@ a,
   }
 } */
 
+
 @media (min-width: 1024px) {
   body {
     display: flex;
@@ -42,5 +44,6 @@ a,
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
+    justify-items: center;
   }
 }

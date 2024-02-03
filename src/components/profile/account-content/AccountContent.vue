@@ -1,5 +1,5 @@
 <template>
-    <div class="account-content my-3">
+    <div class="account-content mt-3">
         <div id="info-tab" class="account-info">
             <h2 class="account-page-title">
                 Thông tin tài khoản
@@ -11,7 +11,7 @@
                             Họ và tên
                         </div>
                         <div class="account-info-value">
-                            Thanh Nguyễn
+                            Nguyễn Ngọc Lam Thanh
                         </div>
                     </div>
                     <div class="account-info-field">
@@ -77,7 +77,7 @@
                         Email
                     </div>
                     <div class="account-info-value">
-                        thanhreika2002@gmail.com
+                        lamthanh02@gmail.com
                     </div>
                 </div>
                 <div class="account-info-field">
@@ -149,15 +149,14 @@
 }
 
 .account-info-btn:hover {
-  background-color: #000;
-  border: 1px solid #000;
-  color: #fff;
-  transition: 0.4s;
+    background-color: #000;
+    border: 1px solid #000;
+    color: #fff;
+    transition: 0.4s;
 }
 
 .bday-note {
     color: #999;
     font-size: 0.9rem;
 }
-
 </style>
