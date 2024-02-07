@@ -10,27 +10,27 @@ const router = createRouter({
       // meta: { requiresAuth: true },
       children: [
         {
-          path: '/account/info',
+          path: 'info',
           name: 'userInfo',
-          component: () => import('@/views/CustomerProfilePage.vue'),
+          component: () => import('@/components/profile/account-content/AccountContent.vue'),
         },
         {
-          path: '/account/orders',
+          path: 'orders',
           name: 'myOrders',
-          component: () => import('@/views/CustomerProfilePage.vue'),
+          component: () => import('@/components/profile/account-content/OrderContent.vue'),
         },
         {
-          path: '/account/coupons',
+          path: 'coupons',
           name: 'myCoupons',
-          component: () => import('@/views/CustomerProfilePage.vue'),
+          component: () => import('@/components/profile/account-content/VoucherContent.vue'),
         },
         {
-          path: '/account/addresses',
+          path: 'addresses',
           name: 'myAddresses',
           component: () => import('@/views/CustomerProfilePage.vue'),
         },
         {
-          path: '/account/reviews',
+          path: 'reviews',
           name: 'myReviews',
           component: () => import('@/views/CustomerProfilePage.vue'),
         },
