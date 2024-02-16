@@ -3,7 +3,7 @@
     @dragover.prevent="onDragOver" 
     @drop.prevent="onDrop">
         <figure class="figure avatar-frame">
-            <div class="fs-5" v-if="!avatar">Drop avatar here</div>
+            <div class="fs-5 text-secondary" v-if="!avatar">Drop avatar here</div>
             <img v-if="avatar" :src="avatar" class="figure-img avatar-image" alt="Avatar">
         </figure>
         <figcaption class="figure-caption fs-5">Nguyễn Ngọc Lam Thanh</figcaption>
