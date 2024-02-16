@@ -163,6 +163,11 @@
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
+.account-page-title {
+    margin-bottom: 25px;
+    font-size: 2.5rem;
+}
+
 .account-page-label {
   font-size: 18px;
   color: rgba(0, 0, 0, 0.5333333333);
