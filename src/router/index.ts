@@ -27,12 +27,12 @@ const router = createRouter({
         {
           path: 'addresses',
           name: 'myAddresses',
-          component: () => import('@/views/CustomerProfilePage.vue'),
+          component: () => import('@/components/profile/account-content/AddressContent.vue'),
         },
         {
           path: 'reviews',
           name: 'myReviews',
-          component: () => import('@/views/CustomerProfilePage.vue'),
+          component: () => import('@/components/profile/account-content/ReviewContent.vue'),
         },
       ],
     },
