@@ -9,8 +9,8 @@
                     <img src="../../assets/images/logo/bt-high-resolution-logo-white-transparent.png" alt="" srcset="">
                 </a>
             </div>
-            <ul class="navbar-nav">
-                <li class="nav-item">
+            <div class="navbar-nav">
+                <div class="nav-item">
                     <a class="nav-link" href="#">
                         SẢN PHẨM
                         <i class="fa-solid fa-chevron-down dropdown-icon"></i>
@@ -60,15 +60,15 @@
                         </ul>
 
                     </div>
-                </li>
-                <li class="nav-item">
+                </div>
+                <div class="nav-item">
                     <a class="nav-link" href="#">GIỚI THIỆU</a>
 
-                </li>
-                <li class="nav-item">
+                </div>
+                <div class="nav-item">
                     <a class="nav-link" href="#">LIÊN HỆ</a>
-                </li>
-            </ul>
+                </div>
+            </div>
             <div class="header_actions">
                 <div class="header_actions_search-box">
                     <label class="header_actions_search-field">
@@ -186,6 +186,9 @@ header {
     cursor: pointer;
 }
 
+.navbar {
+    --bs-navbar-padding-y: 0px;
+}
 
 .navbar-nav {
     --bs-nav-link-padding-x: 0;
@@ -194,11 +197,14 @@ header {
     --bs-nav-link-hover-color: #fff;
     height: inherit;
     min-width: 940px;
+    height: 100%;
+    padding: 0px;
 }
 
 .nav-item {
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 31px 16px;
     font-size: 16px;
     cursor: pointer;
@@ -244,6 +250,9 @@ header {
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, .05);
 }
 
+.nav-link {
+    max-height: 100%;
+}
 .subnav .subnav-item {
     padding: 10px 36px;
 }
@@ -337,5 +346,11 @@ header {
     font-size: 10px;
     font-weight: 700;
     pointer-events: none;
+}
+
+input {
+    font-family: inherit;
+    font-size: 100%;
+    line-height: 1.15;
 }
 </style>

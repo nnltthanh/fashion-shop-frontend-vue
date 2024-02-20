@@ -24,6 +24,7 @@
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@500&display=swap');
+
 .banner-block {
     margin: 40px 0;
 }
