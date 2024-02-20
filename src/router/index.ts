@@ -5,6 +5,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/home',
+      component: () => import('@/views/HomeView.vue'),
+    },
+    {
       path: '/account',
       component: () => import('@/views/CustomerProfilePage.vue'),
       // meta: { requiresAuth: true },

@@ -1,6 +1,10 @@
 @import './base.css';
 @import './font.css';
 
+.my-50 {
+  margin: 50px 0;
+}
+
 /* #app {
   max-width: 1280px;
   margin: 0 auto;
@@ -10,40 +14,41 @@
 
 body {
   /* background-color: rgba(64, 65, 65, 0.296) !important; */
-  background-color: rgba(181, 174, 174, 0.805) !important;
+  /* background-color: rgba(181, 174, 174, 0.805) !important; */
   font-family: 'Pangea',sans-serif !important;
 }
 
-#app {
-  width: 100%;
+
+.section-container {
+  padding: 0 64px;
+  /* width: 100%; */
+  max-width: 1920px;
 }
 
-a,
-.green {
-  text-decoration: none;
-  /* color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s; */
-  padding: 3px;
-  vertical-align: middle;
+.button {
+  line-height: 20px;
+  height: 54px;
+  font-weight: 700;
+  border: 0;
+  border-radius: 100vmax;
+  text-transform: uppercase;
+  padding: 0.875rem 2.5rem;
+  width: max-content;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
-/* 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-} */
 
+.button--black {
+  background-color: #000;
+  color: #fff;
+}
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    /* place-items: center; */
-  }
+.button--white {
+  background-color: #fff;
+  color: #000;
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-    justify-items: center;
-  }
+.button:hover {
+  opacity: 0.8;
 }
