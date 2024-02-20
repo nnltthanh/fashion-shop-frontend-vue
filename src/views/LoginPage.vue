@@ -1,4 +1,5 @@
 <template>
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
   <div class="max-md:gap-3 max-md:flex-col min-h-screen h-screen flex">
     <div class="max-md:h-[250px] lg:flex-auto bg-[#191a24] flex items-center px-10">
       <img class="w-full h-full object-cover opacity-[35%]" src="../assets/img_login.jpg" alt="" />

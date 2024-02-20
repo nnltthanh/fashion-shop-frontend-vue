@@ -13,7 +13,7 @@ const router = createRouter({
       component: () => import('@/views/LoginPage.vue'),
     },
     {
-      path: '/login-employee',
+      path: '/login/employee',
       alias: ['/', ''],
       component: () => import('@/views/EmployeeLoginPage.vue'),
     },

@@ -3,6 +3,7 @@ module.exports = {
   purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   content: [
     "./src/**/*.html",
+    "./src/index.html",
     "./src/**/*.vue",
     "./src/**/*.js",
     // Thêm đường dẫn tới các tệp tin của bạn

@@ -344,13 +344,13 @@ input {
 
 .dropdown-item {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .dropdown-item:focus, .dropdown-item:hover {
     color: white;
     background-color: black;
     font-weight: 500;
-    transition: all 0.2s;
+    transition: all 0.1s;
 }
 </style>
