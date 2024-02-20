@@ -31,6 +31,6 @@ import Footer from '@/components/common/Footer.vue';
 
     <CategoryList />
 
-    <Footer/>
+    <!-- <Footer/> -->
   <!-- </main> -->
 </template>
