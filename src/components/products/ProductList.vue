@@ -87,15 +87,15 @@ import ProductCard from './ProductCard.vue';
     left: 100%;
 }
 
-.slick-prev:before {
+.slick-prev::before {
     content: '←';
 }
 
-.slick-next:before {
+.slick-next::before {
     content: '→';
 }
 
-.slick-prev:before, .slick-next:before {
+.slick-prev::before, .slick-next::before {
     position: relative;
     top: -2px;
     font-size: 24px;

@@ -1,7 +1,7 @@
 <template>
-    <div class="row">
+    <div class="row mt-5">
         <div class="col-md-3"><AccountSidebar/></div>
-        <div class="col-md-9"><router-view></router-view></div>
+        <div class="col-md-9 "><router-view></router-view></div>
     </div>
 </template>
 

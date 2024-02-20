@@ -1,13 +1,13 @@
 <script setup lang="ts"></script>
 
 <template>
-    <header class="header container-fluid">
+    <header class="header">
         <nav class="navbar navbar-expand-sm">
             <!-- Links -->
             <div class="header_logo">
-                <a href="/">
+                <router-link to="/home">
                     <img src="../../assets/images/logo/bt-high-resolution-logo-white-transparent.png" alt="" srcset="">
-                </a>
+                </router-link>
             </div>
             <div class="navbar-nav">
                 <div class="nav-item">
@@ -80,9 +80,9 @@
                     </label>
                 </div>
                 <div class="header_actions_button">
-                    <a href="#" class="header_actions_button-link">
+                    <router-link to="/account/info" class="header_actions_button-link">
                         <i class="fa-solid fa-user"></i>
-                    </a>
+                    </router-link>
                 </div>
                 <div class="header_actions_button">
                     <a href="#" class="header_actions_button-link">
@@ -97,7 +97,7 @@
 
 <style>
 body {
-    height: 2000px;
+    /* height: 2000px; */
 }
 /* .grid-row {
     display: flex;
@@ -162,9 +162,8 @@ body {
 }
 
 ul {
-    padding-left: 0;
+    padding-left: 0 !important;
 }
-
 
 header {
     position: fixed;
@@ -174,6 +173,7 @@ header {
     height: 83px;
     padding: 0 64px;
     z-index: 9999;
+    width: 100% !important;
 }
 
 .header_logo {
@@ -187,17 +187,16 @@ header {
 }
 
 .navbar {
-    --bs-navbar-padding-y: 0px;
+    --bs-navbar-padding-y: 0px !important;
 }
 
 .navbar-nav {
-    --bs-nav-link-padding-x: 0;
-    --bs-nav-link-padding-y: 0;
+    --bs-nav-link-padding-x: 0 !important;
+    --bs-nav-link-padding-y: 0 !important;
     --bs-nav-link-color: #fff !important;
     --bs-nav-link-hover-color: #fff;
     height: inherit;
     min-width: 940px;
-    height: 100%;
     padding: 0px;
 }
 
@@ -237,7 +236,7 @@ header {
     top: 100%;
     left: 0;
     padding: 0;
-    min-width: 350px;
+    min-width: 300px;
     background-color: #ededed;
     /* border-top: 2px solid #ee4266; */
     z-index: 9999;
@@ -250,11 +249,8 @@ header {
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, .05);
 }
 
-.nav-link {
-    max-height: 100%;
-}
 .subnav .subnav-item {
-    padding: 10px 36px;
+    padding: 10px 30px;
 }
 
 .subnav .subnav-item:hover {

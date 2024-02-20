@@ -10,8 +10,8 @@ import CategoryList from '@/components/common/CategoryList.vue';
 </script>
 
 <template>
-  <Header />
-  <main>
+  <!-- <main> -->
+  <!-- <Header /> -->
     <Carousel />
     <ProductList />
 
@@ -29,5 +29,5 @@ import CategoryList from '@/components/common/CategoryList.vue';
     <CollectionList />
 
     <CategoryList />
-  </main>
+  <!-- </main> -->
 </template>
