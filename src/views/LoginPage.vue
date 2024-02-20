@@ -16,18 +16,18 @@
               style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
               placeholder=" Nhập tên đăng nhập..." />
           </div>
-          <div class="w-full mt-5">
+          <div class="w-full mt-2">
             <AInput name="password" label="Mật khẩu"
               style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
               placeholder=" Nhập mật khẩu..." type="password" />
           </div>
 
           <!-- forgot -->
-          <div class="w-full flex justify-end mt-2">
+          <div class="w-full flex justify-end mt-3">
             <RouterLink to="#" class="text-[#3E334E] text-sm font-medium">Quên mật khẩu?
             </RouterLink>
           </div>
-          <div class="w-full flex gap-3 mt-5">
+          <div class="w-full flex gap-3 mt-3">
             <button class="bg-[#3E334E] text-white flex-[1] w-full py-3 font-bold rounded-lg" @click="onLogin">
               <!-- <button class="bg-[#3E334E] text-white flex-[1] w-full py-3 font-bold rounded-lg" @click=""> -->
               Đăng nhập
@@ -38,12 +38,12 @@
             </RouterLink>
           </div>
 
-          <div class="w-full flex  justify-center gap-3 mt-5">HOẶC </div>
+          <div class="w-full flex  justify-center gap-3 mt-4">HOẶC </div>
 
-          <div class="w-full flex gap-3 mt-5">
+          <div class="w-full flex gap-3 mt-4">
             <div class="flex justify-center w-full">
               <button
-                class="flex items-center bg-white border border-gray-300 rounded-lg shadow-md max-w-xs px-8 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                class="social-button flex items-center bg-white border border-gray-300 rounded-lg shadow-md max-w-xs px-8 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                 <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                   viewBox="-0.5 0 48 48" version="1.1">
                   <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -69,10 +69,10 @@
               </button>
             </div>
           </div>
-          <div class="w-full flex gap-3 mt-5">
+          <div class="w-full flex gap-3 mt-3">
             <div class="flex justify-center w-full">
               <button
-                class="flex items-center bg-white border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                class="social-button flex items-center bg-white border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                 <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                   viewBox="0 0 48 48" version="1.1">
                   <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -94,6 +94,12 @@
     </div>
   </div>
 </template>
+
+<style>
+.social-button:hover {
+  background-color: #edf2f7 !important;
+}
+</style>
 
 <script setup>
 import { ref } from "vue"

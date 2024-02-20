@@ -10,17 +10,17 @@
                     <p class="text-base font-medium mt-2">Hãy đăng ký và thoả thích mua sắm!</p>
                 </div>
                 <div class="w-full flex flex-col items-center justify-center mt-10">
-                    <div class="w-full mt-5 mb-7 h-12 border-blacks">
+                    <div class="w-full mt-5">
                         <AInput v-model="name" name="name" label="Tên đăng nhập"
                             style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
                             placeholder=" Nhập tên đăng nhập..." />
                     </div>
-                    <div class="w-full mt-10">
+                    <div class="w-full mt-3">
                         <AInput v-model="password" name="password" label="Mật khẩu"
                             style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
                             placeholder=" Nhập mật khẩu..." type="password" />
                     </div>
-                    <div class="w-full mt-5">
+                    <div class="w-full mt-3">
                         <AInput v-model="confirmPassword" name="confirmPassword" label="Xác nhận mật khẩu"
                             style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
                             placeholder=" Nhập lại mật khẩu xác nhận..." type="password" />

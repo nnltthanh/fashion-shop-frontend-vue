@@ -15,7 +15,7 @@
                             style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
                             placeholder=" Tên đăng nhập..." />
                     </div>
-                    <div class="w-full mt-5">
+                    <div class="w-full mt-3">
                         <AInput name="password" label="Mật khẩu"
                             style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
                             placeholder=" Nhập mật khẩu..." type="password" />
