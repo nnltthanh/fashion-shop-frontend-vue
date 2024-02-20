@@ -1,5 +1,5 @@
 <template>
-    <div class="account-sidebar-items mt-3">
+    <div class="account-sidebar-items my-50">
         <div class="avatar">
             <AvatarFrame/>
         </div>

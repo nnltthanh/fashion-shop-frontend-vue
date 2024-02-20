@@ -1,6 +1,6 @@
 <template>
     <!-- <Header/> -->
-    <div class="container my-5" id="customer-profile">
+    <div class="container" id="customer-profile">
         <AccountContentDisplay/>
     </div>
 </template>
@@ -12,22 +12,9 @@ import AccountContentDisplay from '@/components/profile/AccountContentDisplay.vu
 
 <style scoped>
 
-#app {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh; /* Set the height to viewport height */
-    }
-
-    body {
-      margin: 0; /* Remove default body margin */
-    }
-
 #customer-profile {
-    display: block;
-    position: absolute;
-    border-radius: 5px;
-    width: 100%;
-    
+    position: relative;
+    justify-content: center;
+    width: inherit;
 }
 </style>

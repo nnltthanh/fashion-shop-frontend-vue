@@ -1,5 +1,5 @@
 <template>
-    <div class="account-content mt-3">
+    <div class="account-content my-50">
         <div class="account-address">
             <h2 class="account-page-title">
                 Địa chỉ của tôi

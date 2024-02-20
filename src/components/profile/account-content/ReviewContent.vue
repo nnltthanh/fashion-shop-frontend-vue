@@ -1,5 +1,5 @@
 <template>
-  <div class="account-content mt-3">
+  <div class="account-content my-50">
     <div id="info-tab" class="account-info">
       <h2 class="account-page-title">Đánh giá và phản hồi</h2>
       <!-- <div class="account-page-label mt-4">Bạn chưa có đánh giá nào...</div> -->
