@@ -5,8 +5,8 @@
         class="dark:bg-neutral-950 bg-neutral-100 text-center text-neutral-600 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left font-pangea">
         <div
             class="flex items-center justify-center border-b-2 mx-6  border-neutral-900 p-6 dark:border-neutral-500 lg:justify-between">
-            <div class="lg:w-[50%] mr-60">
-                <h4 class="font-semibold text-white text-2xl leading-6 mb-2">
+            <div class="lg:w-[50%] mr-60 text-left">
+                <h4 class="font-semibold text-white text-2xl leading-6 mb-2 flex justify-start">
                     B&T luôn lắng nghe bạn!
                 </h4>
                 <p class="site-footer__description" style="margin-bottom: 30px;">
@@ -14,7 +14,7 @@
                     khách hàng để có thể nâng cấp trải nghiệm dịch vụ và sản phẩm tốt hơn nữa.
                 </p>
                 <a href="https://form.typeform.com/to/lU2oprGc?typeform-medium=embed-snippet" target="_blank"
-                    class="inline-flex justify-center items-center h-12 bg-blue-500 rounded-2xl px-6 text-white font-semibold text-base tracking-wide mb-6 no-underline focus:outline-none focus:shadow-outline-blue active:bg-blue-800 transition duration-150 ease-in-out button-contribute">
+                    class="inline-flex items-center h-12 bg-blue-500 rounded-2xl px-6 text-white font-semibold text-base tracking-wide mb-6 no-underline focus:outline-none focus:shadow-outline-blue active:bg-blue-800 transition duration-150 ease-in-out button-contribute">
                     Đóng góp ý kiến
                 </a>
             </div>
@@ -54,16 +54,17 @@
                     <h6 class="mb-4 flex justify-center font-semibold uppercase md:justify-start">
                         VỀ B&T
                     </h6>
-                    <p class="mb-4">
-                        <a href="#!" class="text-neutral-600 dark:text-neutral-200">Câu chuyện về B&T</a>
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
+                        <a href="#!" class="text-neutral-600 justify-center dark:text-neutral-200 ">Câu
+                            chuyện về B&T</a>
                     </p>
-                    <p class="mb-4">
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Nhà máy</a>
                     </p>
-                    <p class="mb-4">
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Care&share</a>
                     </p>
-                    <p class="mb-4">
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Đăng ký thành viên</a>
                     </p>
 
@@ -73,16 +74,16 @@
                     <h6 class="mb-4 flex justify-center font-semibold uppercase md:justify-start">
                         CHÍNH SÁCH
                     </h6>
-                    <p class="mb-4">
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Chính sách đổi trả 60 ngày</a>
                     </p>
-                    <p class="mb-4">
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Chính sách khuyến mãi</a>
                     </p>
-                    <p class="mb-4">
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Chính sách bảo mật</a>
                     </p>
-                    <p>
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Chính sách giao hàng</a>
                     </p>
                 </div>
@@ -92,16 +93,16 @@
                     <h6 class="mb-4 flex justify-center font-semibold uppercase md:justify-start">
                         CHĂM SÓC KHÁCH HÀNG
                     </h6>
-                    <p class="mb-4">
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Trải nghiệm mua sắm 100% hài lòng</a>
                     </p>
-                    <p class="mb-4">
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Hỏi đáp-FAQs</a>
                     </p>
-                    <p class="mb-4">
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Blog</a>
                     </p>
-                    <p>
+                    <p class="mb-4 flex items-center justify-center md:justify-start">
                         <a href="#!" class="text-neutral-600 dark:text-neutral-200">Hướng dẫn lựa chọn</a>
                     </p>
                 </div>
@@ -109,7 +110,7 @@
                 <!-- Contact section -->
                 <div>
                     <h6 class="mb-4 flex justify-center font-semibold uppercase md:justify-start">
-                        Contact
+                        LIÊN LẠC
                     </h6>
                     <p class="mb-4 flex items-center justify-center md:justify-start">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
@@ -154,7 +155,8 @@
         </div>
 
         <!--Copyright section-->
-        <div class="dark:bg-neutral-950 bg-neutral-200 p-6 dark:bg-neutral-700 border-t-2 border-neutral-800 mx-6">
+        <div
+            class="dark:bg-neutral-950 bg-neutral-200 p-6 dark:bg-neutral-700 border-t-2 border-neutral-800 mx-6 text-left">
             <div class="items-start text-xs">© 2023 Copyright: CÔNG TY TNHH B&T</div>
             <div class="items-start text-xs">Mã số doanh nghiệp: 1234567895. Giấy chứng nhận đăng ký doanh nghiệp do Sở Kế
                 hoạch và Đầu tư TP Cần Thơ cấp lần đầu ngày 20/02/2019.</div>
@@ -184,7 +186,7 @@
 
 .button-contribute:hover {
     background-color: #fff;
-    color: #000;
+    color: #000 !important;
     border: 1px solid #000;
 }
 </style>
