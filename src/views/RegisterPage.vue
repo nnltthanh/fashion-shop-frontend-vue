@@ -79,7 +79,7 @@ const { handleSubmit } = useForm({
             .required('Mật khẩu là trường bắt buộc'),
         confirmPassword: yup
             .string()
-            .required()
+            .required('Xác nhận mật khẩu là trường bắt buộc')
             .oneOf([yup.ref('password'), null], 'Mật khẩu không khớp'),
     }),
 })
