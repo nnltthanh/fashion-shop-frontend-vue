@@ -1,4 +1,3 @@
-import CustomerProfilePageVue from '@/views/CustomerProfilePage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -8,6 +7,19 @@ const router = createRouter({
       path: '/home',
       alias: ['/', ''],
       component: () => import('@/views/HomeView.vue'),
+    },
+    {
+      path: '/login',
+      component: () => import('@/views/LoginPage.vue'),
+    },
+    {
+      path: '/login-employee',
+      alias: ['/', ''],
+      component: () => import('@/views/EmployeeLoginPage.vue'),
+    },
+    {
+      path: '/register',
+      component: () => import('@/views/RegisterPage.vue'),
     },
     {
       path: '/account',

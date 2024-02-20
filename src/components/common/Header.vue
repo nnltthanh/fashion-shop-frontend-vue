@@ -6,7 +6,7 @@
             <!-- Links -->
             <div class="header_logo">
                 <router-link to="/home">
-                    <img src="../../assets/images/logo/bt-high-resolution-logo-white-transparent.png" alt="" srcset="">
+                    <img src="../../assets/images/logo/bt-high-resolution-logo-white-transparent.png" alt="" srcset="" />
                 </router-link>
             </div>
             <div class="navbar-nav">
@@ -18,52 +18,34 @@
                     <div class="subnav">
                         <ul class="subnav-list">
                             <li class="subnav-item">
-                                <a href="">
-                                    Áo
-                                </a>
+                                <a href=""> Áo </a>
                             </li>
                             <li class="subnav-item">
-                                <a href="">
-                                    Quần
-                                </a>
+                                <a href=""> Quần </a>
                             </li>
                             <li class="subnav-item">
-                                <a href="">
-                                    Áo khoác
-                                </a>
+                                <a href=""> Áo khoác </a>
                             </li>
                             <li class="subnav-item">
-                                <a href="">
-                                    Đồ thể thao
-                                </a>
+                                <a href=""> Đồ thể thao </a>
                             </li>
                             <li class="subnav-item">
-                                <a href="">
-                                    Đồ lót
-                                </a>
+                                <a href=""> Đồ lót </a>
                             </li>
                             <li class="subnav-item">
-                                <a href="">
-                                    Giày
-                                </a>
+                                <a href=""> Giày </a>
                             </li>
                             <li class="subnav-item">
-                                <a href="">
-                                    Phụ kiện
-                                </a>
+                                <a href=""> Phụ kiện </a>
                             </li>
                             <li class="subnav-item">
-                                <a href="">
-                                    Nước hoa
-                                </a>
+                                <a href=""> Nước hoa </a>
                             </li>
                         </ul>
-
                     </div>
                 </div>
                 <div class="nav-item">
                     <a class="nav-link" href="#">GIỚI THIỆU</a>
-
                 </div>
                 <div class="nav-item">
                     <a class="nav-link" href="#">LIÊN HỆ</a>
@@ -76,13 +58,23 @@
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </a>
                         <input class="header_actions_search-control" type="text" name="search" id="search-input"
-                            placeholder="Tìm kiếm sản phẩm...">
+                            placeholder="Tìm kiếm sản phẩm..." />
                     </label>
                 </div>
-                <div class="header_actions_button">
-                    <router-link to="/account/info" class="header_actions_button-link">
+                <div class="header_actions_button dropdown-center">
+                    <div class="header_actions_button-link dropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                        type="button">
                         <i class="fa-solid fa-user"></i>
-                    </router-link>
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><router-link to="/account/info" class="dropdown-item">Thông tin tài khoản</router-link>
+                        </li>
+                        <li><a class="dropdown-item">Đăng xuất</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><router-link to="/login" class="dropdown-item">Đăng nhập</router-link></li>
+                    </ul>
                 </div>
                 <div class="header_actions_button">
                     <a href="#" class="header_actions_button-link">
@@ -99,6 +91,7 @@
 body {
     /* height: 2000px; */
 }
+
 /* .grid-row {
     display: flex;
     justify-content: center;
@@ -222,7 +215,7 @@ header {
 }
 
 .nav-item>.nav-link {
-    font-size: .875rem;
+    font-size: 0.875rem;
     font-weight: 500;
 }
 
@@ -240,13 +233,13 @@ header {
     background-color: #ededed;
     /* border-top: 2px solid #ee4266; */
     z-index: 9999;
-    animation: fadeIn .3s;
+    animation: fadeIn 0.3s;
 }
 
 .subnav .subnav-list {
     list-style-type: none;
     width: 100%;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, .05);
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.05);
 }
 
 .subnav .subnav-item {
@@ -265,7 +258,6 @@ header {
 .subnav-item:hover a {
     color: #ededed;
 }
-
 
 .header_actions {
     display: flex;
@@ -348,5 +340,17 @@ input {
     font-family: inherit;
     font-size: 100%;
     line-height: 1.15;
+}
+
+.dropdown-item {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.dropdown-item:focus, .dropdown-item:hover {
+    color: white;
+    background-color: black;
+    font-weight: 500;
+    transition: all 0.2s;
 }
 </style>

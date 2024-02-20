@@ -6,7 +6,7 @@
         <div v-for="(item, index) in sidebarItems" :key="index" class="account-sidebar-item" @click="toggleActive(index)"
             :class="{ active: item.isActive }">
             <span class="account-option">
-                <img :src="item.imageSrc" alt="Thông tin tài khoản">
+                <img :src="item.imageSrc" alt="Thông tin tài khoản" style="margin-right: 8px;">
                 <a href="" @click.prevent>{{ item.label }}</a>
             </span>
         </div>
@@ -29,7 +29,7 @@ export default {
     },
     methods: {
         toggleActive(index: number) {
-            const item = this.sidebarItems[index];
+            const item = this.$data.sidebarItems[index];
             this.sidebarItems.forEach((sidebarItem) => {
                 sidebarItem.isActive = false;
             });
@@ -89,9 +89,10 @@ export default {
 }
 
 .account-option {
-    padding-left: 20px;
+    display: flex;
     vertical-align: baseline;
-
+    padding-left: 10px;
+    width: 100% !important;
     img {
         vertical-align: middle;
         width: 25px;
