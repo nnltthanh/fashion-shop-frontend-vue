@@ -11,4 +11,5 @@ $(document).ready(function () {
             slidesToShow: 4,
         });
     }, 500)
+    console.log($('.product-card'));
 });

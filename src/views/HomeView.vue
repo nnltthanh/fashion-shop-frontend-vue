@@ -13,24 +13,24 @@ import Footer from '@/components/common/Footer.vue';
 <template>
   <!-- <main> -->
   <Header />
-    <Carousel />
-    <ProductList />
+  <Carousel />
+  <ProductList />
 
-    <Banner />
-    <ProductListFixed />
+  <Banner />
+  <ProductListFixed />
 
-    <Banner />
-    <ProductListFixed />
+  <Banner />
+  <ProductListFixed />
 
-    <Banner />
-    <ProductListFixed />
+  <Banner />
+  <ProductListFixed />
 
-    <CareShare />
+  <CareShare />
 
-    <CollectionList />
+  <CollectionList />
 
-    <CategoryList />
+  <CategoryList />
 
-    <!-- <Footer/> -->
+  <Footer />
   <!-- </main> -->
 </template>
