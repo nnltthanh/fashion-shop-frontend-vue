@@ -8,7 +8,7 @@ module.exports = {
     "./src/**/*.js",
     // Thêm đường dẫn tới các tệp tin của bạn
   ],
-  darkMode: 'media', // or 'media' or 'class'
+  darkMode: 'selector', // or 'media' or 'class'
   theme: {
     extend: {
       colors: {
