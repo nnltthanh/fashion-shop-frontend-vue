@@ -10,6 +10,5 @@ $(document).ready(function () {
             infinite: true,
             slidesToShow: 4,
         });
-    }, 500)
-    console.log($('.product-card'));
+    }, 500);
 });

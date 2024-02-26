@@ -1,15 +1,15 @@
 <template>
   <div class="cart-item">
     <div class="cart-item-thumbnail">
-      <div class="cart-item-thumbnail__image">
-        <div class="cart-item__thumbnail-block">
+      <div class="cart-item-thumbnail-image">
+        <div class="cart-item-thumbnail-block">
           <img
             src="https://media.coolmate.me/cdn-cgi/image/width=320,height=362,quality=80/uploads/February2024/joggerutdanang4.jpg"
             alt="Quần Jogger Nam UT đa năng"
             style="opacity: 1"
           />
 
-          <div class="cart-item__multiselect">
+          <div class="cart-item-multiselect">
             <label
               for="select65798ace52b8b42f52482b67a90e7f17"
               class="custom-checkbox-label"
@@ -24,14 +24,14 @@
       </div>
     </div>
     <div class="cart-item-content">
-      <div class="cart-item-content__wrapper">
-        <div class="cart-item-content__inner" style="opacity: 1">
-          <h3 class="cart-item__title">
+      <div class="cart-item-content-wrapper">
+        <div class="cart-item-content-inner" style="opacity: 1">
+          <h3 class="cart-item-title">
             <a href="/product/quan-ut-jogger-da-nang-co-gian" target="_blank"
               >Quần Jogger Nam UT đa năng</a
             >
           </h3>
-          <div class="cart-item__variant">Đen / L</div>
+          <div class="cart-item-variant">Đen / L</div>
         </div>
         <div class="cart-item-actions" style="opacity: 1">
           <div class="cart-item-selects">
@@ -40,31 +40,31 @@
               class="v-select vue-select vs--single vs--unsearchable"
             >
               <div
-                id="vs4__combobox"
+                id="vs4-combobox"
                 role="combobox"
                 aria-expanded="false"
-                aria-owns="vs4__listbox"
+                aria-owns="vs4-listbox"
                 aria-label="Search for option"
-                class="vs__dropdown-toggle"
+                class="vs-dropdown-toggle"
               >
-                <div class="vs__selected-options">
-                  <span class="vs__selected"> Đen </span>
+                <div class="vs-selected-options">
+                  <span class="vs-selected"> Đen </span>
                   <input
                     readonly="true"
                     aria-autocomplete="list"
-                    aria-labelledby="vs4__combobox"
-                    aria-controls="vs4__listbox"
+                    aria-labelledby="vs4-combobox"
+                    aria-controls="vs4-listbox"
                     type="search"
                     autocomplete="off"
-                    class="vs__search"
+                    class="vs-search"
                   />
                 </div>
-                <div class="vs__actions">
+                <div class="vs-actions">
                   <button
                     type="button"
                     title="Clear Selected"
                     aria-label="Clear Selected"
-                    class="vs__clear"
+                    class="vs-clear"
                     style="display: none"
                   >
                     <svg
@@ -82,19 +82,19 @@
                     width="14"
                     height="10"
                     role="presentation"
-                    class="vs__open-indicator"
+                    class="vs-open-indicator"
                   >
                     <path
                       d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z"
                     ></path>
                   </svg>
-                  <div class="vs__spinner" style="display: none">
+                  <div class="vs-spinner" style="display: none">
                     Loading...
                   </div>
                 </div>
               </div>
               <ul
-                id="vs4__listbox"
+                id="vs4-listbox"
                 role="listbox"
                 style="display: none; visibility: hidden"
               ></ul>
@@ -104,31 +104,31 @@
               class="v-select vue-select vs--single vs--unsearchable"
             >
               <div
-                id="vs5__combobox"
+                id="vs5-combobox"
                 role="combobox"
                 aria-expanded="false"
-                aria-owns="vs5__listbox"
+                aria-owns="vs5-listbox"
                 aria-label="Search for option"
-                class="vs__dropdown-toggle custom-cursor-on-hover"
+                class="vs-dropdown-toggle custom-cursor-on-hover"
               >
-                <div class="vs__selected-options">
-                  <span class="vs__selected"> L </span>
+                <div class="vs-selected-options">
+                  <span class="vs-selected"> L </span>
                   <input
                     readonly="true"
                     aria-autocomplete="list"
-                    aria-labelledby="vs5__combobox"
-                    aria-controls="vs5__listbox"
+                    aria-labelledby="vs5-combobox"
+                    aria-controls="vs5-listbox"
                     type="search"
                     autocomplete="off"
-                    class="vs__search"
+                    class="vs-search"
                   />
                 </div>
-                <div class="vs__actions">
+                <div class="vs-actions">
                   <button
                     type="button"
                     title="Clear Selected"
                     aria-label="Clear Selected"
-                    class="vs__clear"
+                    class="vs-clear"
                     style="display: none"
                   >
                     <svg
@@ -146,19 +146,19 @@
                     width="14"
                     height="10"
                     role="presentation"
-                    class="vs__open-indicator"
+                    class="vs-open-indicator"
                   >
                     <path
                       d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z"
                     ></path>
                   </svg>
-                  <div class="vs__spinner" style="display: none">
+                  <div class="vs-spinner" style="display: none">
                     Loading...
                   </div>
                 </div>
               </div>
               <ul
-                id="vs5__listbox"
+                id="vs5-listbox"
                 role="listbox"
                 style="display: none; visibility: hidden"
               ></ul>
@@ -166,7 +166,7 @@
           </div>
           <div class="cart-item-quantity">
             <div class="quantity-box">
-              <button class="quantity-box__decrease">
+              <button class="quantity-box-decrease">
                 <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
                   <g>
                     <line
@@ -182,8 +182,8 @@
                   </g>
                 </svg>
               </button>
-              <input type="text" />
-              <button class="quantity-box__increase">
+              <input type="text" value="1"/>
+              <button class="quantity-box-increase">
                 <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
                   <g>
                     <line
@@ -237,3 +237,291 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+</script>
+
+<style scoped>
+.cart-item {
+  position: relative;
+  display: flex;
+  flex-flow: row wrap;
+  padding: 0;
+  padding-bottom: 21px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.cart-item:not(:last-child) {
+  margin-bottom: 2rem;
+}
+
+.cart-item-thumbnail {
+  width: 120px;
+}
+.cart-item-thumbnail-image {
+  border-radius: 2px;
+  overflow: hidden;
+}
+.cart-item-thumbnail-block {
+  position: relative;
+  width: 126px;
+}
+img:not(.home-banner) {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+.cart-item .cart-item-multiselect {
+  border-radius: 2px;
+}
+.cart-item-multiselect {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: hsla(0, 0%, 100%, 0.9);
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+  display: flex;
+  opacity: 0;
+}
+.custom-checkbox-label,
+.custom-radio-label {
+  display: flex;
+  cursor: pointer;
+}
+.cart-item-multiselect .custom-checkbox {
+  width: 40px;
+  height: 40px;
+  border-radius: 16px;
+  flex: 0 0 40px;
+}
+.custom-checkbox {
+  border-radius: 5px;
+}
+.custom-checkbox input,
+.custom-radio input {
+  display: none;
+}
+[type="checkbox"],
+[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+.cart-item-multiselect .checkmark {
+  border-bottom: 4px solid #2f5acf;
+  border-right: 4px solid #2f5acf;
+  width: 12px;
+  height: 20px;
+}
+.custom-checkbox .checkmark {
+  transform: translate(-50%, -63%) rotate(45deg);
+  border-bottom: 3px solid #2f5acf;
+  border-right: 3px solid #2f5acf;
+  width: 7px;
+  height: 10px;
+  border-radius: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
+.custom-checkbox .checkmark,
+.custom-radio .checkmark {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 20px;
+  background-color: #2f5acf;
+}
+.cart-item-content {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+.cart-item-content-wrapper {
+  display: flex;
+  flex-flow: column;
+  flex: 1;
+  padding-left: 10px;
+}
+.cart-item-content-inner {
+  margin-bottom: 20px;
+}
+.cart-item-actions {
+  flex: 1;
+  display: flex;
+}
+.cart-item-selects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1 0 0;
+}
+
+.cart-item-selects .v-select {
+  max-width: 50%;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+.cart-item-selects .vs-dropdown-toggle {
+  height: 42px;
+  border-radius: 100vmax;
+  background-color: #f1f1f1;
+  border: 1px solid #f1f1f1;
+  font-size: 16px;
+  line-height: 20px;
+  padding: 0 12px;
+}
+.vs--unsearchable .vs-dropdown-toggle {
+  cursor: pointer;
+}
+.vue-select .vs-selected,
+.vue-select .vs-selected-options {
+  padding: 0;
+  margin: 0;
+  align-items: center;
+}
+.vs-selected-options {
+  display: flex;
+  flex-basis: 100%;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  padding: 0 2px;
+  position: relative;
+}
+.vue-select .vs-selected {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vs--single .vs-selected {
+  background-color: transparent;
+  border-color: transparent;
+}
+.cart-item-selects .v-select .vs-search {
+  display: none;
+}
+
+.vs--unsearchable:not(.vs--disabled) .vs-search {
+  cursor: pointer;
+}
+.vue-select .vs-search {
+  margin: 0;
+  padding: 0;
+}
+.vs-actions {
+  display: flex;
+  align-items: center;
+  padding: 4px 6px 0 3px;
+}
+.cart-item-selects .vs-actions {
+  margin-left: 5px;
+}
+.vs-clear {
+  fill: rgba(60, 60, 60, 0.5);
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+  margin-right: 8px;
+}
+.cart-item-selects .v-select {
+  max-width: 50%;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+.cart-item-quantity {
+  display: flex;
+  justify-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.cart-item-quantity .quantity-box {
+  width: 95px;
+  height: 44px;
+  border: 1px solid #d9d9d9;
+  border-radius: 100vmax;
+  box-sizing: border-box;
+}
+.quantity-box {
+  background: #ffffff;
+  border: 1px solid black;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  height: 25px;
+  width: 77px;
+}
+.cart-item-quantity .quantity-box {
+  width: 95px;
+  height: 44px;
+  border: 1px solid #d9d9d9;
+  border-radius: 100vmax;
+  box-sizing: border-box;
+}
+.quantity-box-decrease,
+.quantity-box-increase {
+  display: flex;
+  height: 100%;
+  width: 25px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 20px;
+  transition: 0.2s all;
+  border: none;
+  background-color: white;
+  padding: 0;
+  border: 0;
+  background-color: rgba(255, 255, 255, 0);
+}
+.cart-item-quantity .quantity-box-decrease,
+.cart-item-quantity .quantity-box-increase {
+  flex: 1;
+}
+.quantity-box input {
+  border: none;
+  padding: 5px 0;
+  margin: 0;
+  height: 100%;
+  width: 25px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+button,
+input {
+  overflow: visible;
+}
+.quantity-box-increase {
+  border-radius: 0 8px 8px 0;
+}
+.cart-item-price {
+  display: flex;
+  flex-flow: column;
+  text-align: right;
+}
+.cart-item-remove {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border: 0;
+  background-color: rgba(255, 255, 255, 0);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17.75px;
+  color: #242424;
+  padding: 0;
+  cursor: pointer;
+}
+</style>
