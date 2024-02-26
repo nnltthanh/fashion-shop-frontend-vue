@@ -162,7 +162,7 @@ header {
     position: fixed;
     top: 0;
     display: flex;
-    background-color: #212121;
+    background-color: rgb(10 10 10);
     height: 83px;
     padding: 0 64px;
     z-index: 9999;

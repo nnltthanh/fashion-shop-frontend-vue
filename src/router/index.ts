@@ -53,6 +53,10 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/cart',
+      component: () => import('@/views/CartPage.vue')
+    }
   ]
 })
 
