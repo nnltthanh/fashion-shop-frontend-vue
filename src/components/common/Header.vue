@@ -77,9 +77,9 @@
                     </ul>
                 </div>
                 <div class="header_actions_button">
-                    <a href="#" class="header_actions_button-link">
+                    <router-link to="/cart" class="header_actions_button-link">
                         <i class="fa-solid fa-cart-shopping"></i>
-                    </a>
+                    </router-link>
                     <span class="cart-count">0</span>
                 </div>
             </div>
@@ -88,23 +88,6 @@
 </template>
 
 <style>
-body {
-    /* height: 2000px; */
-}
-
-/* .grid-row {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.grid-col {
-    display: flex;
-}
-
-.col:has(-) {
-    padding: 4px;
-} */
 
 .visible {
     visibility: visible;
