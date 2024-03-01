@@ -22,6 +22,10 @@ const router = createRouter({
       component: () => import('@/views/RegisterPage.vue'),
     },
     {
+      path: '/branch',
+      component: () => import('@/views/BranchPage.vue'),
+    },
+    {
       path: '/account',
       component: () => import('@/views/CustomerProfilePage.vue'),
       // meta: { requiresAuth: true },

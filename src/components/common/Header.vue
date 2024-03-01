@@ -50,6 +50,9 @@
                 <div class="nav-item">
                     <a class="nav-link" href="#">LIÊN HỆ</a>
                 </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="/branch">CHI NHÁNH</a>
+                </div>
             </div>
             <div class="header_actions">
                 <div class="header_actions_search-box">
@@ -347,7 +350,8 @@ input {
     font-weight: 500;
 }
 
-.dropdown-item:focus, .dropdown-item:hover {
+.dropdown-item:focus,
+.dropdown-item:hover {
     color: white;
     background-color: black;
     font-weight: 500;

@@ -20,7 +20,7 @@
             </div>
 
             <!-- Social network icons container -->
-            <div class="flex justify-center space-x-8">
+            <div class="flex justify-center space-x-4 md:space-x-8">
                 <a href="https://www.facebook.com/coolmate.me" target="_blank" class="footer-social__item"><img
                         src="https://mcdn.coolmate.me/image/June2023/mceclip1_43.png" class="w-12 h-12"
                         alt="Footer Icon facebook"></a>
