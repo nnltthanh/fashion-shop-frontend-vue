@@ -9,42 +9,37 @@ import CareShare from '@/components/common/CareShare.vue';
 import CollectionList from '@/components/common/CollectionList.vue';
 import CategoryList from '@/components/common/CategoryList.vue';
 import Footer from '@/components/common/Footer.vue';
-import ProductService from "@/services/product.service";
 
-// const products = ref([]);
+const collectionList = [
+    {
+        id: 1,
+        material: "FABRIC",
+        title: "SẢN PHẨM THU ĐÔNG",
+        banner: {
+            src: "https://media.coolmate.me/cdn-cgi/image/width=1800,height=1200,quality=80,format=auto/uploads/February2024/mceclip8_38.png",
+            text: "ĐỒ THU ĐÔNG",
+        },
+    },
+    {
+        id: 2,
+        material: "COTTON",
+        title: "SẢN PHẨM CHẠY BỘ",
+        banner: {
+            src: "https://media.coolmate.me/cdn-cgi/image/width=1800,height=1200,quality=80,format=auto/uploads/February2024/mceclip6_85.png",
+            text: "ĐỒ CHẠY BỘ",
+        }
+    },
+    {
+        id: 3,
+        material: "CANVAS",
+        title: "SẢN PHẨM ÁO THUN",
+        banner: {
+            src: "https://media.coolmate.me/cdn-cgi/image/width=1800,height=1200,quality=80,format=auto/uploads/February2024/mceclip7_14.png",
+            text: "ÁO THUN NAM",
+        }
+    }
+];
 
-// const objectFromHome = {
-//     name: "Tai",
-//     age: 22
-// };
-
-// const productStrings = computed(() => {
-//     return products.value.map((product) => {
-//         const { name, price, salePercent, type, material } = product;
-//         return [name, price, salePercent, type, material].join("").toLowerCase();
-//     });
-// });
-
-// // const mostSaleProducts = computed(() => {
-// //     return [...products.value].sort((a, b) => b.salePercent - a.salePercent)
-// //         .slice(0, 10);
-// // });
-
-// const retrieveProducts = async () => {
-//     try {
-//         products.value = await ProductService.getAll();
-//     } catch (error) {
-//         console.log(error);
-//     }
-// };
-
-// const refreshList = () => {
-//     retrieveProducts();
-// };
-
-// onMounted(() => {
-//     refreshList();
-// });
 </script>
 
 <template>
@@ -52,16 +47,11 @@ import ProductService from "@/services/product.service";
     <Header />
     <Carousel />
     <ProductList />
-    <!-- <ProductList :products="products" :myObject="objectFromHome"/> -->
 
-    <Banner />
-    <ProductListFixed />
-
-    <Banner />
-    <ProductListFixed />
-
-    <Banner />
-    <ProductListFixed />
+    <div v-for="(item, index) in collectionList">
+        <Banner :banner="item.banner" :key="index"/>
+        <ProductListFixed :collection="item" :key="index" />
+    </div>
 
     <CareShare />
 

@@ -4,7 +4,6 @@ import { computed } from 'vue';
 const props = defineProps({
     product: {
         type: Object,
-        required: true
     },
 })
 
@@ -48,8 +47,8 @@ const formatedSalePrice = computed(() => {
             <p class="product-card__sub-title card-text">{{ product.material }} / Xanh dương</p>
             <div class="product-card__prices">
                 <div class="product-prices">
-                    <span style="color: red;margin-left: 10px;">-{{ product.salePercent }}%</span>
-                    <del>{{ formatedPrice }}</del>
+                    <span v-if="product.salePercent > 0" style="color: red;margin-left: 10px;">-{{ product.salePercent }}%</span>
+                    <del v-if="product.salePercent > 0">{{ formatedPrice }}</del>
                     <ins>{{ formatedSalePrice }}</ins>
                 </div>
             </div>
