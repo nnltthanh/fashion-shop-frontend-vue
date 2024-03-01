@@ -1,4 +1,29 @@
-<script setup lang="ts"></script>
+<script setup>
+import { computed } from 'vue';
+
+const props = defineProps({
+    product: {
+        type: Object,
+        required: true
+    },
+})
+
+const VND = new Intl.NumberFormat('vi-VN', {
+  style: 'currency',
+  currency: 'VND',
+});
+
+const formatedPrice = computed(() => {
+    return VND.format(props.product.price);
+});
+
+const formatedSalePrice = computed(() => {
+    let salePrice = props.product.price * (1 - props.product.salePercent / 100);
+    salePrice = Math.floor(salePrice / 1000);
+    salePrice *= 1000;
+    return VND.format(salePrice);
+})
+</script>
 
 <template>
     <div class="product-card card col-2-4">
@@ -6,7 +31,7 @@
             <div class="product-card__image-container">
                 <a href="#">
                     <img class="card-img-top"
-                        src="https://media.coolmate.me/cdn-cgi/image/width=672,height=990,quality=80/uploads/January2024/24CMAW.AT011.1_91.jpg"
+                        :src="product.imageData.base64String"
                         alt="Card image" style="width:100%">
                 </a>
             </div>
@@ -17,15 +42,15 @@
             <div class="product-card__options"></div>
             <h3 class="product-card__title card-title">
                 <a href="#">
-                    Áo Thun Nam Chạy Bộ Graphic Photic Zone
+                    {{ product.name }}
                 </a>
             </h3>
-            <p class="product-card__sub-title card-text">Mỏng nhẹ / Xanh dương</p>
+            <p class="product-card__sub-title card-text">{{ product.material }} / Xanh dương</p>
             <div class="product-card__prices">
                 <div class="product-prices">
-                    <span style="color: red;margin-left: 10px;">-10%</span>
-                    <del>199.000đ</del>
-                    <ins>179.000đ</ins>
+                    <span style="color: red;margin-left: 10px;">-{{ product.salePercent }}%</span>
+                    <del>{{ formatedPrice }}</del>
+                    <ins>{{ formatedSalePrice }}</ins>
                 </div>
             </div>
         </div>
@@ -51,7 +76,7 @@ a {
     border: none;
 }
 
-.product-card > * {
+.product-card>* {
     transition: all .3s;
 }
 
@@ -94,8 +119,14 @@ a {
 .product-card__title {
     font-size: 14px;
     line-height: 1.2em;
+    height: 2.4em;
     font-weight: 400;
     margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .product-card__sub-title {

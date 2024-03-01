@@ -88,24 +88,6 @@
 </template>
 
 <style>
-body {
-    /* height: 2000px; */
-}
-
-/* .grid-row {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.grid-col {
-    display: flex;
-}
-
-.col:has(-) {
-    padding: 4px;
-} */
-
 .visible {
     visibility: visible;
     opacity: 1;

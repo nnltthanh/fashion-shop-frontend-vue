@@ -1,25 +1,114 @@
-<script setup lang="ts">
+<script setup>
+import { ref, reactive, computed } from 'vue';
 import ProductCard from './ProductCard.vue';
+import ProductService from "@/services/product.service";
+
+// export default {
+//     // data() {
+//     //     return {
+//     //         product: {
+//     //             name: "Áo Thun Nam Chạy Bộ Graphic Photic Zone",
+//     //             price: 199000.00,
+//     //             salePercent: 10,
+//     //             material: "COTTON",
+//     //         }
+//     //     }
+//     // },
+//     props: {
+//         products: {
+//             type: Array,
+//             required: true
+//         }
+//     }
+// }
+// const product = {
+//     name: "Áo Thun Nam Chạy Bộ Graphic Photic Zone",
+//     price: 199000.00,
+//     salePercent: 10,
+//     material: "COTTON",
+// };
+
+// const objectFromList = {
+//     name: "Áo thun",
+//     price: 199000.00
+// };
+
+// const props = defineProps({
+//     products: {
+//         type: Array,
+//         default: []
+//     },
+//     myObject: {
+//         type: Object
+//     }
+// });
+
+const message = ref("hello from parent");
+
+const tabItems = reactive([
+    {
+        routeName: "newProducts",
+        label: "Sản phẩm mới",
+        isActive: true,
+    },
+    {
+        routeName: "bestSellerProducts",
+        label: "Bán chạy nhất",
+        isActive: false,
+    },
+])
+
+const toggleActive = (index) => {
+    const item = tabItems[index];
+    tabItems.forEach((tabItem) => {
+        tabItem.isActive = false;
+    });
+    item.isActive = true;
+    // if (item.routeName == "newProducts") {
+    //     products.value = mostSaleProducts;
+    // } else if (item.routeName == "bestSellerProducts") {
+    //     products.value = leastSaleProducts;
+    // }
+    // this.$router.push({ name: item.routeName });
+}
+
+const products = ref([]);
+
+const retrieveProducts = async () => {
+    try {
+        products.value = await ProductService.getAll();
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const mostSaleProducts = computed(() => {
+    return [...products.value].sort((a, b) => b.salePercent - a.salePercent);
+});
+
+const leastSaleProducts = computed(() => {
+    return [...products.value].sort((a, b) => a.salePercent - b.salePercent);
+});
+
+const changeProducts = () => {
+    products.value = mostSaleProducts;
+};
+
+const refreshList = () => {
+    retrieveProducts();
+};
+
+refreshList();
 </script>
 
 <template>
     <div class="section-container">
         <div class="products__tab">
-            <a href="#" class="products__tab-item active">Sản phẩm mới</a>
-            <a href="#" class="products__tab-item" @click="">Bán chạy nhất</a>
+            <a  v-for="(item, index) in tabItems" :key="index" href="" class="products__tab-item" @click.prevent @click="toggleActive(index)"
+            :class="{ active: item.isActive }">{{ item.label }}</a>
         </div>
         <div class="product-slider row">
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
+            <ProductCard v-for="product in products" :product="product" />
         </div>
     </div>
 </template>
@@ -32,13 +121,6 @@ import ProductCard from './ProductCard.vue';
     margin-top: 4rem;
     display: flex;
 }
-
-/* button {
-    overflow: visible;
-    font-family: inherit;
-    font-size: 100%;
-    line-height: 1.15;
-} */
 
 .products__heading {
     font-size: 28px;
@@ -95,7 +177,8 @@ import ProductCard from './ProductCard.vue';
     content: '→';
 }
 
-.slick-prev::before, .slick-next::before {
+.slick-prev::before,
+.slick-next::before {
     position: relative;
     top: -2px;
     font-size: 24px;
@@ -128,5 +211,4 @@ import ProductCard from './ProductCard.vue';
     background-color: #212121;
     color: #fff;
 }
-
-.product-slider {}</style>
+</style>

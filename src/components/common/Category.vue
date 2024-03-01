@@ -7,8 +7,6 @@
                 <img loading="lazy" src="https://media.coolmate.me/cdn-cgi/image/width=1069,height=1575,quality=80,format=auto/uploads/January2024/mceclip2.png" alt="">
             </div>
         </a>
-
-
     </div>
 </template>
 
