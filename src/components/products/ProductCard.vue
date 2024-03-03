@@ -4,12 +4,13 @@ import { computed } from 'vue';
 const props = defineProps({
     product: {
         type: Object,
+        required: true,
     },
 })
 
 const VND = new Intl.NumberFormat('vi-VN', {
-  style: 'currency',
-  currency: 'VND',
+    style: 'currency',
+    currency: 'VND',
 });
 
 const formatedPrice = computed(() => {
@@ -28,11 +29,14 @@ const formatedSalePrice = computed(() => {
     <div class="product-card card col-2-4">
         <div class="product-card__thumbnail">
             <div class="product-card__image-container">
-                <a href="#">
-                    <img class="card-img-top"
-                        :src="product.imageData.base64String"
-                        alt="Card image" style="width:100%">
-                </a>
+                <router-link :to="{
+                    name: 'product',
+                    params: {
+                        id: product.id,
+                    },
+                }" :product-id="product.id">
+                    <img class="card-img-top" :src="product.imageData.base64String" alt="Card image" style="width:100%">
+                </router-link>
             </div>
             <span class="product-card__tags">New</span>
             <div class="product-card__select"></div>
@@ -40,14 +44,20 @@ const formatedSalePrice = computed(() => {
         <div class="product-card__content card-body">
             <div class="product-card__options"></div>
             <h3 class="product-card__title card-title">
-                <a href="#">
+                <router-link :to="{
+                    name: 'product',
+                    params: {
+                        id: product.id,
+                    },
+                }">
                     {{ product.name }}
-                </a>
+                </router-link>
             </h3>
             <p class="product-card__sub-title card-text">{{ product.material }} / Xanh dương</p>
             <div class="product-card__prices">
                 <div class="product-prices">
-                    <span v-if="product.salePercent > 0" style="color: red;margin-left: 10px;">-{{ product.salePercent }}%</span>
+                    <span v-if="product.salePercent > 0" style="color: red;margin-left: 10px;">-{{ product.salePercent
+                        }}%</span>
                     <del v-if="product.salePercent > 0">{{ formatedPrice }}</del>
                     <ins>{{ formatedSalePrice }}</ins>
                 </div>
