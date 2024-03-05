@@ -25,9 +25,7 @@
     <div class="cart-item-content">
       <div class="cart-item-content-wrapper">
         <div class="cart-item-content-inner" style="opacity: 1">
-          <span class="cart-item-tags giveaway_all"
-            ><span>Quà tặng</span></span
-          >
+          <span class="cart-item-tags giveaway_all"><span>Quà tặng</span></span>
           <h3 class="cart-item-title">
             <a
               href="/product/qt-ao-thun-the-thao-nam-promax-s1-qua-tang"
@@ -92,9 +90,7 @@
                       d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z"
                     ></path>
                   </svg>
-                  <div class="vs-spinner" style="display: none">
-                    Loading...
-                  </div>
+                  <div class="vs-spinner" style="display: none">Loading...</div>
                 </div>
               </div>
               <ul
@@ -156,9 +152,7 @@
                       d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z"
                     ></path>
                   </svg>
-                  <div class="vs-spinner" style="display: none">
-                    Loading...
-                  </div>
+                  <div class="vs-spinner" style="display: none">Loading...</div>
                 </div>
               </div>
               <ul
@@ -280,13 +274,14 @@ img:not(.home-banner) {
   height: 20px;
 }
 .cart-item-selects .vs-dropdown-toggle {
-    height: 42px;
-    border-radius: 100vmax;
-    background-color: #f1f1f1;
-    border: 1px solid #f1f1f1;
-    font-size: 16px;
-    line-height: 20px;
-    padding: 0 12px;
+  display: flex;
+  height: 42px;
+  border-radius: 100vmax;
+  background-color: #f1f1f1;
+  border: 1px solid #f1f1f1;
+  font-size: 16px;
+  line-height: 20px;
+  padding: 0 12px;
 }
 .custom-checkbox .checkmark {
   transform: translate(-50%, -63%) rotate(45deg);
@@ -340,15 +335,7 @@ img:not(.home-banner) {
   height: -moz-fit-content;
   height: fit-content;
 }
-.cart-item-selects .vs-dropdown-toggle {
-  height: 42px;
-  border-radius: 100vmax;
-  background-color: #f1f1f1;
-  border: 1px solid #f1f1f1;
-  font-size: 16px;
-  line-height: 20px;
-  padding: 0 12px;
-}
+
 .vs--unsearchable .vs-dropdown-toggle {
   cursor: pointer;
 }
@@ -410,50 +397,50 @@ img:not(.home-banner) {
   height: fit-content;
 }
 .cart-item-tags.giveaway_all[data-v-4b846691] {
-    color: #ff2359;
-    background: rgba(255, 35, 89, 0.1);
+  color: #ff2359;
+  background: rgba(255, 35, 89, 0.1);
 }
 .cart-item-tags[data-v-4b846691] {
-    display: inline-flex;
-    align-items: center;
-    padding-left: 12px;
-    padding-right: 12px;
-    margin-bottom: 5px;
-    height: 28px;
-    font-size: 16px;
-    border-radius: 100vmax;
-    color: #fff;
-    background-color: #000;
+  display: inline-flex;
+  align-items: center;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-bottom: 5px;
+  height: 28px;
+  font-size: 16px;
+  border-radius: 100vmax;
+  color: #fff;
+  background-color: #000;
 }
 .cart-item-tags.giveaway_all[data-v-4b846691]::before {
-    content: "";
-    display: block;
-    background-image: url(https://mcdn.coolmate.me/image/April2023/mceclip0_94.png);
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
+  content: "";
+  display: block;
+  background-image: url(https://mcdn.coolmate.me/image/April2023/mceclip0_94.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
 }
 .cart-item-quantity[data-v-4b846691] {
-    display: flex;
-    justify-content: center;
-    padding-left: 20px;
-    padding-right: 20px;
+  display: flex;
+  justify-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 .cart-item-quantity-number {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 95px;
-    height: 44px;
-    border: 1px solid #d9d9d9;
-    border-radius: 100vmax;
-    box-sizing: border-box;
-    color: rgba(0,0,0,.5);
-    font-size: 16px;
-    line-height: 20.3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 95px;
+  height: 44px;
+  border: 1px solid #d9d9d9;
+  border-radius: 100vmax;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 16px;
+  line-height: 20.3px;
 }
 .cart-item-quantity .quantity-box {
   width: 95px;

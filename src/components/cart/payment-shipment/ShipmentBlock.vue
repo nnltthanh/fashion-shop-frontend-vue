@@ -1,3 +1,100 @@
+<script lang="ts">
+import { findLevel1ByName } from "dvhcvn";
+import axios, { type AxiosRequestConfig } from "axios";
+import { onMounted, ref } from "vue";
+import { findLevelXById } from "dvhcvn/lib/internal";
+import data from "@/assets/data/dvhcvn.json";
+
+export default {
+  setup() {
+    const showCityDropdown = ref(false);
+    const showDistrictDropdown = ref(false);
+    const showVillageDropdown = ref(false);
+
+    const activeCityIndex = ref<number | null>(null);
+    const activeDistrictIndex = ref<number | null>(null);
+    const activeVillageIndex = ref<number | null>(null);
+
+    const activeCity = ref("Chọn Tỉnh / Thành");
+    const activeDistrict = ref("Chọn Quận / Huyện");
+    const activeVillage = ref("Chọn Phường / Xã");
+
+    var cities: string[] = [];
+    const districts: Ref<string[]> = ref<string[]>([]);
+    var districtsFullInfo: string[] = [];
+    const villages: Ref<string[]> = ref<string[]>([]);
+
+    const setActiveCity = (index: number) => {
+      activeCityIndex.value = index;
+    };
+
+    const setActiveDistrict = (index: number) => {
+      activeDistrictIndex.value = index;
+    };
+
+    const setActiveVillage = (index: number) => {
+      activeVillageIndex.value = index;
+    };
+
+    const toggleCityDropdown = () => {
+      showCityDropdown.value = !showCityDropdown.value;
+      if (!showCityDropdown.value) {
+        activeCity.value = cities[activeCityIndex.value];
+        districts.value = findLevel1ByName(activeCity.value)
+          .children.sort()
+          .map((d) => d.name);
+        districtsFullInfo = findLevel1ByName(activeCity.value)
+          .children.sort()
+          .map((d) => d.children);
+      }
+    };
+
+    const toggleDistrictDropdown = () => {
+      if (districts.length === 0) return;
+      showDistrictDropdown.value = !showDistrictDropdown.value;
+
+      if (!showDistrictDropdown.value) {
+        activeDistrict.value = districts.value[activeDistrictIndex.value];
+        villages.value = districtsFullInfo[activeDistrictIndex.value].map(
+          (d) => d.name
+        );
+      }
+    };
+
+    const toggleVillageDropdown = () => {
+      if (activeDistrictIndex.value === null) return;
+      showVillageDropdown.value = !showVillageDropdown.value;
+      if (!showVillageDropdown.value) {
+        activeVillage.value = villages.value[activeVillageIndex.value];
+      }
+    };
+
+    onMounted(() => {
+      data.forEach((city) => cities.push(city.name));
+      cities.sort();
+    });
+
+    return {
+      toggleCityDropdown,
+      toggleDistrictDropdown,
+      toggleVillageDropdown,
+      showCityDropdown,
+      showDistrictDropdown,
+      showVillageDropdown,
+      cities,
+      districts,
+      villages,
+      setActiveCity,
+      setActiveDistrict,
+      setActiveVillage,
+      activeCity,
+      activeDistrict,
+      activeVillage,
+    };
+  },
+};
+</script>
+
 <template>
   <div class="title-with-actions">
     <div class="title">Thông tin vận chuyển</div>
@@ -61,15 +158,16 @@
           name="nhanh_city"
         >
           <div
+            @click="toggleCityDropdown"
             id="vs1-combobox"
             role="combobox"
-            aria-expanded="false"
+            :aria-expanded="showCityDropdown"
             aria-owns="vs1-listbox"
             aria-label="Search for option"
             class="vs-dropdown-toggle"
           >
             <div class="vs-selected-options">
-              <span class="vs-selected"> Cần Thơ </span>
+              <span class="vs-selected"> {{ activeCity }}</span>
               <input
                 aria-autocomplete="list"
                 aria-labelledby="vs1-combobox"
@@ -78,7 +176,25 @@
                 autocomplete="off"
                 class="vs-search"
               />
+              <ul
+                class="city-list"
+                v-show="showCityDropdown"
+                id="vs1-listbox"
+                role="listbox"
+                aria-label="cities"
+              >
+                <li
+                  v-for="(city, index) in cities"
+                  class="city-option"
+                  role="option"
+                  :id="'city-' + index"
+                  @mouseover="setActiveCity(index)"
+                >
+                  {{ city }}
+                </li>
+              </ul>
             </div>
+
             <div class="vs-actions">
               <button
                 type="button"
@@ -107,11 +223,6 @@
               <div class="vs-spinner" style="display: none">Loading...</div>
             </div>
           </div>
-          <ul
-            id="vs1-listbox"
-            role="listbox"
-            style="display: none; visibility: hidden"
-          ></ul>
         </div>
       </div>
       <div class="grid-column four-twelfths mobile--one-whole">
@@ -121,15 +232,16 @@
           name="nhanh_district"
         >
           <div
+            @click="toggleDistrictDropdown"
             id="vs2-combobox"
             role="combobox"
-            aria-expanded="false"
+            :aria-expanded="showDistrictDropdown"
             aria-owns="vs2-listbox"
             aria-label="Search for option"
             class="vs-dropdown-toggle"
           >
             <div class="vs-selected-options">
-              <span class="vs-selected"> Quận Ninh Kiều </span>
+              <span class="vs-selected"> {{ activeDistrict }}</span>
               <input
                 aria-autocomplete="list"
                 aria-labelledby="vs2-combobox"
@@ -138,6 +250,24 @@
                 autocomplete="off"
                 class="vs-search"
               />
+              <ul
+                class="district-list"
+                v-show="showDistrictDropdown"
+                id="vs2-listbox"
+                role="listbox"
+                aria-label="districts"
+              >
+                <li
+                  v-for="(district, index2) in districts"
+                  class="district-option"
+                  role="option"
+                  :id="'district-' + index2"
+                  @mouseover="setActiveDistrict(index2)"
+                  :key="index2"
+                >
+                  {{ district }}
+                </li>
+              </ul>
             </div>
             <div class="vs-actions">
               <button
@@ -167,11 +297,6 @@
               <div class="vs-spinner" style="display: none">Loading...</div>
             </div>
           </div>
-          <ul
-            id="vs2-listbox"
-            role="listbox"
-            style="display: none; visibility: hidden"
-          ></ul>
         </div>
       </div>
       <div class="grid-column four-twelfths mobile--one-whole">
@@ -182,16 +307,17 @@
           id="nhanh_ward"
         >
           <div
+            @click="toggleVillageDropdown"
             id="vs3-combobox"
             role="combobox"
-            aria-expanded="false"
+            :aria-expanded="showVillageDropdown"
             aria-owns="vs3-listbox"
             aria-label="Search for option"
             class="vs-dropdown-toggle"
           >
             <div class="vs-selected-options">
+              <span class="vs-selected"> {{ activeVillage }}</span>
               <input
-                placeholder="Chọn Phường/Xã"
                 aria-autocomplete="list"
                 aria-labelledby="vs3-combobox"
                 aria-controls="vs3-listbox"
@@ -199,7 +325,25 @@
                 autocomplete="off"
                 class="vs-search"
               />
+              <ul
+                class="village-list"
+                v-show="showVillageDropdown"
+                id="vs3-listbox"
+                role="listbox"
+                aria-label="villages"
+              >
+                <li
+                  v-for="(village, index) in villages"
+                  class="village-option"
+                  role="option"
+                  :id="'village-' + index"
+                  @mouseover="setActiveVillage(index)"
+                >
+                  {{ village }}
+                </li>
+              </ul>
             </div>
+
             <div class="vs-actions">
               <button
                 type="button"
@@ -228,11 +372,6 @@
               <div class="vs-spinner" style="display: none">Loading...</div>
             </div>
           </div>
-          <ul
-            id="vs3-listbox"
-            role="listbox"
-            style="display: none; visibility: hidden"
-          ></ul>
         </div>
       </div>
     </div>
@@ -441,9 +580,9 @@
   transition: opacity 0.1s;
 }
 
-
-.form-control:focus, .form-control:active
-.vs-dropdown-toggle:focus, .vs-dropdown-toggle:active {
+.form-control:focus,
+.form-control:active .vs-dropdown-toggle:focus,
+.vs-dropdown-toggle:active {
   border-color: inherit !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
@@ -452,13 +591,43 @@
 }
 
 .four-twelfths {
-    width: 33.333%;
+  width: 33.333%;
 }
 
 .seven-twelfths {
-    width: 58.333%;
+  width: 58.333%;
 }
 .six-twelfths {
-    width: 50%;
+  width: 50%;
+}
+
+.city-list,
+.district-list,
+.village-list {
+  display: block;
+  background-color: white;
+  z-index: 99;
+  width: 100%;
+  margin-top: 20px;
+  overflow-y: scroll;
+  max-height: 200px;
+  cursor: pointer;
+}
+
+.city-option,
+.district-option,
+.village-option {
+  margin: 2px 0px 2px;
+  font-size: 14px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  z-index: 100;
+}
+
+.city-option:hover,
+.district-option:hover,
+.village-option:hover {
+  background-color: #333;
+  color: #fff;
 }
 </style>

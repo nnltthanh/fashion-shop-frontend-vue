@@ -2,26 +2,7 @@
   <div class="title">Hình thức thanh toán</div>
   <div>
     <form>
-      <label for="payment-zalopay" class="payment-method__item active"
-        ><span class="payment-method__item-custom-checkbox custom-radio"
-          ><input
-            type="radio"
-            id="payment-zalopay"
-            name="payment-method"
-            autocomplete="off"
-            value="zalopay" />
-          <span class="checkmark"></span
-        ></span>
-        <span class="payment-method__item-icon-wrapper"
-          ><img
-            src="https://www.coolmate.me/images/logo-zalopay.svg"
-            alt="Ví điện tử ZaloPay"
-        /></span>
-        <span class="payment-method__item-name"
-          >Ví điện tử ZaloPay <br />
-          Thẻ ATM / Thẻ tín dụng (Credit card) / Thẻ ghi nợ (Debit card)</span
-        ></label
-      ><label
+      <label
         for="payment-COD"
         class="payment-method__item custom-cursor-on-hover"
         ><span class="payment-method__item-custom-checkbox custom-radio"
@@ -57,28 +38,8 @@
             alt="Thanh Toán MoMo"
         /></span>
         <span class="payment-method__item-name">Thanh Toán MoMo</span></label
-      ><label for="payment-shopeepay" class="payment-method__item"
-        ><span class="payment-method__item-custom-checkbox custom-radio"
-          ><input
-            type="radio"
-            id="payment-shopeepay"
-            name="payment-method"
-            autocomplete="off"
-            value="shopeepay" />
-          <span class="checkmark"></span
-        ></span>
-        <span class="payment-method__item-icon-wrapper"
-          ><img
-            src="https://mcdn.coolmate.me/image/September2021/195dbf69c0ac36f26fbd_(1).png"
-            alt="Ví ShopeePay <br><i>Giảm thêm 50k cho khách hàng lần đầu mở ví và thanh toán bằng ShopeePay</i>"
-        /></span>
-        <span class="payment-method__item-name"
-          >Ví ShopeePay <br /><i
-            >Giảm thêm 50k cho khách hàng lần đầu mở ví và thanh toán bằng
-            ShopeePay</i
-          ></span
-        ></label
-      ><label for="payment-vnpay" class="payment-method__item"
+      >
+      <label for="payment-vnpay" class="payment-method__item"
         ><span class="payment-method__item-custom-checkbox custom-radio"
           ><input
             type="radio"
@@ -116,27 +77,6 @@
           >Quét QR &amp; Thanh toán bằng ứng dụng ngân hàng<br />Mờ ứng dụng
           ngân hàng để thanh toán</span
         ></label
-      ><label
-        for="payment-flex_money"
-        class="payment-method__item custom-cursor-on-hover"
-        ><span class="payment-method__item-custom-checkbox custom-radio"
-          ><input
-            type="radio"
-            id="payment-flex_money"
-            name="payment-method"
-            autocomplete="off"
-            value="flex_money" />
-          <span class="checkmark"></span
-        ></span>
-        <span class="payment-method__item-icon-wrapper"
-          ><img
-            src="https://sandbox.flexmoney.vn/static/media/logo-login.cd69de6e7b8ff1cc0e4d74762ee7d40b.svg"
-            alt="Chuyển khoản liên ngân hàng bằng QR Code<br>Chuyển tiền qua ví điện tử (MoMo, Zalopay,...)"
-        /></span>
-        <span class="payment-method__item-name"
-          >Chuyển khoản liên ngân hàng bằng QR Code<br />Chuyển tiền qua ví điện
-          tử (MoMo, Zalopay,...)</span
-        ></label
       >
     </form>
   </div>
@@ -151,7 +91,6 @@
   <button class="checkout-btn">
     Thanh toán
     <span>2.133k</span>
-    <span>(ZaloPay)</span>
     <span> - Đổi trả 60 ngày</span>
   </button>
 </template>

@@ -190,7 +190,7 @@
                   </g>
                 </svg>
               </button>
-              <input type="text" />
+              <input type="text" value="1"/>
               <button class="quantity-box-increase">
                 <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
                   <g>
@@ -395,6 +395,7 @@ img:not(.home-banner) {
   height: fit-content;
 }
 .cart-item-selects .vs-dropdown-toggle {
+  display: flex;
   height: 42px;
   border-radius: 100vmax;
   background-color: #f1f1f1;

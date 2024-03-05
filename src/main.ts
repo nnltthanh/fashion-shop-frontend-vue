@@ -8,10 +8,12 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import * as $ from "jquery";
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 
 const app = createApp(App)
-
+app.use(VueAxios, axios)
+// app.provide('axios', app.config.globalProperties.axios)
 app.use(router)
 
 app.mount('#app')

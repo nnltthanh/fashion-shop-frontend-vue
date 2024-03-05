@@ -372,6 +372,7 @@ img:not(.home-banner) {
   height: fit-content;
 }
 .cart-item-selects .vs-dropdown-toggle {
+  display: flex;
   height: 42px;
   border-radius: 100vmax;
   background-color: #f1f1f1;
