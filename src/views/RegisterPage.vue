@@ -49,24 +49,24 @@ import { useRouter } from 'vue-router'
 import AInput from '@/components/AInput.vue'
 const router = useRouter()
 
-// const submit = async (val) => {
-//     const { email, password, name, confirmPassword } = val
-//     try {
-//         await registerApi({
-//             email: email,
-//             password: password,
-//             confirmPassword: confirmPassword,
-//             name: name,
-//         }).then((res) => {
-//             console.log(res)
-//             toast.success('Register success!')
-//             router.push('/login')
-//         })
-//     } catch (error) {
-//         console.log(error)
-//         toast.error('Register failed!')
-//     }
-// }
+const submit = async (val) => {
+    const { email, password, name, confirmPassword } = val
+    try {
+        await registerApi({
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword,
+            name: name,
+        }).then((res) => {
+            console.log(res)
+            toast.success('Register success!')
+            router.push('/login')
+        })
+    } catch (error) {
+        console.log(error)
+        toast.error('Register failed!')
+    }
+}
 
 const { handleSubmit } = useForm({
     validationSchema: yup.object({

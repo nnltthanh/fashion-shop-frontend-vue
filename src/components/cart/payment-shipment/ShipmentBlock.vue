@@ -1,9 +1,7 @@
 <script lang="ts">
-import { findLevel1ByName } from "dvhcvn";
-import axios, { type AxiosRequestConfig } from "axios";
-import { onMounted, ref } from "vue";
-import { findLevelXById } from "dvhcvn/lib/internal";
 import data from "@/assets/data/dvhcvn.json";
+import { findLevel1ByName } from "dvhcvn";
+import { onMounted, ref, type Ref } from "vue";
 
 export default {
   setup() {
@@ -21,7 +19,7 @@ export default {
 
     var cities: string[] = [];
     const districts: Ref<string[]> = ref<string[]>([]);
-    var districtsFullInfo: string[] = [];
+    var districtsFullInfo: any[] = [];
     const villages: Ref<string[]> = ref<string[]>([]);
 
     const setActiveCity = (index: number) => {
@@ -39,23 +37,22 @@ export default {
     const toggleCityDropdown = () => {
       showCityDropdown.value = !showCityDropdown.value;
       if (!showCityDropdown.value) {
-        activeCity.value = cities[activeCityIndex.value];
-        districts.value = findLevel1ByName(activeCity.value)
-          .children.sort()
+        activeCity.value = cities[activeCityIndex.value!];
+        districts.value = findLevel1ByName(activeCity.value)!.children!.sort()
           .map((d) => d.name);
-        districtsFullInfo = findLevel1ByName(activeCity.value)
-          .children.sort()
+        districtsFullInfo = findLevel1ByName(activeCity.value)!
+          .children!.sort()
           .map((d) => d.children);
       }
     };
 
     const toggleDistrictDropdown = () => {
-      if (districts.length === 0) return;
+      if (districts.value.length === 0) return;
       showDistrictDropdown.value = !showDistrictDropdown.value;
 
       if (!showDistrictDropdown.value) {
-        activeDistrict.value = districts.value[activeDistrictIndex.value];
-        villages.value = districtsFullInfo[activeDistrictIndex.value].map(
+        activeDistrict.value = districts.value[activeDistrictIndex.value!];
+        villages.value = districtsFullInfo[activeDistrictIndex.value!].map(
           (d) => d.name
         );
       }
@@ -65,7 +62,7 @@ export default {
       if (activeDistrictIndex.value === null) return;
       showVillageDropdown.value = !showVillageDropdown.value;
       if (!showVillageDropdown.value) {
-        activeVillage.value = villages.value[activeVillageIndex.value];
+        activeVillage.value = villages.value[activeVillageIndex.value!];
       }
     };
 
