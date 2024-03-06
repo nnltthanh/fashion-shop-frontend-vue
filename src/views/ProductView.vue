@@ -1,9 +1,9 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import { useRoute } from 'vue-router';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
-import ProductService from "@/services/product.service";
+import ProductFilter from '@/components/products/ProductFilter.vue';
+import ProductsCollection from '@/components/products/ProductsCollection.vue';
 
 const materialList = reactive([
     {
@@ -52,34 +52,11 @@ const toggleActive = (index) => {
             </div>
         </div>
         <div class="collection-grid">
-            <div class="collection-left-filter__desktop">
-                <div class="collection-left-filter__wrapper">
-                    <div class="collection-left-filter__action">
-                        <div class="collection-left-filter__count-item">
-                            188 kết quả
-                        </div>
-                        <div class="collection-left-filter__empty" style="">
-                            <a href="https://www.coolmate.me/collections?sort=new" id="removeAllFilterSticky">
-                                Xoá lọc
-                            </a>
-                        </div>
-                    </div>
-                    <div class="collection-left-filter__select">
-                        <div class="collection-left-filter__item">
-                            <h5 class="collection-left-filter__heading">
-                                Danh mục
-                            </h5>
-                            <ul class="filter-select-material">
-                                <li v-for="(item, index) in materialList" :key="index" data-value="ao" class="filter-select-material__item" :class="{ selected: item.isActive }" @click="toggleActive(index)">
-                                    <div class="filter-select-material__checkbox">
-                                        <input type="checkbox" value="false">
-                                        <label>{{ item.name }}</label>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            <div class="collection-grid__left">
+                <ProductFilter />
+            </div>
+            <div class="collection-grid__right">
+                <ProductsCollection />
             </div>
         </div>
 
@@ -113,7 +90,7 @@ body {
 
 .collections-filter__heading {
     font-family: 'Prompt', sans-serif;
-    padding: 0 10px;
+    padding: 0;
     text-transform: uppercase;
     font-weight: 600;
     font-size: 24px;
@@ -156,7 +133,7 @@ body {
     min-width: 100px;
     padding: 10px 12px;
     border-radius: 41px;
-    margin: 0 10px;
+    margin: 0 10px 0 0;
     color: #000;
     text-align: center;
     font-size: 14px;
@@ -174,105 +151,7 @@ body {
     margin-top: 1rem;
 }
 
-.collection-left-filter__desktop {
-    padding-left: 64px;
-    position: sticky;
-    top: 20px;
-    transition: all .3s;
-    transform: translateY(0px);
-}
-
-.collection-left-filter__wrapper {
-    overflow: auto;
-    max-height: calc(100vh - 50px);
-    min-width: 273px;
-    padding-right: 15px;
-}
-
-.collection-left-filter__action {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #aebbc1;
-    padding: 0.5rem 0;
-}
-
-.collection-left-filter__count-item {
-    font-weight: 600;
-}
-
-.collection-left-filter__empty {
-    padding: 0.375rem 0.75rem;
-    gap: 0.5rem;
-    border-radius: 1.5rem;
-    border: 1px solid #000;
-    font-weight: 600;
-}
-
-.collection-left-filter__empty a {
-    background-color: transparent;
-    text-decoration: none;
-    color: inherit;
-    transition: all .2s;
-}
-
-.collection-left-filter__heading {
-    opacity: .5;
-    font-weight: 500;
-    font-size: .875rem;
-    margin: 0.75rem 0;
-}
-
-.filter-select-material {
-    padding-left: 0;
-    transition: all .4s ease;
-    overflow: hidden;
-    list-style: none;
-}
-
-.filter-select-material__item {
-    position: relative;
-    margin-bottom: 6px;
-    cursor: pointer;
-}
-
-.filter-select-material__checkbox {
-    display: flex;
-    align-items: center;
-}
-
-input {
-    line-height: 1.15;
-    appearance: none;
-    box-shadow: none;
-    border-radius: 0;
-}
-
-.filter-select-material__checkbox input:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    border: 2px solid #bebebe;
-    color: #2b9dd6;
-    border-radius: 0.2rem;
-}
-
-.filter-select-material__item.selected input:before {
-    background: #2f5acf;
-}
-
-.filter-select-material__checkbox label {
-    letter-spacing: 0;
-    display: flex;
-    align-items: center;
-    vertical-align: middle;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 24px;
-    cursor: pointer;
-    padding-left: 30px;
+.collection-grid__right {
+    width: 100%;
 }
 </style>

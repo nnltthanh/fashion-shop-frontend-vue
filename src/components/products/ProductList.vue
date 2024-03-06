@@ -6,6 +6,8 @@ import { useProductStore } from '@/stores/productStore';
 
 const productStore = useProductStore()
 
+const productPerRow = 'col-2-4';
+
 const tabItems = reactive([
     {
         name: "newProducts",
@@ -25,7 +27,7 @@ const toggleActive = (index) => {
         tabItem.isActive = false;
     });
     item.isActive = true;
-    productStore.filteredType = item.name;
+    productStore.setFilteredType(item.name);
 }
 
 const products = ref([]);
@@ -74,7 +76,7 @@ refreshList();
                 @click="toggleActive(index)" :class="{ active: item.isActive }">{{ item.label }}</a>
         </div>
         <div class="product-slider row">
-            <ProductCard v-for="product in filteredProducts" :product="product" />
+            <ProductCard v-for="product in filteredProducts" :product="product" :gridCol="productPerRow"/>
         </div>
     </div>
 </template>
@@ -104,7 +106,6 @@ refreshList();
     margin-top: 12px;
     font-weight: 400;
 }
-
 
 .slick-arrow {
     font-size: 0;

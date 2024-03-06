@@ -10,6 +10,8 @@ const props = defineProps({
 
 const products = ref([]);
 
+const productPerRow = 'col-2-4';
+
 const retrieveProducts = async () => {
     try {
         products.value = await ProductService.getAll();
@@ -36,7 +38,7 @@ refreshList();
             <span>Xem thêm</span>
         </div>
         <div class="product-list row">
-            <ProductCard v-for="product in filteredProducts" :product="product"/>
+            <ProductCard v-for="product in filteredProducts" :product="product" :gridCol="productPerRow"/>
         </div>
     </div>
 </template>

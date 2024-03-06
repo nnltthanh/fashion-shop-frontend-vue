@@ -5,6 +5,7 @@ export const useProductStore = defineStore('product', {
         allProducts: [],
         filteredType: null,
         activeIndex: -1,
+        productCount: Number,
     }),
     getters: {
 
@@ -21,6 +22,9 @@ export const useProductStore = defineStore('product', {
         },
         setActiveIndex(index) {
             this.activeIndex = index;
+        },
+        setProductCount(number) {
+            this.productCount = number;
         },
     }
 })

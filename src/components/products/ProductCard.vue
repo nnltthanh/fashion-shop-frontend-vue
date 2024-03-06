@@ -6,6 +6,7 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    gridCol: String
 })
 
 const VND = new Intl.NumberFormat('vi-VN', {
@@ -26,7 +27,7 @@ const formatedSalePrice = computed(() => {
 </script>
 
 <template>
-    <div class="product-card card col-2-4">
+    <div class="product-card card" :class="gridCol">
         <div class="product-card__thumbnail">
             <div class="product-card__image-container">
                 <router-link :to="{
