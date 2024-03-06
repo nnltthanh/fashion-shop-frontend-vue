@@ -1,25 +1,82 @@
-<script setup lang="ts">
+<script setup>
+import { ref, reactive, computed } from 'vue';
 import ProductCard from './ProductCard.vue';
+import ProductService from "@/services/product.service";
+import { useProductStore } from '@/stores/productStore';
+
+const productStore = useProductStore()
+
+const productPerRow = 'col-2-4';
+
+const tabItems = reactive([
+    {
+        name: "newProducts",
+        label: "Sản phẩm mới",
+        isActive: true,
+    },
+    {
+        name: "bestSellerProducts",
+        label: "Bán chạy nhất",
+        isActive: false,
+    },
+])
+
+const toggleActive = (index) => {
+    const item = tabItems[index];
+    tabItems.forEach((tabItem) => {
+        tabItem.isActive = false;
+    });
+    item.isActive = true;
+    productStore.setFilteredType(item.name);
+}
+
+const products = ref([]);
+
+const retrieveProducts = async () => {
+    try {
+        products.value = await ProductService.getAll();
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const filteredProducts = computed(() => {
+    if (!productStore.filteredType) return products.value;
+    switch (productStore.filteredType) {
+        case "newProducts":
+            return mostSaleProducts.value;
+            break;
+        case "bestSellerProducts":
+            return leastSaleProducts.value;
+            break;
+        default:
+            break;
+    }
+})
+
+const mostSaleProducts = computed(() => {
+    return [...products.value].sort((a, b) => b.salePercent - a.salePercent);
+});
+
+const leastSaleProducts = computed(() => {
+    return [...products.value].sort((a, b) => a.salePercent - b.salePercent);
+});
+
+const refreshList = () => {
+    retrieveProducts();
+};
+
+refreshList();
 </script>
 
 <template>
     <div class="section-container">
         <div class="products__tab">
-            <a href="#" class="products__tab-item active">Sản phẩm mới</a>
-            <a href="#" class="products__tab-item" @click="">Bán chạy nhất</a>
+            <a v-for="(item, index) in tabItems" :key="index" href="" class="products__tab-item" @click.prevent
+                @click="toggleActive(index)" :class="{ active: item.isActive }">{{ item.label }}</a>
         </div>
         <div class="product-slider row">
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
+            <ProductCard v-for="product in filteredProducts" :product="product" :gridCol="productPerRow"/>
         </div>
     </div>
 </template>
@@ -32,13 +89,6 @@ import ProductCard from './ProductCard.vue';
     margin-top: 4rem;
     display: flex;
 }
-
-/* button {
-    overflow: visible;
-    font-family: inherit;
-    font-size: 100%;
-    line-height: 1.15;
-} */
 
 .products__heading {
     font-size: 28px;
@@ -56,7 +106,6 @@ import ProductCard from './ProductCard.vue';
     margin-top: 12px;
     font-weight: 400;
 }
-
 
 .slick-arrow {
     font-size: 0;
@@ -95,7 +144,8 @@ import ProductCard from './ProductCard.vue';
     content: '→';
 }
 
-.slick-prev::before, .slick-next::before {
+.slick-prev::before,
+.slick-next::before {
     position: relative;
     top: -2px;
     font-size: 24px;
@@ -128,5 +178,4 @@ import ProductCard from './ProductCard.vue';
     background-color: #212121;
     color: #fff;
 }
-
-.product-slider {}</style>
+</style>

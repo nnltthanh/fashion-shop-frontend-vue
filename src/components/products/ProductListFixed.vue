@@ -1,18 +1,44 @@
-<script setup lang="ts">
+<script setup>
+import { ref, reactive, computed } from 'vue';
 import ProductCard from './ProductCard.vue';
+import ProductService from "@/services/product.service";
+const props = defineProps({
+    collection: {
+        type: Object,
+    }
+});
+
+const products = ref([]);
+
+const productPerRow = 'col-2-4';
+
+const retrieveProducts = async () => {
+    try {
+        products.value = await ProductService.getAll();
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const filteredProducts = computed(() => {
+    return products.value.filter((product) => product.material === props.collection.material).slice(0, 4);
+});
+
+const refreshList = () => {
+    retrieveProducts();
+};
+
+refreshList();
 </script>
 
 <template>
     <div class="section-container">
         <div class="products__heading d-flex justify-content-between">
-            <p>SẢN PHẨM THU ĐÔNG</p>
+            <p>{{ collection.title }}</p>
             <span>Xem thêm</span>
         </div>
         <div class="product-list row">
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
+            <ProductCard v-for="product in filteredProducts" :product="product" :gridCol="productPerRow"/>
         </div>
     </div>
 </template>

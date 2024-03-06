@@ -6,7 +6,10 @@
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BT Fashion Shop</title>
+  </head>
 
+  <body>
+    <div id="app" class="container-fluid"></div>
     <!-- Loại bỏ các trang không xuất hiện FChat -->
     <script>
       if (!['/login', '/register', '/login/employee'].includes(window.location.pathname)) {
@@ -18,10 +21,6 @@
         document.head.appendChild(script);
       }
     </script>
-  </head>
-
-  <body>
-    <div id="app" class="container-fluid"></div>
     <script type="module" src="/src/main.ts"></script>
     <script type="text/javascript"
       src="//code.jquery.com/jquery-1.11.0.min.js"></script>

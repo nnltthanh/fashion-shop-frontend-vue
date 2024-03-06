@@ -1,17 +1,21 @@
-<script setup lang="ts"></script>
+<script setup>
+const props = defineProps({
+    banner: {
+        type: Object
+    }
+});
+</script>
 
 <template>
     <section class="banner-block">
         <div class="banner-block__wrapper">
             <a href="#" class="d-block w-100">
-                <img src="https://media.coolmate.me/cdn-cgi/image/width=1800,height=1200,quality=80,format=auto/uploads/December2023/mceclip2_67.png"
+                <img :src="banner.src"
                     alt="" class="w-100">
             </a>
             <div class="banner-block__content">
                 <h2 class="banner-block__heading">
-                    BST
-                    <br>
-                    THU ĐÔNG
+                    {{ banner.text }}
                 </h2>
                 <div class="banner-block__button">
                     <a href="" class="button button--black">KHÁM PHÁ NGAY</a>
@@ -34,14 +38,14 @@
 }
 
 .banner-block__content {
-    top: -14%;
+    top: 0;
     max-width: 800px;
     position: absolute;
     left: 0;
     height: 100%;
     display: flex;
     flex-flow: column;
-    justify-content: flex-end;
+    justify-content: center;
     max-width: 600px;
     padding: 0 0 0 2rem;
 }

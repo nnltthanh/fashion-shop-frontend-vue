@@ -29,6 +29,9 @@
   "vueCompilerOptions": {
     "experimentalSuppressInvalidJsxElementTypeErrors": true
   },
-  "include": ["resources/**/*"],
+  "include": [
+    "resources/**/*",
+    "src/**/*"
+  ],
   "exclude": ["public/**/*", "node_modules", "vendor"]
 }
