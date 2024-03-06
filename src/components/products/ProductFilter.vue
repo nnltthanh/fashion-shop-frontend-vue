@@ -156,8 +156,9 @@ const toggleActiveRadio = (index, list) => {
                         Kích cỡ
                     </h5>
                     <ul class="filter-select-size">
-                        <li v-for="(item, index) in sizeList" :key="index" data-type="size" class="filter-select-size__item"
-                            :class="{ selected: item.isActive }" @click="toggleActive(index, sizeList)">
+                        <li v-for="(item, index) in sizeList" :key="index" data-type="size"
+                            class="filter-select-size__item" :class="{ selected: item.isActive }"
+                            @click="toggleActive(index, sizeList)">
                             <button class="filter-select-size__button">
                                 <span class="filter-select-size__label">{{ item.size }}</span>
                             </button>
@@ -171,9 +172,10 @@ const toggleActiveRadio = (index, list) => {
                     <ul class="filter-select-color">
                         <li v-for="(item, index) in colorList" :key="index" :class="{ selected: item.isActive }"
                             @click="toggleActiveRadio(index, colorList)" class="filter-select-color__item">
-                            <div class="filter-select-color__button" :style="{ backgroundColor: item.hexCode }">
-
-                            </div>
+                            <div class="filter-select-color__button" :style="{ backgroundColor: item.hexCode }"></div>
+                            <label class="filter-select-color__label">
+                                {{ item.color }}
+                            </label>
                         </li>
                     </ul>
                 </div>
@@ -213,20 +215,23 @@ const toggleActiveRadio = (index, list) => {
     padding-right: 15px;
 }
 
-.collection-left-filter__wrapper::-webkit-scrollbar, .collection-right-filter-cate__wrapper::-webkit-scrollbar {
+.collection-left-filter__wrapper::-webkit-scrollbar,
+.collection-right-filter-cate__wrapper::-webkit-scrollbar {
     width: 4px;
     height: 3px;
     background-color: #f5f5f5;
 }
 
-.collection-left-filter__wrapper::-webkit-scrollbar-thumb, .collection-right-filter-cate__wrapper::-webkit-scrollbar-thumb {
+.collection-left-filter__wrapper::-webkit-scrollbar-thumb,
+.collection-right-filter-cate__wrapper::-webkit-scrollbar-thumb {
     background-color: #000;
     border: 2px solid #555;
     border-radius: 10px;
 }
 
-.collection-left-filter__wrapper::-webkit-scrollbar-track, .collection-right-filter-cate__wrapper::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+.collection-left-filter__wrapper::-webkit-scrollbar-track,
+.collection-right-filter-cate__wrapper::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
     background-color: #f5f5f5;
     border-radius: 20px;
 }
@@ -333,6 +338,7 @@ input {
 
 .filter-select-size__item {
     position: relative;
+    margin-top: 8px;
 }
 
 .filter-select-size__button {
@@ -345,6 +351,7 @@ input {
     background: #fff;
     cursor: pointer;
     border-radius: 0.375rem;
+    line-height: 1.15;
 }
 
 .filter-select-size__item.selected button {
@@ -399,5 +406,10 @@ input {
 
 .filter-select-color__item.selected .filter-select-color__button:before {
     border: 2px solid #2f5acf;
+}
+
+.filter-select-color__label {
+    font-size: .75rem;
+    opacity: .5;
 }
 </style>
