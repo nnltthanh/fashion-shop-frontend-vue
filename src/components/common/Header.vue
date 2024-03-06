@@ -6,15 +6,18 @@
             <!-- Links -->
             <div class="header_logo">
                 <router-link to="/home">
-                    <img src="../../assets/images/logo/bt-high-resolution-logo-white-transparent.png" alt="" srcset="" />
+                    <img src="../../assets/images/logo/bt-high-resolution-logo-white-transparent.png" alt=""
+                        srcset="" />
                 </router-link>
             </div>
             <div class="navbar-nav">
                 <div class="nav-item">
-                    <a class="nav-link" href="#">
+                    <router-link :to="{
+                        name: 'products',
+                    }" class="nav-link">
                         SẢN PHẨM
                         <i class="fa-solid fa-chevron-down dropdown-icon"></i>
-                    </a>
+                    </router-link>
                     <div class="subnav">
                         <ul class="subnav-list">
                             <li class="subnav-item">
@@ -329,7 +332,8 @@ input {
     font-weight: 500;
 }
 
-.dropdown-item:focus, .dropdown-item:hover {
+.dropdown-item:focus,
+.dropdown-item:hover {
     color: white;
     background-color: black;
     font-weight: 500;

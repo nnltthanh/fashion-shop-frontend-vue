@@ -58,21 +58,15 @@ const router = createRouter({
         },
       ],
     },
-    // {
-    //   path: "/products",
-    //   name: "products",
-    //   children: [
-    //     {
-    //       path: "/:id",
-    //       name: "product",
-    //       component: () => import("@/components/products/ProductDetail.vue"),
-    //     },
-    //   ],
-    // },
+    {
+      path: "/products",
+      name: "products",
+      component: () => import("@/views/ProductView.vue"),
+    },
     {
       path: "/products/:id",
       name: "product",
-      component: () => import("@/components/products/ProductDetail.vue"),
+      component: () => import("@/views/ProductDetail.vue"),
     },
   ],
 });

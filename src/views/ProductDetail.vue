@@ -84,8 +84,7 @@ onBeforeMount(() => {
                             <div class="product-single__inner">
                                 <div class="thumbnails">
                                     <a href="#" class="image">
-                                        <img :src="product.value.imageData.base64String"
-                                            alt="Áo Singlet Nam Chạy Bộ in Graphic Special Mỏng nhẹ Xanh dương">
+                                        <img :src="product.value.imageData.base64String" :alt="product.value.name">
                                     </a>
                                 </div>
                             </div>
@@ -97,8 +96,8 @@ onBeforeMount(() => {
                                 {{ product.value.name }}
                                 <span class="product-grid__sub-title">Mỏng nhẹ</span>
                             </h1>
-                            <a href="#reviews" class="product-single__ratings scroll-to-step">
-                                <div data-review-count="2" data-review-avg="4.7" class="reviews-rating">
+                            <a href="#" class="product-single__ratings scroll-to-step">
+                                <div class="reviews-rating">
                                     <div class="reviews-rating__star is-active"></div>
                                     <div class="reviews-rating__star is-active"></div>
                                     <div class="reviews-rating__star is-active"></div>
@@ -117,130 +116,159 @@ onBeforeMount(() => {
                             <div class="product-single__price-infomation">
                                 <div class="product-single__prices">
                                     <ins class="product-single__regular-price">{{ formatedSalePrice }}</ins>
-                                    <del class="product-single__compare-price">{{ formatedPrice }}</del>
-                                    <span class="product-single__percent-price">-{{ product.value.salePercent }}%</span>
+                                    <div v-if="product.value.salePercent > 0">
+                                        <del class="product-single__compare-price">{{ formatedPrice }}</del>
+                                        <span class="product-single__percent-price">-{{ product.value.salePercent
+                                            }}%</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="product-single__addtocart">
                                 <form action="">
                                     <div class="product-single__options">
-                                        <div rel-script="product-single-option-item" class="product-single__option">
-                                            <div class="option-heading"><span class="option-heading__title">Màu sắc:
-                                                    <span rel="product-option-title-color" class="text--bold">Xám
-                                                        đậm</span></span></div>
-                                            <div data-option-id="color" data-option-index="1"
-                                                class="option-select option-select--color"><label
-                                                    class="option-select__item option-select__item--color xam-dam">
-                                                    <div class="option-select__inner"><input type="radio" name="color"
-                                                            value="xam-dam" checked="checked">
+                                        <div class="product-single__option">
+                                            <div class="option-heading">
+                                                <span class="option-heading__title">
+                                                    Màu sắc:
+                                                    <span class="text--bold">Xám đậm</span>
+                                                </span>
+                                            </div>
+                                            <div class="option-select option-select--color">
+                                                <label class="option-select__item option-select__item--color xam-dam">
+                                                    <div class="option-select__inner">
+                                                        <input type="radio" name="color" value="xam-dam"
+                                                            checked="checked">
                                                         <span class="checkmark checkmark--color xam-dam"
                                                             style="background-image: url(&quot;https://media.coolmate.me/cdn-cgi/image/width=160,height=160,quality=80,format=auto/uploads/October2023/mau_vai_combo-5.jpg&quot;);"></span>
                                                     </div>
-                                                </label> <label
-                                                    class="option-select__item option-select__item--color den">
-                                                    <div class="option-select__inner"><input type="radio" name="color"
-                                                            value="den"
-                                                            data-gallery="[{&quot;id&quot;:&quot;1f5ae35b&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.1.jpg&quot;},{&quot;id&quot;:&quot;a9bb71f6&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.2.jpg&quot;},{&quot;id&quot;:&quot;9c0717c6&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.7.jpg&quot;},{&quot;id&quot;:&quot;8066705c&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.4.jpg&quot;},{&quot;id&quot;:&quot;0162797b&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.6.jpg&quot;},{&quot;id&quot;:&quot;4300b2fd&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.12.jpg&quot;},{&quot;id&quot;:&quot;d62b287f&quot;,&quot;src&quot;:&quot;\/image\/October2023\/mau_vai_combo-2.jpg&quot;}]"
-                                                            data-title="Đen"> <span
-                                                            class="checkmark checkmark--color den"
+                                                </label>
+                                                <label class="option-select__item option-select__item--color den">
+                                                    <div class="option-select__inner">
+                                                        <input type="radio" name="color" value="den">
+                                                        <span class="checkmark checkmark--color den"
                                                             style="background-image: url(&quot;https://media.coolmate.me/cdn-cgi/image/width=160,height=160,quality=80,format=auto/uploads/October2023/mau_vai_combo-2.jpg&quot;);"></span>
                                                     </div>
-                                                </label> <label
-                                                    class="option-select__item option-select__item--color xam-nhat">
-                                                    <div class="option-select__inner"><input type="radio" name="color"
-                                                            value="xam-nhat"
-                                                            data-gallery="[{&quot;id&quot;:&quot;86becbb6&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.14.jpg&quot;},{&quot;id&quot;:&quot;746816a8&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.20.jpg&quot;},{&quot;id&quot;:&quot;dd78be47&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.16.jpg&quot;},{&quot;id&quot;:&quot;150986bb&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.19s.jpg&quot;},{&quot;id&quot;:&quot;0eeb52ec&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.25.jpg&quot;},{&quot;id&quot;:&quot;7fda7773&quot;,&quot;src&quot;:&quot;\/image\/January2024\/24CMAW.QD002.23.jpg&quot;},{&quot;id&quot;:&quot;6ef7b9fe&quot;,&quot;src&quot;:&quot;\/image\/January2024\/xamnhatz_copyv2.jpg&quot;}]"
-                                                            data-title="Xám nhạt"> <span
-                                                            class="checkmark checkmark--color xam-nhat"
+                                                </label>
+                                                <label class="option-select__item option-select__item--color xam-nhat">
+                                                    <div class="option-select__inner">
+                                                        <input type="radio" name="color" value="xam-nhat">
+                                                        <span class="checkmark checkmark--color xam-nhat"
                                                             style="background-image: url(&quot;https://media.coolmate.me/cdn-cgi/image/width=160,height=160,quality=80,format=auto/uploads/January2024/xamnhatz_copyv2.jpg&quot;);"></span>
                                                     </div>
-                                                </label></div>
+                                                </label>
+                                            </div>
                                         </div>
-                                        <div rel-script="product-single-option-item" class="product-single__option">
-                                            <div class="option-heading"><span class="option-heading__title">Kích thước
-                                                    Quần: <span rel="product-option-title-shorts_size"
-                                                        class="text--bold"></span> <span rel="product-option-sizechart"
-                                                        class="product-option-size shorts_size"></span></span> <a
-                                                    href="#size-guide" ga-tracking-value="huong-dan-chon-size"
-                                                    rel-script="toggle-size-guide" class="option-heading__sizeguide">
+                                        <div class="product-single__option">
+                                            <div class="option-heading">
+                                                <span class="option-heading__title">
+                                                    Kích thước Quần:
+                                                    <span class="text--bold"></span>
+                                                    <span class="product-option-size shorts_size"></span>
+                                                </span>
+                                                <a href="#" class="option-heading__sizeguide">
                                                     Hướng dẫn chọn size
-                                                </a></div>
+                                                </a>
+                                            </div>
                                             <div data-option-id="shorts_size" data-option-index="2"
-                                                class="option-select option-select--shorts_size"><label
-                                                    class="option-select__item option-size m">
-                                                    <div class="option-select__inner"><input type="radio"
-                                                            name="shorts_size" value="m" data-title="M"> <span
-                                                            class="checkmark">M</span></div>
+                                                class="option-select option-select--shorts_size">
+                                                <label class="option-select__item option-size m">
+                                                    <div class="option-select__inner">
+                                                        <input type="radio" name="shorts_size" value="m" data-title="M">
+                                                        <span class="checkmark">M</span>
+                                                    </div>
                                                     <div class="option-size-tooltip">
                                                         <div class="option-size-tooltip__arrow"></div>
                                                         <div data-size-height="1m60 - 1m65"
                                                             data-size-weight="55kg - 61kg" data-size-type=""
-                                                            class="option-size-tooltip__inner"><span> 1m60 - 1m65</span>
-                                                            <br> <span> 55kg - 61kg</span>
+                                                            class="option-size-tooltip__inner">
+                                                            <span> 1m60 - 1m65</span>
+                                                            <br>
+                                                            <span> 55kg - 61kg</span>
                                                         </div>
                                                     </div>
-                                                </label> <label class="option-select__item option-size l">
-                                                    <div class="option-select__inner"><input type="radio"
-                                                            name="shorts_size" value="l" data-title="L"> <span
-                                                            class="checkmark">L</span></div>
+                                                </label>
+                                                <label class="option-select__item option-size l">
+                                                    <div class="option-select__inner">
+                                                        <input type="radio" name="shorts_size" value="l" data-title="L">
+                                                        <span class="checkmark">L</span>
+                                                    </div>
                                                     <div class="option-size-tooltip">
                                                         <div class="option-size-tooltip__arrow"></div>
                                                         <div data-size-height="1m66 - 1m72"
                                                             data-size-weight="62kg - 68kg" data-size-type=""
-                                                            class="option-size-tooltip__inner"><span> 1m66 - 1m72</span>
-                                                            <br> <span> 62kg - 68kg</span>
+                                                            class="option-size-tooltip__inner">
+                                                            <span> 1m66 - 1m72</span>
+                                                            <br>
+                                                            <span> 62kg - 68kg</span>
                                                         </div>
                                                     </div>
-                                                </label> <label class="option-select__item option-size xl">
-                                                    <div class="option-select__inner"><input type="radio"
-                                                            name="shorts_size" value="xl" data-title="XL"> <span
-                                                            class="checkmark">XL</span></div>
+                                                </label>
+                                                <label class="option-select__item option-size xl">
+                                                    <div class="option-select__inner">
+                                                        <input type="radio" name="shorts_size" value="xl"
+                                                            data-title="XL">
+                                                        <span class="checkmark">XL</span>
+                                                    </div>
                                                     <div class="option-size-tooltip">
                                                         <div class="option-size-tooltip__arrow"></div>
                                                         <div data-size-height="1m72 - 1m77"
                                                             data-size-weight="69kg - 75kg" data-size-type=""
-                                                            class="option-size-tooltip__inner"><span> 1m72 - 1m77</span>
-                                                            <br> <span> 69kg - 75kg</span>
+                                                            class="option-size-tooltip__inner">
+                                                            <span> 1m72 - 1m77</span>
+                                                            <br>
+                                                            <span> 69kg - 75kg</span>
                                                         </div>
                                                     </div>
-                                                </label> <label class="option-select__item option-size 2xl">
-                                                    <div class="option-select__inner"><input type="radio"
-                                                            name="shorts_size" value="2xl" data-title="2XL"> <span
-                                                            class="checkmark">2XL</span></div>
+                                                </label>
+                                                <label class="option-select__item option-size 2xl">
+                                                    <div class="option-select__inner">
+                                                        <input type="radio" name="shorts_size" value="2xl"
+                                                            data-title="2XL">
+                                                        <span class="checkmark">2XL</span>
+                                                    </div>
                                                     <div class="option-size-tooltip">
                                                         <div class="option-size-tooltip__arrow"></div>
                                                         <div data-size-height="1m77 - 1m83"
                                                             data-size-weight="76kg - 82kg" data-size-type=""
-                                                            class="option-size-tooltip__inner"><span> 1m77 - 1m83</span>
-                                                            <br> <span> 76kg - 82kg</span>
+                                                            class="option-size-tooltip__inner">
+                                                            <span> 1m77 - 1m83</span>
+                                                            <br>
+                                                            <span> 76kg - 82kg</span>
                                                         </div>
                                                     </div>
                                                 </label> <label class="option-select__item option-size 3xl">
-                                                    <div class="option-select__inner"><input type="radio"
-                                                            name="shorts_size" value="3xl" data-title="3XL"> <span
-                                                            class="checkmark">3XL</span></div>
+                                                    <div class="option-select__inner">
+                                                        <input type="radio" name="shorts_size" value="3xl"
+                                                            data-title="3XL"> <span class="checkmark">3XL
+                                                        </span>
+                                                    </div>
                                                     <div class="option-size-tooltip">
                                                         <div class="option-size-tooltip__arrow"></div>
                                                         <div data-size-height="1m83 - 1m90"
                                                             data-size-weight="83kg - 89kg" data-size-type=""
-                                                            class="option-size-tooltip__inner"><span> 1m83 - 1m90</span>
-                                                            <br> <span> 83kg - 89kg</span>
+                                                            class="option-size-tooltip__inner">
+                                                            <span> 1m83 - 1m90</span>
+                                                            <br>
+                                                            <span> 83kg - 89kg</span>
                                                         </div>
                                                     </div>
-                                                </label></div>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="product-single__actions">
                                         <div class="product-single__quantity">
-                                            <div rel-script="quantity-change" class="quantity"><a href="#"
-                                                    class="quantity__reduce">-</a> <input type="number" value="1"
-                                                    max="99" min="1" class="quantity__control"> <a href="#"
-                                                    class="quantity__augure">+</a></div>
+                                            <div class="quantity">
+                                                <a href="#" class="quantity__reduce">-</a>
+                                                <input type="number" value="1" max="99" min="1"
+                                                    class="quantity__control">
+                                                <a href="#" class="quantity__augure">+</a>
+                                            </div>
                                         </div>
-                                        <div class="product-single__button"><a href="#"
-                                                data-product-id="65b20a115d462739c420cfd6" data-variant-id=""
-                                                data-quantity="1" rel-script="product-add-to-cart" class="cart-button">Chọn kích
-                                                thước quần</a></div>
+                                        <div class="product-single__button">
+                                            <a href="#" data-variant-id="" data-quantity="1" class="cart-button">Thêm
+                                                vào giỏ hàng</a>
+                                        </div>
                                     </div>
                                 </form>
 
@@ -249,7 +277,8 @@ onBeforeMount(() => {
                                 <div class="product-shipping-info__wrapper">
                                     <h4>Miễn phí giao hàng nhanh toàn quốc cho đơn hàng trên 200.000đ</h4>
                                     <ul>
-                                        <li><svg width="28" height="28" viewBox="0 0 28 28" fill="none"
+                                        <li>
+                                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path fill-rule="evenodd" clip-rule="evenodd"
                                                     d="M11.0539 7.97635C12.4497 6.72799 14.2825 5.96922 16.289 5.96922C20.6591 5.96922 24.2078 9.56811 24.2078 14C24.2078 18.4319 20.6591 22.0308 16.289 22.0308C14.2825 22.0308 12.4497 21.272 11.0539 20.0236C10.7153 19.7201 10.1964 19.7522 9.89716 20.0967C9.59788 20.4401 9.63065 20.9652 9.96924 21.2687C11.6546 22.7773 13.8675 23.6923 16.289 23.6923C21.5635 23.6923 25.8462 19.349 25.8462 14C25.8462 8.65094 21.5635 4.30768 16.289 4.30768C13.8675 4.30768 11.6546 5.22263 9.96924 6.73131C9.63065 7.03482 9.59788 7.55986 9.89716 7.90325C10.1964 8.24774 10.7153 8.27986 11.0539 7.97635Z"
@@ -269,7 +298,8 @@ onBeforeMount(() => {
                                             </svg>
                                             Nội thành Hà Nội và HCM nhận hàng trong 1-2 ngày
                                         </li>
-                                        <li><svg width="32" height="29" viewBox="0 0 32 29" fill="none"
+                                        <li>
+                                            <svg width="32" height="29" viewBox="0 0 32 29" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_796_10786)">
                                                     <path
@@ -299,33 +329,45 @@ onBeforeMount(() => {
                             <div class="product-single__policy">
                                 <div class="product-policy">
                                     <div class="product-policy__item">
-                                        <div class="product-policy__icon"><img
-                                                src="https://www.coolmate.me/images/icons/icon3.svg"
-                                                alt="Đổi trả với số điện thoại"></div> <span
-                                            class="product-policy__title">
-                                            Đổi trả cực dễ chỉ cần số<br> điện thoại
+                                        <div class="product-policy__icon">
+                                            <img src="https://www.coolmate.me/images/icons/icon3.svg"
+                                                alt="Đổi trả với số điện thoại">
+                                        </div>
+                                        <span class="product-policy__title">
+                                            Đổi trả cực dễ chỉ cần số
+                                            <br>
+                                            điện thoại
                                         </span>
                                     </div>
                                     <div class="product-policy__item">
-                                        <div class="product-policy__icon"><img
-                                                src="https://www.coolmate.me/images/icons/icon5.svg"
-                                                alt="Đổi hàng trong 60 ngày"></div> <span class="product-policy__title">
+                                        <div class="product-policy__icon">
+                                            <img src="https://www.coolmate.me/images/icons/icon5.svg"
+                                                alt="Đổi hàng trong 60 ngày">
+                                        </div>
+                                        <span class="product-policy__title">
                                             60 ngày đổi trả vì bất kỳ lý do gì
                                         </span>
                                     </div>
                                     <div class="product-policy__item">
-                                        <div class="product-policy__icon"><img
-                                                src="https://www.coolmate.me/images/icons/icon2.svg"
-                                                alt="Hotline 1900.27.27.37" style="width: 25px;"></div> <span
-                                            class="product-policy__title">
-                                            Hotline 1900.27.27.37 hỗ<br> trợ từ 8h30 - 22h mỗi ngày
+                                        <div class="product-policy__icon">
+                                            <img src="https://www.coolmate.me/images/icons/icon2.svg"
+                                                alt="Hotline 1900.27.27.37" style="width: 25px;">
+                                        </div>
+                                        <span class="product-policy__title">
+                                            Hotline 1900.27.27.37 hỗ
+                                            <br>
+                                            trợ từ 8h30 - 22h mỗi ngày
                                         </span>
                                     </div>
                                     <div class="product-policy__item">
-                                        <div class="product-policy__icon"><img
-                                                src="https://www.coolmate.me/images/icons/icon1.svg"
-                                                alt="Trả hàng tận nơi"></div> <span class="product-policy__title">
-                                            Đến tận nơi nhận hàng trả,<br> hoàn tiền trong 24h
+                                        <div class="product-policy__icon">
+                                            <img src="https://www.coolmate.me/images/icons/icon1.svg"
+                                                alt="Trả hàng tận nơi">
+                                        </div>
+                                        <span class="product-policy__title">
+                                            Đến tận nơi nhận hàng trả,
+                                            <br>
+                                            hoàn tiền trong 24h
                                         </span>
                                     </div>
                                 </div>
@@ -674,24 +716,6 @@ body {
     transition: all .3s;
 }
 
-.product-single__options .option-select__item .checkmark {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    border-radius: 16px;
-    background-color: #d9d9d9;
-    color: #000;
-    transition: all .3s;
-    cursor: pointer;
-    position: relative;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
 .product-single__options .option-heading__sizeguide {
     color: #2f5acf;
     text-decoration: underline;
@@ -706,7 +730,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 40px;
+    height: 32px;
     border-radius: 16px;
     background-color: #d9d9d9;
     color: #000;
@@ -746,7 +770,8 @@ body {
     line-height: 23px;
 }
 
-.quantity__augure, .quantity__reduce {
+.quantity__augure,
+.quantity__reduce {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -754,6 +779,7 @@ body {
     height: 100%;
     line-height: 1em;
 }
+
 .quantity input {
     position: relative;
     left: 7%;
