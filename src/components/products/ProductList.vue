@@ -1,5 +1,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue';
+import 'vue3-carousel/dist/carousel.css'
+import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
 import ProductCard from './ProductCard.vue';
 import ProductService from "@/services/product.service";
 import { useProductStore } from '@/stores/productStore';
@@ -75,15 +77,27 @@ refreshList();
             <a v-for="(item, index) in tabItems" :key="index" href="" class="products__tab-item" @click.prevent
                 @click="toggleActive(index)" :class="{ active: item.isActive }">{{ item.label }}</a>
         </div>
-        <div class="product-slider row">
-            <ProductCard v-for="product in filteredProducts" :product="product" :gridCol="productPerRow"/>
-        </div>
+        <!-- <div class="product-slider row">
+            <ProductCard v-for="product in filteredProducts" :product="product" :gridCol="productPerRow" />
+        </div> -->
+        <Carousel class="product-slider" :items-to-show="5" :wrap-around="true" :autoplay="0">
+            <Slide v-for="product in filteredProducts" :key="product">
+                <ProductCard :product="product"/>
+            </Slide>
+            <template #addons>
+                <Navigation />
+                <Pagination />
+            </template>
+        </Carousel>
     </div>
 </template>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@500&display=swap');
-
+.carousel {
+    margin-top: 0;
+    text-align: start;
+}
 .products__tab {
     margin-bottom: 1rem;
     margin-top: 4rem;

@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 export const useProductStore = defineStore('product', {
     state: () => ({
         allProducts: [],
+        filterList: [],
         filteredType: null,
         activeIndex: -1,
         productCount: Number,
@@ -13,6 +14,9 @@ export const useProductStore = defineStore('product', {
     actions: {
         setAllProduct(products) {
             this.allProducts = products;
+        },
+        setFilterList(filters) {
+            this.filterList = filters;
         },
         setFilteredType(type) {
             this.filteredType = type;
