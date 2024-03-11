@@ -1,24 +1,28 @@
 <script setup>
-import { reactive } from 'vue';
+import { ref, reactive } from 'vue';
 import { useProductStore } from '@/stores/productStore';
 
 const productStore = useProductStore();
 
-const materialList = reactive([
+const typeList = reactive([
     {
-        name: "Áo",
+        label: "Áo",
+        name: "SHIRTS",
         isActive: false
     },
     {
-        name: "Quần",
+        label: "Quần",
+        name: "PANTS",
         isActive: false
     },
     {
-        name: "Áo khoác",
+        label: "Áo khoác",
+        name: "JACKETS",
         isActive: false
     },
     {
-        name: "Phụ kiện",
+        label: "Phụ kiện",
+        name: "ACCESSORIES",
         isActive: false
     },
 ]);
@@ -109,6 +113,22 @@ const purposeList = reactive([
     },
 ]);
 
+const filtersList = {
+    types: ref([]),
+    sizes: ref([]),
+    colors: ref([]),
+};
+
+const handleFilterList = (category, name) => {
+    let index = filtersList[category].value.indexOf(name);
+    if (index > -1) {
+        filtersList[category].value.splice(index, 1);
+    } else {
+        filtersList[category].value.push(name);
+    }
+    productStore.setFilterList(filtersList);
+}
+
 const toggleActive = (index, list) => {
     const item = list[index];
     item.isActive = !item.isActive;
@@ -142,11 +162,11 @@ const toggleActiveRadio = (index, list) => {
                         Danh mục
                     </h5>
                     <ul class="filter-select-material">
-                        <li v-for="(item, index) in materialList" :key="index" class="filter-select-material__item"
-                            :class="{ selected: item.isActive }" @click="toggleActive(index, materialList)">
+                        <li v-for="(item, index) in typeList" :key="index" class="filter-select-material__item"
+                            :class="{ selected: item.isActive }" @click="toggleActive(index, typeList)">
                             <div class="filter-select-material__checkbox">
-                                <input type="checkbox" value="false">
-                                <label>{{ item.name }}</label>
+                                <input type="checkbox" value="false" @click="handleFilterList('types', item.name)">
+                                <label>{{ item.label }}</label>
                             </div>
                         </li>
                     </ul>
@@ -158,7 +178,7 @@ const toggleActiveRadio = (index, list) => {
                     <ul class="filter-select-size">
                         <li v-for="(item, index) in sizeList" :key="index" data-type="size"
                             class="filter-select-size__item" :class="{ selected: item.isActive }"
-                            @click="toggleActive(index, sizeList)">
+                            @click="toggleActive(index, sizeList)" >
                             <button class="filter-select-size__button">
                                 <span class="filter-select-size__label">{{ item.size }}</span>
                             </button>

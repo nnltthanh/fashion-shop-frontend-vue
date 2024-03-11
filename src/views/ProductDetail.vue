@@ -3,6 +3,7 @@ import { reactive, computed, onBeforeMount } from 'vue';
 import { useRoute } from 'vue-router';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
+import ProductReview from '@/components/products/ProductReview.vue';
 import ProductService from "@/services/product.service";
 
 const route = useRoute();
@@ -378,6 +379,7 @@ onBeforeMount(() => {
 
             </div>
         </section>
+        <ProductReview />
     </main>
     <Footer />
 </template>

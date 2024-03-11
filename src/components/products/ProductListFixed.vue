@@ -10,7 +10,7 @@ const props = defineProps({
 
 const products = ref([]);
 
-const productPerRow = 'col-2-4';
+const productPerRow = 'col-3';
 
 const retrieveProducts = async () => {
     try {
