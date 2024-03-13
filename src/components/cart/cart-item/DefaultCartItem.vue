@@ -1,7 +1,8 @@
 <script setup lang="ts">
 
-import { computed, defineProps, ref } from 'vue';
+import { computed, defineProps, ref, inject } from 'vue';
 import type { CartDetailObject } from '../CartComponent.vue';
+import CartService from "@/services/cart.service";
 
 export type ProductObject = {
   id: Number,
@@ -28,9 +29,13 @@ export type ProductDetailObject = {
   product: ProductObject
 }
 
+const { cartService }: { cartService: CartService } = inject('cartService')!;
+
 const props = defineProps<{
   cartDetail: CartDetailObject
 }>();
+
+const isVisible = ref(true);
 
 const quantityRef = ref(props.cartDetail.quantity);
 const productDetail = ref(props.cartDetail.productDetail);
@@ -52,14 +57,34 @@ const VND = new Intl.NumberFormat('vi-VN', {
   currency: 'VND',
 });
 
-const formatedPrice = computed(() => {
+const formattedPrice = computed(() => {
   return VND.format(Number(props.cartDetail.total));
 });
+
+const formattedSalePrice = computed(() => {
+  let salePrice = props.cartDetail.total * (1 - props.cartDetail.productDetail.product.salePercent / 100);
+  salePrice = Math.floor(salePrice / 1000);
+  salePrice *= 1000;
+  return VND.format(salePrice);
+})
+
+const deleteItem = async () => {
+  (await cartService.deleteCartDetail(props.cartDetail.id));
+  cartService.subTotal.value -= props.cartDetail.total * props.cartDetail.quantity * (1 - props.cartDetail.productDetail.product.salePercent / 100);
+  cartService.cartDetailsToOrder.value.pop(props.cartDetail.id)
+  const regularArray = Object.keys(cartService.cartDetailsToOrder.value).map((key)=>cartService.cartDetailsToOrder.value[Number(key)]);
+            console.log(regularArray);
+  console.log(regularArray.pop(props.cartDetail.id))
+  cartService.cartDetailsToOrder.value = regularArray;
+  console.log(cartService.subTotal.value)
+  isVisible.value = false;
+
+}
 
 </script>
 
 <template>
-  <div class="cart-item">
+  <div class="cart-item" v-if="isVisible">
     <div class="cart-item-thumbnail">
       <div class="cart-item-thumbnail-image">
         <div class="cart-item-thumbnail-block">
@@ -170,11 +195,11 @@ const formatedPrice = computed(() => {
             </div>
           </div>
           <div class="cart-item-price">
-            <span> {{ formatedPrice }} </span>
-            <!-- <del>{{ totalRef }}</del>    -->
+            <span> {{ formattedSalePrice }} </span>
+            <del>{{ formattedPrice }}</del>
           </div>
         </div>
-        <button class="cart-item-remove">
+        <button class="cart-item-remove" @click="deleteItem">
           <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M12.668 4.668a.667.667 0 0 0-.667.667v7.46a1.28 1.28 0 0 1-1.34 1.206h-5.32a1.28 1.28 0 0 1-1.34-1.206v-7.46a.667.667 0 0 0-1.333 0v7.46a2.612 2.612 0 0 0 2.673 2.54h5.32a2.612 2.612 0 0 0 2.674-2.54v-7.46a.667.667 0 0 0-.667-.667ZM13.333 2.668h-2.666V1.335A.667.667 0 0 0 10 .668H6a.667.667 0 0 0-.667.667v1.333H2.667a.667.667 0 0 0 0 1.333h10.666a.667.667 0 1 0 0-1.333Zm-6.666 0v-.667h2.666v.667H6.667Z"

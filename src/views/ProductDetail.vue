@@ -1,11 +1,13 @@
-<script setup>
-import { ref, reactive, computed, onBeforeMount } from 'vue';
+<script setup lang="ts">
+import { ref, reactive, computed, onBeforeMount, inject } from 'vue';
 import { useRoute } from 'vue-router';
 import _ from 'lodash';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
 import ProductReview from '@/components/products/ProductReview.vue';
 import ProductService from "@/services/product.service";
+
+  const { cartService }: { cartService: CartService } = inject('cartService')!;
 
 let count = ref(1);
 
@@ -179,11 +181,13 @@ const retrieveProductDetail = async (productId, id) => {
     }
 };
 
-const addToCart = () => {
-    productDetailActive.value = Object.assign(productDetailActive.value,
-        { 'qty': count.value }
-    );
-    console.log(productDetailActive.value);
+const addToCart = async () => {
+    // productDetailActive.value = Object.assign(productDetailActive.value,
+    //     { 'qty': count.value }
+    // );
+    console.log(count.value, productDetailActive.value);
+
+    await cartService.addProductDetailToCart(productDetailActive.value, count.value);
 };
 
 onBeforeMount(() => {

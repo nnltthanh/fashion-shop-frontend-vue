@@ -12,7 +12,9 @@
         </div>
 
         <div class="cart-items">
-          <DefaultCartItem v-for="(cartItem, idx) in cartItems" :key="idx" :cartDetail="cartItem" />
+          <DefaultCartItem v-for="(cartItem, idx) in cartItems" :key="idx" 
+          :cartDetail="cartItem" 
+          />
         </div>
       </div>
     </div>
@@ -32,7 +34,7 @@
     <div class="pricing-info-item">
       <p>Tạm tính</p>
       <p class="pricing-info-sub">
-        <span> {{ formattedPrice }}</span>
+        <span> {{ formattedSalePrice }}</span>
         <!-- <span class="pricing-info-saving"
           ><i>(tiết kiệm <span class="text--primary">940k)</span></i></span
         > -->
@@ -93,12 +95,14 @@ export default {
     return {
       cartItems: ref<CartDetailObject[]>([]),
       formattedPrice: ref<string>(0),
+      formattedSalePrice: ref<string>(0),
       discount: ref(0),
       shipCost: ref(30000),
       formattedShipCost: ref<string>(0),
       subTotal: ref<string>(0),
       formattedSubTotal: ref<string>(0),
-      cartDetailIds: [] as number[]
+      cartDetailIds: [] as number[],
+      
     }
   },
 
@@ -116,15 +120,26 @@ export default {
       this.cartItems = cartService.cartItems._rawValue;
 
       let total = 0;
+      let salePriceTotal = 0;
       this.cartItems.forEach(item => {
         total += Number(item.total);
+        let salePrice = item.total * (1 - item.productDetail.product.salePercent / 100);
+        salePrice = Math.floor(salePrice / 1000);
+        salePrice *= 1000;
+        salePriceTotal += salePrice;
         this.cartDetailIds.push(Number(item.id));
       });
 
       this.formattedPrice = VND.format(total);
+      // let salePrice = total * (1 - props.cartDetail.productDetail.product.salePercent / 100);
+      // salePrice = Math.floor(salePrice / 1000);
+      // salePrice *= 1000;
+      console.log(salePriceTotal)
+      this.formattedSalePrice = VND.format(salePriceTotal);
+
       this.formattedShipCost = VND.format(this.shipCost);
 
-      let fees = total - this.discount + this.shipCost;
+      let fees = salePriceTotal - this.discount + this.shipCost;
 
       this.subTotal = VND.format(fees);
       const regularArray = Object.keys(this.cartDetailIds).map(key => this.cartDetailIds[Number(key)]);

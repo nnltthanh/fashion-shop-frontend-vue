@@ -9,7 +9,6 @@ const VND = new Intl.NumberFormat('vi-VN', {
   currency: 'VND',
 });
 
-
 const user1 = {
     "id": 1,
     "account": "nnlthanh20",

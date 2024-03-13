@@ -46,6 +46,15 @@ class CartService {
         }
     }
 
+    async addProductDetailToCart(productDetail, quantity) {
+        const baseUri = this.getBaseUri();
+        let cartDetail = {
+            productDetail: productDetail,
+            quantity: quantity
+        }
+        return axios.post(`${baseUri}/customers/1/cart`, cartDetail);
+    }
+
     async addCartDetailToOrder(data, paymentOption) {
         try {
             const baseUri = this.getBaseUri();
@@ -86,6 +95,11 @@ class CartService {
             "Content-Type": "application/json",
             Accept: "*/*",
         });
+    }
+
+    async deleteCartDetail(cartDetailId) {
+        const baseUri = this.getBaseUri();
+        return axios.delete(`${baseUri}/customers/1/cart/${cartDetailId}`);
     }
 
     async getOrderById(orderId: Number) {
