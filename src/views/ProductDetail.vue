@@ -1,14 +1,76 @@
 <script setup>
-import { reactive, computed, onBeforeMount } from 'vue';
+import { ref, reactive, computed, onBeforeMount } from 'vue';
 import { useRoute } from 'vue-router';
+import _ from 'lodash';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
 import ProductReview from '@/components/products/ProductReview.vue';
 import ProductService from "@/services/product.service";
 
+let count = ref(1);
+
+const decrease = () => {
+    if (count.value == 1) {
+        count.value = 1;
+    } else count.value--;
+}
+
+const increase = () => {
+    if (count.value == 99) {
+        count.value = 99;
+    } else count.value++;
+}
+
 const route = useRoute();
 
 const product = reactive({});
+
+const productDetails = ref([]);
+
+const productDetailActive = reactive({});
+
+const productColors = ref([]);
+
+const productsByColor = ref([]);
+
+const activeColor = reactive({});
+
+const activeSize = reactive({});
+
+const sizes = [
+    {
+        size: 'M',
+        height: "1m60 - 1m65",
+        weight: "55kg - 61kg",
+        isChecked: false
+    },
+    {
+        size: 'L',
+        height: "1m66 - 1m72",
+        weight: "62kg - 68kg",
+        isChecked: false
+    },
+    {
+        size: 'XL',
+        height: "1m72 - 1m77",
+        weight: "69kg - 75kg",
+        isChecked: false
+    },
+    {
+        size: '2XL',
+        height: "1m77 - 1m83",
+        weight: "76kg - 82kg",
+        isChecked: false
+    },
+    {
+        size: '3XL',
+        height: "1m83 - 1m90",
+        weight: "83kg - 89kg",
+        isChecked: false
+    },
+];
+
+const productSizes = ref([]);
 
 const productId = computed(() => {
     return parseInt(route.params.id);
@@ -34,10 +96,6 @@ const productPrice = computed(() => {
     return product.value.price;
 })
 
-// const salePercent = computed(() => {
-//     return product.value.salePercent;
-// })
-
 const formatedPrice = computed(() => {
     return VND.format(product.value.price);
 });
@@ -49,6 +107,33 @@ const formatedSalePrice = computed(() => {
     return VND.format(salePrice);
 })
 
+const getColorActive = (detail) => {
+    activeColor.value = Object.assign(activeColor.value,
+        {
+            'color': detail.color,
+            'imageLink': detail.imageLink,
+            'colorImage': detail.colorImage
+        }
+    );
+    productsByColor.value = productDetails.value.filter((item) => item.color == detail.color);
+    productSizes.value = _.uniqWith(productsByColor.value.map(({ size }) => ({ size })), _.isEqual);
+    productSizes.value = productSizes.value.map((item) => {
+        const matchedSize = sizes.find((size) => size.size === item.size);
+        if (matchedSize) {
+            return matchedSize;
+        } else {
+            return item;
+        }
+    });
+    productSizes.value.forEach((item) => item.isChecked = false);
+}
+
+const getSizeActive = (index, sizeValue) => {
+    productSizes.value.forEach((item) => item.isChecked = false);
+    productSizes.value.at(index).isChecked = true;
+    productDetailActive.value = productsByColor.value.find((item) => item.size == sizeValue);
+}
+
 const retrieveProduct = async (id) => {
     try {
         product.value = await ProductService.get(id);
@@ -57,8 +142,54 @@ const retrieveProduct = async (id) => {
     }
 };
 
+const retrieveAllProductDetails = async (id) => {
+    try {
+        productDetails.value = await ProductService.getAllDetails(id);
+        productColors.value = _.uniqWith(productDetails.value.map(({ color, imageLink, colorImage }) =>
+            ({ color, imageLink, colorImage })
+        ), _.isEqual);
+        productsByColor.value = productDetails.value.filter((detail) =>
+            (detail.color === productColors.value.at(0).color));
+        productSizes.value = _.uniqWith(productsByColor.value.map(({ size }) =>
+            ({ size })
+        ), _.isEqual);
+        productSizes.value = productSizes.value.map((item) => {
+            const matchedSize = sizes.find((size) => size.size === item.size);
+            if (matchedSize) {
+                return matchedSize;
+            } else {
+                return item;
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const retrieveProductDetail = async (productId, id) => {
+    try {
+        productDetailActive.value = await ProductService.getDetail(productId, id);
+        activeColor.value = { 
+            'color': productDetailActive.value.color,
+            'imageLink': productDetailActive.value.imageLink,
+            'colorImage': productDetailActive.value.colorImage
+        };
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const addToCart = () => {
+    productDetailActive.value = Object.assign(productDetailActive.value,
+        { 'qty': count.value }
+    );
+    console.log(productDetailActive.value);
+};
+
 onBeforeMount(() => {
     retrieveProduct(productId.value);
+    retrieveAllProductDetails(productId.value);
+    retrieveProductDetail(productId.value, 1);
 })
 
 
@@ -85,7 +216,7 @@ onBeforeMount(() => {
                             <div class="product-single__inner">
                                 <div class="thumbnails">
                                     <a href="#" class="image">
-                                        <img :src="product.value.imageData.base64String" :alt="product.value.name">
+                                        <img :src="activeColor.value.imageLink" :alt="product.value.name">
                                     </a>
                                 </div>
                             </div>
@@ -131,19 +262,20 @@ onBeforeMount(() => {
                                             <div class="option-heading">
                                                 <span class="option-heading__title">
                                                     Màu sắc:
-                                                    <span class="text--bold">Xám đậm</span>
+                                                    <span class="text--bold">{{ activeColor.value.color }}</span>
                                                 </span>
                                             </div>
                                             <div class="option-select option-select--color">
-                                                <label class="option-select__item option-select__item--color xam-dam">
+                                                <label v-for="(item, index) in productColors" :key="index + 1"
+                                                    class="option-select__item option-select__item--color">
                                                     <div class="option-select__inner">
-                                                        <input type="radio" name="color" value="xam-dam"
-                                                            checked="checked">
-                                                        <span class="checkmark checkmark--color xam-dam"
-                                                            style="background-image: url(&quot;https://media.coolmate.me/cdn-cgi/image/width=160,height=160,quality=80,format=auto/uploads/October2023/mau_vai_combo-5.jpg&quot;);"></span>
+                                                        <input type="radio" name="color" :value="item.color"
+                                                            :checked="index === 0" @click="getColorActive(item)">
+                                                        <span class="checkmark checkmark--color"
+                                                            :style="{ backgroundImage: 'url(' + item.colorImage + ')' }"></span>
                                                     </div>
                                                 </label>
-                                                <label class="option-select__item option-select__item--color den">
+                                                <!-- <label class="option-select__item option-select__item--color den">
                                                     <div class="option-select__inner">
                                                         <input type="radio" name="color" value="den">
                                                         <span class="checkmark checkmark--color den"
@@ -156,13 +288,13 @@ onBeforeMount(() => {
                                                         <span class="checkmark checkmark--color xam-nhat"
                                                             style="background-image: url(&quot;https://media.coolmate.me/cdn-cgi/image/width=160,height=160,quality=80,format=auto/uploads/January2024/xamnhatz_copyv2.jpg&quot;);"></span>
                                                     </div>
-                                                </label>
+                                                </label> -->
                                             </div>
                                         </div>
                                         <div class="product-single__option">
                                             <div class="option-heading">
                                                 <span class="option-heading__title">
-                                                    Kích thước Quần:
+                                                    Kích thước:
                                                     <span class="text--bold"></span>
                                                     <span class="product-option-size shorts_size"></span>
                                                 </span>
@@ -170,9 +302,25 @@ onBeforeMount(() => {
                                                     Hướng dẫn chọn size
                                                 </a>
                                             </div>
-                                            <div data-option-id="shorts_size" data-option-index="2"
-                                                class="option-select option-select--shorts_size">
-                                                <label class="option-select__item option-size m">
+                                            <div class="option-select option-select--shorts_size">
+                                                <label v-for="(item, index) in productSizes" :key="index"
+                                                    class="option-select__item option-size"
+                                                    @click="getSizeActive(index, item.size)">
+                                                    <div class="option-select__inner">
+                                                        <input type="radio" name="shorts_size" :checked="item.isChecked"
+                                                            :value="item.size">
+                                                        <span class="checkmark">{{ item.size }}</span>
+                                                    </div>
+                                                    <div class="option-size-tooltip">
+                                                        <div class="option-size-tooltip__arrow"></div>
+                                                        <div class="option-size-tooltip__inner">
+                                                            <span> {{ item.height }}</span>
+                                                            <br>
+                                                            <span> {{ item.weight }}</span>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                                <!-- <label class="option-select__item option-size">
                                                     <div class="option-select__inner">
                                                         <input type="radio" name="shorts_size" value="m" data-title="M">
                                                         <span class="checkmark">M</span>
@@ -188,7 +336,7 @@ onBeforeMount(() => {
                                                         </div>
                                                     </div>
                                                 </label>
-                                                <label class="option-select__item option-size l">
+                                                <label class="option-select__item option-size">
                                                     <div class="option-select__inner">
                                                         <input type="radio" name="shorts_size" value="l" data-title="L">
                                                         <span class="checkmark">L</span>
@@ -204,7 +352,7 @@ onBeforeMount(() => {
                                                         </div>
                                                     </div>
                                                 </label>
-                                                <label class="option-select__item option-size xl">
+                                                <label class="option-select__item option-size">
                                                     <div class="option-select__inner">
                                                         <input type="radio" name="shorts_size" value="xl"
                                                             data-title="XL">
@@ -221,7 +369,7 @@ onBeforeMount(() => {
                                                         </div>
                                                     </div>
                                                 </label>
-                                                <label class="option-select__item option-size 2xl">
+                                                <label class="option-select__item option-size">
                                                     <div class="option-select__inner">
                                                         <input type="radio" name="shorts_size" value="2xl"
                                                             data-title="2XL">
@@ -237,7 +385,7 @@ onBeforeMount(() => {
                                                             <span> 76kg - 82kg</span>
                                                         </div>
                                                     </div>
-                                                </label> <label class="option-select__item option-size 3xl">
+                                                </label> <label class="option-select__item option-size">
                                                     <div class="option-select__inner">
                                                         <input type="radio" name="shorts_size" value="3xl"
                                                             data-title="3XL"> <span class="checkmark">3XL
@@ -253,22 +401,21 @@ onBeforeMount(() => {
                                                             <span> 83kg - 89kg</span>
                                                         </div>
                                                     </div>
-                                                </label>
+                                                </label> -->
                                             </div>
                                         </div>
                                     </div>
                                     <div class="product-single__actions">
                                         <div class="product-single__quantity">
                                             <div class="quantity">
-                                                <a href="#" class="quantity__reduce">-</a>
-                                                <input type="number" value="1" max="99" min="1"
+                                                <div class="quantity__reduce" @click="decrease()">-</div>
+                                                <input type="number" :value="count" max="99" min="1"
                                                     class="quantity__control">
-                                                <a href="#" class="quantity__augure">+</a>
+                                                <div class="quantity__augure" @click="increase()">+</div>
                                             </div>
                                         </div>
-                                        <div class="product-single__button">
-                                            <a href="#" data-variant-id="" data-quantity="1" class="cart-button">Thêm
-                                                vào giỏ hàng</a>
+                                        <div class="product-single__button" @click.prevent="addToCart()">
+                                            <a href="#" class="cart-button">Thêm vào giỏ hàng</a>
                                         </div>
                                     </div>
                                 </form>
@@ -486,7 +633,7 @@ body {
 
 .product-single__inner:before {
     content: "";
-    background-image: url(ttps://www.coolmate.me/images/zoom-in-icon.svg?9367bf9df81bf29177515e819646ae05);
+    background-image: url(https://www.coolmate.me/images/zoom-in-icon.svg?9367bf9df81bf29177515e819646ae05);
     width: 25px;
     height: 25px;
     position: absolute;
@@ -727,6 +874,10 @@ body {
     position: relative;
 }
 
+.product-single__options .option-select__item.option-size:hover .option-size-tooltip {
+    visibility: visible;
+}
+
 .product-single__options .option-select__item .checkmark {
     display: flex;
     justify-content: center;
@@ -750,8 +901,46 @@ body {
     visibility: hidden;
     position: absolute;
     z-index: 2;
-    left: -10px;
+    left: -2px;
     top: 100%;
+}
+
+.product-single__options .option-size-tooltip__arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+}
+
+.product-single__options .option-size-tooltip__inner {
+    background-color: #fff !important;
+    color: #000 !important;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, .0666666667);
+    border: 1px solid #d9d9d9;
+    padding: 5px 15px;
+    border-radius: 8px;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.product-single__options .option-size-tooltip__inner:before {
+    background-color: #fff;
+    box-shadow: -1px -1px 1px 0 hsla(0, 0%, 69.8%, .4);
+    content: "\A0";
+    display: block;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -5px;
+    transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    margin: 2px auto auto;
 }
 
 .product-single__actions {
@@ -780,6 +969,7 @@ body {
     width: 35px;
     height: 100%;
     line-height: 1em;
+    cursor: pointer;
 }
 
 .quantity input {
