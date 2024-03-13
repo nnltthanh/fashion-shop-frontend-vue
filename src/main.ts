@@ -12,13 +12,23 @@ import router from './router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import cors from 'cors';
+import { provideCartService } from './services/cart.service';
 
-const app = createApp(App)
-app.use(VueAxios, axios)
-// app.provide('axios', app.config.globalProperties.axios)
-app.use(router)
+const app = createApp(App);
+
+// Provide VueAxios and axios
+app.use(VueAxios, axios);
+
+// Use router and cors
+app.use(router);
 app.use(cors);
-app.use(createPinia());
-app.mount('#app')
 
-console.log(import.meta.env.VITE_BACKEND_BASE_URL);
+// Create and use Pinia store
+const pinia = createPinia();
+app.use(pinia);
+
+// Provide cartService
+app.provide('cartService', provideCartService());
+
+// Mount the app
+app.mount('#app');

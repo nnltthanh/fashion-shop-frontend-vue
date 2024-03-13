@@ -3,7 +3,7 @@
     <CustomerHeader />
   </div>
   <div class="cart-section">
-    <ShipmentBlock />
+    <ShipmentBlock/>
   </div>
   <div class="cart-section cart-payment-scroll">
     <PaymentBlock />

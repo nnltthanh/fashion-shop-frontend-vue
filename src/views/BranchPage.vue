@@ -52,12 +52,12 @@ onMounted(() => {
             <div class="flex">
                 <div class="branch w-2/5 border-1 mt-3">
                     <div class="store border-1 pb-3" v-for="(store, index) in stores" :key="index">
-                        <h2 class="ml-1">{{ store.name }}</h2>
-                        <p class="ml-1"><strong>Địa chỉ:</strong> {{ store.address }}</p>
-                        <p class="ml-1"><strong>Số điện thoại:</strong> {{ store.phone }}</p>
-                        <p class="ml-1"><strong>Số điện thoại:</strong> 028 7100 0415</p>
-                        <p class="ml-1"><strong>Giờ mở cửa:</strong> 7:00 – 23:00 * 7 ngày/ tuần</p>
-                        <button class="ml-1 p-1 bg-black text-white rounded" @click="showMap(store.mapUrl)">
+                        <h2 class="ml-1 p-1">{{ store.name }}</h2>
+                        <p class="ml-1 p-1"><strong>Địa chỉ:</strong> {{ store.address }}</p>
+                        <p class="ml-1 p-1"><strong>Số điện thoại:</strong> {{ store.phone }}</p>
+                        <p class="ml-1 p-1"><strong>Số điện thoại:</strong> 028 7100 0415</p>
+                        <p class="ml-1 p-1"><strong>Giờ mở cửa:</strong> 7:00 – 23:00 * 7 ngày/ tuần</p>
+                        <button class="ml-1 p-2 bg-black text-white rounded" @click="showMap(store.mapUrl)">
                             TÌM KIẾM
                         </button>
                     </div>

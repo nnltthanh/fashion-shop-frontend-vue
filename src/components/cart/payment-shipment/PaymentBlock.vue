@@ -1,3 +1,33 @@
+<script setup lang="ts">
+import CartService from '@/services/cart.service';
+import { inject, ref } from 'vue';
+
+  const { cartService }: { cartService: CartService } = inject('cartService')!;
+
+  const paymentOption = ref("vnpay");
+
+  const choseOption = (event: MouseEvent) => {
+    paymentOption.value = (event.target as HTMLInputElement).value;
+  }
+
+  const VND = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    });
+
+  let paymentUrl = ref<string>();
+  const placeOrder = async ()  => {
+    let data = {
+      status: "PENDING_PAYMENT"
+    };
+    paymentUrl.value = (await cartService!.addCartDetailToOrder(data, paymentOption.value));
+    console.log(paymentUrl.value)
+
+    window.location.href = paymentUrl.value;
+  }
+
+</script>
+
 <template>
   <div class="title">Hình thức thanh toán</div>
   <div>
@@ -5,14 +35,16 @@
       <label
         for="payment-COD"
         class="payment-method__item custom-cursor-on-hover"
+        :class="{ 'active' : paymentOption == 'COD'}"
         ><span class="payment-method__item-custom-checkbox custom-radio"
           ><input
             type="radio"
             id="payment-COD"
             name="payment-method"
             autocomplete="off"
-            value="COD" />
-          <span class="checkmark"></span
+            value="COD" 
+            @click="choseOption($event)"/>
+          <span class="checkmark" :style="{ 'display' : paymentOption == 'COD' ? 'block' : 'none'}"></span
         ></span>
         <span class="payment-method__item-icon-wrapper"
           ><img
@@ -23,14 +55,16 @@
           >COD <br />Thanh toán khi nhận hàng</span
         ></label
       ><label for="payment-momo" class="payment-method__item"
+      :class="{ 'active' : paymentOption == 'momo'}"
         ><span class="payment-method__item-custom-checkbox custom-radio"
           ><input
             type="radio"
             id="payment-momo"
             name="payment-method"
             autocomplete="off"
-            value="momo" />
-          <span class="checkmark"></span
+            value="momo" 
+            @click="choseOption($event)"/>
+          <span class="checkmark" :style="{ 'display' : paymentOption == 'momo' ? 'block' : 'none'}"></span
         ></span>
         <span class="payment-method__item-icon-wrapper"
           ><img
@@ -39,15 +73,16 @@
         /></span>
         <span class="payment-method__item-name">Thanh Toán MoMo</span></label
       >
-      <label for="payment-vnpay" class="payment-method__item"
+      <label for="payment-vnpay" class="payment-method__item" :class="{ 'active' : paymentOption == 'vnpay'}"
         ><span class="payment-method__item-custom-checkbox custom-radio"
           ><input
             type="radio"
             id="payment-vnpay"
             name="payment-method"
             autocomplete="off"
-            value="vnpay" />
-          <span class="checkmark"></span
+            value="vnpay"
+            @click="choseOption($event)"/>
+          <span class="checkmark" :style="{ 'display' : paymentOption == 'vnpay' ? 'block' : 'none'}"></span
         ></span>
         <span class="payment-method__item-icon-wrapper"
           ><img
@@ -58,15 +93,16 @@
           >Thẻ ATM<br />Thẻ tín dụng (Credit card) / Thẻ ghi nợ (Debit card)<br />VNPay
           QR</span
         ></label
-      ><label for="payment-vietqr" class="payment-method__item"
+      ><label for="payment-vietqr" class="payment-method__item" :class="{ 'active' : paymentOption == 'vietqr'}"
         ><span class="payment-method__item-custom-checkbox custom-radio"
           ><input
             type="radio"
             id="payment-vietqr"
             name="payment-method"
             autocomplete="off"
-            value="vietqr" />
-          <span class="checkmark"></span
+            value="vietqr" 
+            @click="choseOption($event)"/>
+          <span class="checkmark" :style="{ 'display' : paymentOption == 'vietqr' ? 'block' : 'none'}"></span
         ></span>
         <span class="payment-method__item-icon-wrapper"
           ><img
@@ -88,10 +124,9 @@
   </p>
   <!-- <input type="hidden" id="gclid_field" name="gclid_field" value="" /> -->
   <!-- <button class="checkout-btn fixed"> -->
-  <button class="checkout-btn">
+  <button class="checkout-btn" @click="placeOrder">
     Thanh toán
-    <span>2.133k</span>
-    <span> - Đổi trả 60 ngày</span>
+    <span> {{ VND.format(cartService.subTotal.value) }}</span>
   </button>
 </template>
 

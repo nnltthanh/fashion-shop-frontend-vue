@@ -17,6 +17,21 @@ export default {
     const activeDistrict = ref("Chọn Quận / Huyện");
     const activeVillage = ref("Chọn Phường / Xã");
 
+    const user1 = {
+      "id": 1,
+      "account": "nnlthanh20",
+      "password": "123456@",
+      "name": "Lam Thanh",
+      "address": null,
+      "phone": "0124567892",
+      "email": "thanhngn20@gmail.com",
+      "avatar": null,
+      "dob": null,
+      "createdAt": "2024-03-11 15:14:04",
+      "updatedAt": null,
+      "roles": []
+    }
+
     var cities: string[] = [];
     const districts: Ref<string[]> = ref<string[]>([]);
     var districtsFullInfo: any[] = [];
@@ -72,6 +87,7 @@ export default {
     });
 
     return {
+      user1,
       toggleCityDropdown,
       toggleDistrictDropdown,
       toggleVillageDropdown,
@@ -96,12 +112,8 @@ export default {
   <div class="title-with-actions">
     <div class="title">Thông tin vận chuyển</div>
     <div class="action">
-      <a href="#" class="flex align--center"
-        ><img
-          src="https://www.coolmate.me/images/address_book_icon.svg"
-          alt="address_book_icon"
-          class="address_book_icon"
-        />
+      <a href="#" class="flex align--center"><img src="https://www.coolmate.me/images/address_book_icon.svg"
+          alt="address_book_icon" class="address_book_icon" />
         Chọn từ sổ địa chỉ
       </a>
     </div>
@@ -109,113 +121,54 @@ export default {
   <div id="customer-info-block" customerinfo="[object Object]">
     <div class="grid">
       <div class="grid-column six-twelfths">
-        <input
-          type="text"
-          name="full_name"
-          placeholder="Họ tên"
-          class="form-control"
-        />
+        <input type="text" name="full_name" placeholder="Họ tên" v-model="user1.name" class="form-control" />
       </div>
       <div class="grid-column six-twelfths">
-        <input
-          type="tel"
-          name="phone"
-          placeholder="Số điện thoại"
-          class="form-control"
-        />
+        <input type="tel" name="phone" placeholder="Số điện thoại" v-model="user1.phone" class="form-control" />
       </div>
     </div>
     <div class="grid">
       <div class="grid-column">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          class="form-control custom-cursor-default-hover"
-          disabled="true"
-        />
+        <input type="email" name="email" placeholder="Email" v-model="user1.email" class="form-control custom-cursor-default-hover" />
       </div>
       <div class="grid-column">
         <div class="address-block">
-          <input
-            type="text"
-            name="address"
-            placeholder="Địa chỉ (ví dụ: 103 Vạn Phúc, phường Vạn Phúc)"
-            autocomplete="off"
-            class="form-control"
-          />
+          <input type="text" name="address" v-model="user1.address" placeholder="Địa chỉ (ví dụ: 103 Vạn Phúc, phường Vạn Phúc)"
+            autocomplete="off" class="form-control" />
         </div>
       </div>
     </div>
     <div class="grid">
       <div class="grid-column four-twelfths mobile--one-whole">
-        <div
-          dir="auto"
-          class="v-select vue-select vs--single vs--searchable"
-          name="nhanh_city"
-        >
-          <div
-            @click="toggleCityDropdown"
-            id="vs1-combobox"
-            role="combobox"
-            :aria-expanded="showCityDropdown"
-            aria-owns="vs1-listbox"
-            aria-label="Search for option"
-            class="vs-dropdown-toggle"
-          >
+        <div dir="auto" class="v-select vue-select vs--single vs--searchable" name="nhanh_city">
+          <div @click="toggleCityDropdown" id="vs1-combobox" role="combobox" :aria-expanded="showCityDropdown"
+            aria-owns="vs1-listbox" aria-label="Search for option" class="vs-dropdown-toggle">
             <div class="vs-selected-options">
               <span class="vs-selected"> {{ activeCity }}</span>
-              <input
-                aria-autocomplete="list"
-                aria-labelledby="vs1-combobox"
-                aria-controls="vs1-listbox"
-                type="search"
-                autocomplete="off"
-                class="vs-search"
-              />
-              <ul
-                class="city-list"
-                v-show="showCityDropdown"
-                id="vs1-listbox"
-                role="listbox"
-                aria-label="cities"
-              >
-                <li
-                  v-for="(city, index) in cities"
-                  class="city-option"
-                  role="option"
-                  :id="'city-' + index"
-                  @mouseover="setActiveCity(index)"
-                >
+              <input aria-autocomplete="list" aria-labelledby="vs1-combobox" aria-controls="vs1-listbox" type="search"
+                autocomplete="off" class="vs-search" />
+              <ul class="city-list" v-show="showCityDropdown" id="vs1-listbox" role="listbox" aria-label="cities">
+                <li v-for="(city, index) in cities" class="city-option" role="option" :id="'city-' + index"
+                  @mouseover="setActiveCity(index)">
                   {{ city }}
                 </li>
               </ul>
             </div>
 
             <div class="vs-actions">
-              <button
-                type="button"
-                title="Clear Selected"
-                aria-label="Clear Selected"
-                class="vs-clear"
-                style="display: none"
-              >
+              <button type="button" title="Clear Selected" aria-label="Clear Selected" class="vs-clear"
+                style="display: none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
                   <path
-                    d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"
-                  ></path>
+                    d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z">
+                  </path>
                 </svg>
               </button>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="10"
-                role="presentation"
-                class="vs-open-indicator"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="10" role="presentation"
+                class="vs-open-indicator">
                 <path
-                  d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z"
-                ></path>
+                  d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z">
+                </path>
               </svg>
               <div class="vs-spinner" style="display: none">Loading...</div>
             </div>
@@ -223,73 +176,35 @@ export default {
         </div>
       </div>
       <div class="grid-column four-twelfths mobile--one-whole">
-        <div
-          dir="auto"
-          class="v-select vue-select vs--single vs--searchable"
-          name="nhanh_district"
-        >
-          <div
-            @click="toggleDistrictDropdown"
-            id="vs2-combobox"
-            role="combobox"
-            :aria-expanded="showDistrictDropdown"
-            aria-owns="vs2-listbox"
-            aria-label="Search for option"
-            class="vs-dropdown-toggle"
-          >
+        <div dir="auto" class="v-select vue-select vs--single vs--searchable" name="nhanh_district">
+          <div @click="toggleDistrictDropdown" id="vs2-combobox" role="combobox" :aria-expanded="showDistrictDropdown"
+            aria-owns="vs2-listbox" aria-label="Search for option" class="vs-dropdown-toggle">
             <div class="vs-selected-options">
               <span class="vs-selected"> {{ activeDistrict }}</span>
-              <input
-                aria-autocomplete="list"
-                aria-labelledby="vs2-combobox"
-                aria-controls="vs2-listbox"
-                type="search"
-                autocomplete="off"
-                class="vs-search"
-              />
-              <ul
-                class="district-list"
-                v-show="showDistrictDropdown"
-                id="vs2-listbox"
-                role="listbox"
-                aria-label="districts"
-              >
-                <li
-                  v-for="(district, index2) in districts"
-                  class="district-option"
-                  role="option"
-                  :id="'district-' + index2"
-                  @mouseover="setActiveDistrict(index2)"
-                  :key="index2"
-                >
+              <input aria-autocomplete="list" aria-labelledby="vs2-combobox" aria-controls="vs2-listbox" type="search"
+                autocomplete="off" class="vs-search" />
+              <ul class="district-list" v-show="showDistrictDropdown" id="vs2-listbox" role="listbox"
+                aria-label="districts">
+                <li v-for="(district, index2) in districts" class="district-option" role="option"
+                  :id="'district-' + index2" @mouseover="setActiveDistrict(index2)" :key="index2">
                   {{ district }}
                 </li>
               </ul>
             </div>
             <div class="vs-actions">
-              <button
-                type="button"
-                title="Clear Selected"
-                aria-label="Clear Selected"
-                class="vs-clear"
-                style="display: none"
-              >
+              <button type="button" title="Clear Selected" aria-label="Clear Selected" class="vs-clear"
+                style="display: none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
                   <path
-                    d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"
-                  ></path>
+                    d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z">
+                  </path>
                 </svg>
               </button>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="10"
-                role="presentation"
-                class="vs-open-indicator"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="10" role="presentation"
+                class="vs-open-indicator">
                 <path
-                  d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z"
-                ></path>
+                  d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z">
+                </path>
               </svg>
               <div class="vs-spinner" style="display: none">Loading...</div>
             </div>
@@ -297,74 +212,36 @@ export default {
         </div>
       </div>
       <div class="grid-column four-twelfths mobile--one-whole">
-        <div
-          dir="auto"
-          class="v-select vue-select vs--single vs--searchable"
-          name="nhanh_ward"
-          id="nhanh_ward"
-        >
-          <div
-            @click="toggleVillageDropdown"
-            id="vs3-combobox"
-            role="combobox"
-            :aria-expanded="showVillageDropdown"
-            aria-owns="vs3-listbox"
-            aria-label="Search for option"
-            class="vs-dropdown-toggle"
-          >
+        <div dir="auto" class="v-select vue-select vs--single vs--searchable" name="nhanh_ward" id="nhanh_ward">
+          <div @click="toggleVillageDropdown" id="vs3-combobox" role="combobox" :aria-expanded="showVillageDropdown"
+            aria-owns="vs3-listbox" aria-label="Search for option" class="vs-dropdown-toggle">
             <div class="vs-selected-options">
               <span class="vs-selected"> {{ activeVillage }}</span>
-              <input
-                aria-autocomplete="list"
-                aria-labelledby="vs3-combobox"
-                aria-controls="vs3-listbox"
-                type="search"
-                autocomplete="off"
-                class="vs-search"
-              />
-              <ul
-                class="village-list"
-                v-show="showVillageDropdown"
-                id="vs3-listbox"
-                role="listbox"
-                aria-label="villages"
-              >
-                <li
-                  v-for="(village, index) in villages"
-                  class="village-option"
-                  role="option"
-                  :id="'village-' + index"
-                  @mouseover="setActiveVillage(index)"
-                >
+              <input aria-autocomplete="list" aria-labelledby="vs3-combobox" aria-controls="vs3-listbox" type="search"
+                autocomplete="off" class="vs-search" />
+              <ul class="village-list" v-show="showVillageDropdown" id="vs3-listbox" role="listbox"
+                aria-label="villages">
+                <li v-for="(village, index) in villages" class="village-option" role="option" :id="'village-' + index"
+                  @mouseover="setActiveVillage(index)">
                   {{ village }}
                 </li>
               </ul>
             </div>
 
             <div class="vs-actions">
-              <button
-                type="button"
-                title="Clear Selected"
-                aria-label="Clear Selected"
-                class="vs-clear"
-                style="display: none"
-              >
+              <button type="button" title="Clear Selected" aria-label="Clear Selected" class="vs-clear"
+                style="display: none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
                   <path
-                    d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"
-                  ></path>
+                    d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z">
+                  </path>
                 </svg>
               </button>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="10"
-                role="presentation"
-                class="vs-open-indicator"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="10" role="presentation"
+                class="vs-open-indicator">
                 <path
-                  d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z"
-                ></path>
+                  d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z">
+                </path>
               </svg>
               <div class="vs-spinner" style="display: none">Loading...</div>
             </div>
@@ -374,12 +251,8 @@ export default {
     </div>
     <div class="grid">
       <div class="grid-column">
-        <input
-          type="text"
-          name="cnote"
-          placeholder="Ghi chú thêm (Ví dụ: Giao hàng giờ hành chính)"
-          class="form-control"
-        />
+        <input type="text" name="cnote" placeholder="Ghi chú thêm (Ví dụ: Giao hàng giờ hành chính)"
+          class="form-control" />
       </div>
     </div>
   </div>
@@ -392,23 +265,28 @@ export default {
   align-items: center;
   margin: 2rem 0 1rem;
 }
+
 .title-with-actions .title {
   margin: 0;
 }
+
 .title {
   font-size: 30px;
   font-weight: 700;
   margin: 2rem 0 1rem;
 }
+
 .title-with-actions .action a {
   color: #2f5acf;
 }
+
 .cart-left-section .address_book_icon {
   display: inline-block;
   margin-right: 3px;
   width: 20px;
   height: 20px;
 }
+
 .grid {
   display: flex;
   display: -webkit-flex;
@@ -421,12 +299,15 @@ export default {
   position: relative;
   float: none;
 }
+
 .six-twelfths {
   width: 50%;
 }
+
 .four-twelfths {
   width: 33.333%;
 }
+
 .grid-column {
   position: relative;
   box-sizing: border-box;
@@ -437,6 +318,7 @@ export default {
   padding: 9px;
   width: 100%;
 }
+
 .form-control,
 .vue-select .vs-dropdown-toggle {
   background: #fff;
@@ -448,21 +330,26 @@ export default {
   padding: 5px 20px;
   transition: all 0.2s;
 }
+
 .grid:after {
   content: "";
   display: table;
   clear: both;
 }
+
 .v-select {
   position: relative;
   font-family: inherit;
 }
+
 .vs--searchable .vs-dropdown-toggle {
   cursor: text;
 }
+
 .vue-select .vs-dropdown-toggle {
   padding: 5px 10px 5px 20px;
 }
+
 .form-control,
 .vue-select .vs-dropdown-toggle {
   background: #fff;
@@ -474,6 +361,7 @@ export default {
   padding: 5px 20px;
   transition: all 0.2s;
 }
+
 .vs-dropdown-toggle {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -485,12 +373,14 @@ export default {
   border-radius: 4px;
   white-space: normal;
 }
+
 .vue-select .vs-selected,
 .vue-select .vs-selected-options {
   padding: 0;
   margin: 0;
   align-items: center;
 }
+
 .vs-selected-options {
   display: flex;
   flex-basis: 100%;
@@ -499,16 +389,19 @@ export default {
   padding: 0 2px;
   position: relative;
 }
+
 .vs--single .vs-selected {
   background-color: transparent;
   border-color: transparent;
 }
+
 .vue-select .vs-selected,
 .vue-select .vs-selected-options {
   padding: 0;
   margin: 0;
   align-items: center;
 }
+
 .vs-selected {
   display: flex;
   align-items: center;
@@ -521,10 +414,12 @@ export default {
   padding: 0 0.25em;
   z-index: 0;
 }
+
 .vue-select .vs-search {
   margin: 0;
   padding: 0;
 }
+
 .vs-search,
 .vs-search:focus {
   -webkit-appearance: none;
@@ -544,6 +439,7 @@ export default {
   flex-grow: 1;
   z-index: 1;
 }
+
 .vue-select .vs-selected {
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -551,11 +447,13 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .vs-actions {
   display: flex;
   align-items: center;
   padding: 4px 6px 0 3px;
 }
+
 .vs-clear {
   fill: rgba(60, 60, 60, 0.5);
   padding: 0;
@@ -564,6 +462,7 @@ export default {
   cursor: pointer;
   margin-right: 8px;
 }
+
 .vs-spinner {
   align-self: center;
   opacity: 0;
@@ -594,6 +493,7 @@ export default {
 .seven-twelfths {
   width: 58.333%;
 }
+
 .six-twelfths {
   width: 50%;
 }
