@@ -15,6 +15,12 @@ class ProductService {
     async get(id) {
         return (await this.api.get(`/${id}`)).data;
     }
+    async getAllDetails(id) {
+        return (await this.api.get(`/${id}/details`)).data;
+    }
+    async getDetail(productId, id) {
+        return (await this.api.get(`/${productId}/details/${id}`)).data;
+    }
     async update(id, data) {
         return (await this.api.put(`/${id}`, data)).data;
     }

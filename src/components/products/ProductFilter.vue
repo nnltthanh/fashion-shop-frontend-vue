@@ -116,15 +116,20 @@ const purposeList = reactive([
 const filtersList = {
     types: ref([]),
     sizes: ref([]),
-    colors: ref([]),
+    colors: ref(''),
+    purposes: ref([]),
 };
 
 const handleFilterList = (category, name) => {
-    let index = filtersList[category].value.indexOf(name);
-    if (index > -1) {
-        filtersList[category].value.splice(index, 1);
+    if (typeof filtersList[category].value == 'string' || filtersList[category].value instanceof String) {
+        filtersList[category].value = name;
     } else {
-        filtersList[category].value.push(name);
+        let index = filtersList[category].value.indexOf(name);
+        if (index > -1) {
+            filtersList[category].value.splice(index, 1);
+        } else {
+            filtersList[category].value.push(name);
+        }
     }
     productStore.setFilterList(filtersList);
 }
@@ -178,7 +183,7 @@ const toggleActiveRadio = (index, list) => {
                     <ul class="filter-select-size">
                         <li v-for="(item, index) in sizeList" :key="index" data-type="size"
                             class="filter-select-size__item" :class="{ selected: item.isActive }"
-                            @click="toggleActive(index, sizeList)" >
+                            @click="toggleActive(index, sizeList); handleFilterList('sizes', item.size)">
                             <button class="filter-select-size__button">
                                 <span class="filter-select-size__label">{{ item.size }}</span>
                             </button>
@@ -191,7 +196,8 @@ const toggleActiveRadio = (index, list) => {
                     </h5>
                     <ul class="filter-select-color">
                         <li v-for="(item, index) in colorList" :key="index" :class="{ selected: item.isActive }"
-                            @click="toggleActiveRadio(index, colorList)" class="filter-select-color__item">
+                            @click="toggleActiveRadio(index, colorList); handleFilterList('colors', item.color)"
+                            class="filter-select-color__item">
                             <div class="filter-select-color__button" :style="{ backgroundColor: item.hexCode }"></div>
                             <label class="filter-select-color__label">
                                 {{ item.color }}
@@ -207,7 +213,7 @@ const toggleActiveRadio = (index, list) => {
                         <li v-for="(item, index) in purposeList" :key="index" class="filter-select-material__item"
                             :class="{ selected: item.isActive }" @click="toggleActive(index, purposeList)">
                             <div class="filter-select-material__checkbox">
-                                <input type="checkbox" value="false">
+                                <input type="checkbox" value="false" @click="handleFilterList('purposes', item.name)">
                                 <label>{{ item.name }}</label>
                             </div>
                         </li>
