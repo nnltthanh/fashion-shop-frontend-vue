@@ -11,17 +11,18 @@
                 </div>
                 <div class="w-full flex flex-col items-center justify-center mt-10">
                     <div class="w-full">
-                        <AInput name="username" label="Tên đăng nhập"
-                            style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
-                            placeholder=" Tên đăng nhập..." />
+                        <AInput v-model="name" name="name" label="Tên đăng nhập"
+                            style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text"
+                            is-required placeholder=" Tên đăng nhập..." />
                     </div>
                     <div class="w-full mt-3">
-                        <AInput name="password" label="Mật khẩu"
-                            style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
-                            placeholder=" Nhập mật khẩu..." type="password" />
+                        <AInput v-model="password" name="password" label="Mật khẩu"
+                            style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text"
+                            is-required placeholder=" Nhập mật khẩu..." type="password" />
                     </div>
                     <div class="w-1/2 flex gap-3 mt-5">
-                        <button class="bg-[#3E334E] text-white flex-[1] w-1/2 py-3 font-bold rounded-lg" @click="onLogin">
+                        <button class="bg-[#3E334E] text-white flex-[1] w-1/2 py-3 font-bold rounded-lg"
+                            @click="onLogin">
                             <!-- <button class="bg-[#3E334E] text-white flex-[1] w-full py-3 font-bold rounded-lg" @click=""> -->
                             Đăng nhập
                         </button>
@@ -33,45 +34,69 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { useForm } from 'vee-validate'
-import * as yup from 'yup'
-// import { useRouter } from 'vue-router'
-// import { initAuthStore } from '@/stores'
-// import { loginApi } from '@/services/auth.service'
-import AInput from '@/components/AInput.vue'
-//  import { toast } from 'vue3-toastify'
-//  const router = useRouter()
+import { useForm } from 'vee-validate';
+import * as yup from 'yup';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import AInput from '@/components/AInput.vue';
+import { ref } from 'vue';
+import bcrypt from 'bcryptjs';
 
-// const submit = async (val) => {
-//   console.log(val)
-//   const { email, password } = val
-//   try {
-//     await loginApi({ email, password }).then((res) => {
-//       const data = res['data']
-//       console.log(data)
-//       localStorage.setItem('access_token', data.token.accessToken)
-//       localStorage.setItem('refresh_token', data.token.refreshToken)
-//     })
-//     await initAuthStore()
-//     const redirect = localStorage.getItem('redirect')
-//     if (redirect) {
-//       router.push(redirect)
-//     } else {
-//       router.push('/')
-//       localStorage.removeItem('redirect')
-//     }
-//   } catch (error) {
-//     console.log(error)
-//     toast.error('Login failed, please check your login information')
-//   }
-// }
+const isLoginFailed = ref(false);
+const isWrongPass = ref(false);
+const router = useRouter();
 
+const login = async (data) => {
+    try {
+        console.log('Login data:', {
+            account: data.name,
+        });
 
-// validate password have min 8, have number vs uppercase
+        // Sử dụng hashedPassword thay vì data.password khi gửi đi
+        const response = await axios.post(`http://localhost:8080/users/loginEmployee`, {
+            account: data.name,
+        });
+
+        // Kiểm tra xem API có trả về dữ liệu hay không
+        if (response.data) {
+            const hashedPasswordFromAPI = response.data.password;
+            bcrypt.compare(data.password, hashedPasswordFromAPI, (err, result) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                if (result) {
+                    console.log('Mật khẩu khớp.');
+
+                    // Lưu thông tin tài khoản vào localStorage
+                    localStorage.setItem('account', JSON.stringify(response.data));
+                    console.log(response.data);
+
+                    router.push('/home');
+                } else {
+                    console.log('Mật khẩu không khớp.');
+                    isWrongPass.value = true;
+                    setTimeout(() => {
+                        isWrongPass.value = false;
+                    }, 5000);
+                }
+            });
+        } else {
+            console.error('Không có dữ liệu trả về từ API.');
+        }
+    } catch (error) {
+        console.error(error);
+        isLoginFailed.value = true; // Set the flag to true
+        setTimeout(() => {
+            isLoginFailed.value = false; // Clear the flag after 5 seconds
+        }, 5000);
+    }
+};
+
+// Validate password have min 8, have number vs uppercase
 const { handleSubmit } = useForm({
     validationSchema: yup.object({
-        username: yup.string().required("Tên đăng nhập là trường bắt buộc"),
+        name: yup.string().required("Tên đăng nhập là trường bắt buộc"),
         password: yup
             .string()
             .matches(/^(?=.*[A-Za-z])(?=.*\d).+$/, 'Mật khẩu phải chứa ít nhất 1 số và 1 chữ cái')
@@ -82,8 +107,9 @@ const { handleSubmit } = useForm({
 })
 
 const onLogin = () => {
-    handleSubmit(submit)()
-}
+    console.log('diem1')
+    handleSubmit(async (values) => {
+        await login(values);
+    })();
+};
 </script>
-
-  

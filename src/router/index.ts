@@ -57,6 +57,10 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/staff',
+      component: () => import('@/views/Staff.vue'),
+    },
   ]
 })
 

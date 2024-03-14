@@ -6,7 +6,8 @@
             <!-- Links -->
             <div class="header_logo">
                 <router-link to="/home">
-                    <img src="../../assets/images/logo/bt-high-resolution-logo-white-transparent.png" alt="" srcset="" />
+                    <img src="../../assets/images/logo/bt-high-resolution-logo-white-transparent.png" alt=""
+                        srcset="" />
                 </router-link>
             </div>
             <div class="navbar-nav">
@@ -72,7 +73,8 @@
                     <ul class="dropdown-menu">
                         <li><router-link to="/account/info" class="dropdown-item">Thông tin tài khoản</router-link>
                         </li>
-                        <li><a class="dropdown-item">Đăng xuất</a></li>
+                        <li><router-link to="/login" class="dropdown-item">Đăng xuất</router-link>
+                        </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
