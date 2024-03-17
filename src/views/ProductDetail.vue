@@ -7,7 +7,7 @@ import Footer from '@/components/common/Footer.vue';
 import ProductReview from '@/components/products/ProductReview.vue';
 import ProductService from "@/services/product.service";
 
-  const { cartService }: { cartService: CartService } = inject('cartService')!;
+const { cartService }: { cartService: CartService } = inject('cartService')!;
 
 let count = ref(1);
 
@@ -36,6 +36,8 @@ const productColors = ref([]);
 const productsByColor = ref([]);
 
 const activeColor = reactive({});
+
+const activeColorInGallery = ref({});
 
 const activeSize = reactive({});
 
@@ -109,14 +111,34 @@ const formatedSalePrice = computed(() => {
     return VND.format(salePrice);
 })
 
+const modifyColorLink = (url) => {
+    const pattern = /\/width=\d+,height=\d+,quality=\d+/;
+    const modifiedURL = url.replace(pattern, "/format=auto");
+    return modifiedURL;
+}
+
+const toggleActiveRadio = (index, list) => {
+    const item = list[index];
+    list.forEach(item => {
+        item.isActive = false;
+    });
+    item.isActive = true;
+    activeColorInGallery.value = item;
+}
+
 const getColorActive = (detail) => {
     activeColor.value = Object.assign(activeColor.value,
         {
             'color': detail.color,
-            'imageLink': detail.imageLink,
+            'imageLinks': (detail.imageLinks.split(", ")).map((item) => ({
+                'link': item,
+                'isActive': false,
+            })),
             'colorImage': detail.colorImage
         }
     );
+    activeColor.value.imageLinks[0].isActive = true;
+    activeColorInGallery.value = activeColor.value.imageLinks[0];
     productsByColor.value = productDetails.value.filter((item) => item.color == detail.color);
     productSizes.value = _.uniqWith(productsByColor.value.map(({ size }) => ({ size })), _.isEqual);
     productSizes.value = productSizes.value.map((item) => {
@@ -147,8 +169,8 @@ const retrieveProduct = async (id) => {
 const retrieveAllProductDetails = async (id) => {
     try {
         productDetails.value = await ProductService.getAllDetails(id);
-        productColors.value = _.uniqWith(productDetails.value.map(({ color, imageLink, colorImage }) =>
-            ({ color, imageLink, colorImage })
+        productColors.value = _.uniqWith(productDetails.value.map(({ color, imageLinks, colorImage }) =>
+            ({ color, imageLinks, colorImage })
         ), _.isEqual);
         productsByColor.value = productDetails.value.filter((detail) =>
             (detail.color === productColors.value.at(0).color));
@@ -171,22 +193,22 @@ const retrieveAllProductDetails = async (id) => {
 const retrieveProductDetail = async (productId, id) => {
     try {
         productDetailActive.value = await ProductService.getDetail(productId, id);
-        activeColor.value = { 
+        activeColor.value = {
             'color': productDetailActive.value.color,
-            'imageLink': productDetailActive.value.imageLink,
+            'imageLinks': (productDetailActive.value.imageLinks.split(", ")).map((item) => ({
+                'link': item,
+                'isActive': false,
+            })),
             'colorImage': productDetailActive.value.colorImage
         };
+        activeColor.value.imageLinks[0].isActive = true;
+        activeColorInGallery.value = activeColor.value.imageLinks[0];
     } catch (error) {
         console.log(error);
     }
 };
 
 const addToCart = async () => {
-    // productDetailActive.value = Object.assign(productDetailActive.value,
-    //     { 'qty': count.value }
-    // );
-    console.log(count.value, productDetailActive.value);
-
     await cartService.addProductDetailToCart(productDetailActive.value, count.value);
 };
 
@@ -220,8 +242,21 @@ onBeforeMount(() => {
                             <div class="product-single__inner">
                                 <div class="thumbnails">
                                     <a href="#" class="image">
-                                        <img :src="activeColor.value.imageLink" :alt="product.value.name">
+                                        <img :src="modifyColorLink(activeColorInGallery.link)" :alt="product.value.name">
                                     </a>
+                                </div>
+                            </div>
+                            <div class="thumbs">
+                                <div class="product-single__gallery product-single__gallery-slider">
+                                    <div class="product-single__gallery-list draggable">
+                                        <div class="product-single__gallery-track"
+                                            style="opacity: 1; width: 240px; transform: translate3d(0px, 0px, 0px);">
+                                            <div v-for="(item, index) in activeColor.value.imageLinks" :key="index" class="image image-lazyload is-current product-single__gallery-slide" :class="item.isActive ? 'product-single__gallery-current' : ''"
+                                                style="width: 40px;" @click="toggleActiveRadio(index, activeColor.value.imageLinks)">
+                                                <img loading="lazy" :src="item.link" :alt="productDetailActive.value.name">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -668,6 +703,107 @@ body {
     overflow: hidden;
     border-radius: 8px;
     cursor: zoom-in;
+}
+
+.product-single__thumbnails .thumbs {
+    position: absolute;
+    top: 0;
+    left: -55px;
+    z-index: 2;
+}
+
+.product-single__gallery {
+    width: 50px;
+}
+
+.product-single__gallery-list,
+.product-single__gallery-slider {
+    position: relative;
+    display: block;
+}
+
+.product-single__gallery-slider {
+    box-sizing: border-box;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.product-single__gallery.product-single__gallery-slider .product-single__gallery-list {
+    max-height: 700px;
+    padding-right: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.product-single__gallery-slider .product-single__gallery-list,
+.product-single__gallery-slider .product-single__gallery-track {
+    transform: translateZ(0);
+}
+
+.product-single__gallery-list {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.product-single__gallery.product-single__gallery-slider .product-single__gallery-track {
+    display: flex;
+    transform: none !important;
+    flex-flow: column !important;
+}
+
+.product-single__gallery-track {
+    position: relative;
+    left: 0;
+    top: 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.product-single__gallery-track:after,
+.product-single__gallery-track:before {
+    content: "";
+    display: table;
+}
+
+.product-single__gallery .image.product-single__gallery-current {
+    opacity: 1;
+}
+
+.product-single__gallery .image {
+    position: relative;
+    display: block;
+    width: 48px;
+    height: 58px;
+    overflow: hidden;
+    border-radius: 4px;
+    opacity: .4;
+    transition: all .3s;
+    cursor: pointer;
+}
+
+.product-single__gallery .image+.image {
+    margin-top: 13px;
+}
+
+.product-single__gallery .image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.product-single__gallery-slide img {
+    display: block;
 }
 
 .product-single__summary {
