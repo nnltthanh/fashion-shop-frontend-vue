@@ -11,7 +11,7 @@
                             Họ và tên
                         </div>
                         <div class="account-info-value">
-                            Nguyễn Ngọc Lam Thanh
+                            {{ userInfo && userInfo.name ? userInfo.name : 'Chưa cập nhật!' }}
                         </div>
                     </div>
                     <div class="account-info-field">
@@ -20,7 +20,7 @@
                         </div>
                         <div class="account-info-value">
                             <span style="opacity: 0.6; font-size: 0.85em;">
-                                <i>Chưa cập nhật!</i>
+                                <i>{{ userInfo && userInfo.phone ? userInfo.phone : 'Chưa cập nhật!' }}</i>
                             </span>
                         </div>
                     </div>
@@ -37,31 +37,23 @@
                     <div class="account-info-field" style="position: relative;">
                         <div class="account-info-label">
                             Ngày sinh <i class="bday-note">(ngày/tháng/năm)</i>
-                        </div> 
-                    </div>
-                    <div class="account-info-field">
-                        <div class="account-info-label">
-                            Chiều cao
                         </div>
                         <div class="account-info-value">
-                            <span
-                                style="opacity: 0.6; 
-                                font-size: 0.85em;">
-                                <i>Chưa cập nhật!</i>
+                            <span style="opacity: 0.6; font-size: 0.85em;">
+                                <i>{{ userInfo && userInfo.dob ? userInfo.dob : 'Chưa cập nhật!' }}</i>
                             </span>
                         </div>
                     </div>
                     <div class="account-info-field">
                         <div class="account-info-label">
-                        Cân nặng
-                    </div>
-                    <div class="account-info-value">
-                        <span
-                            style="opacity: 0.6; 
+                            Địa chỉ
+                        </div>
+                        <div class="account-info-value">
+                            <span style="opacity: 0.6; 
                             font-size: 0.85em;">
-                            <i>Chưa cập nhật!</i>
-                        </span>
-                    </div>
+                                <i>{{ userInfo && userInfo.address ? userInfo.address : 'Chưa cập nhật!' }}</i>
+                            </span>
+                        </div>
                     </div>
                     <div class="account-info-field">
                         <button class="btn account-info-btn">
@@ -77,7 +69,9 @@
                         Email
                     </div>
                     <div class="account-info-value">
-                        lamthanh02@gmail.com
+                        <span style="opacity: 0.6; font-size: 0.85em;">
+                            <i>{{ userInfo && userInfo.email ? userInfo.email : 'Chưa cập nhật!' }}</i>
+                        </span>
                     </div>
                 </div>
                 <div class="account-info-field">
@@ -89,8 +83,7 @@
                     </div>
                 </div>
                 <div class="account-info-field">
-                    <button
-                        class="btn account-info-btn">
+                    <button class="btn account-info-btn">
                         Cập nhật
                     </button>
                 </div>
@@ -98,6 +91,60 @@
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+
+
+interface AccountInfo {
+    id: number;
+    account: string;
+    dob: string;
+    phone: string;
+    email: string;
+    name: string;
+    address: string;
+    // Các thuộc tính khác nếu cần thiết
+}
+
+
+
+const accountInfo = ref<AccountInfo | null>(null);
+const userInfo = ref<AccountInfo | null>(null);
+
+onMounted(() => {
+    // Lấy thông tin tài khoản từ localStorage
+    const storedAccount = localStorage.getItem('account');
+    if (storedAccount) {
+        accountInfo.value = JSON.parse(storedAccount);
+        // Gọi API để lấy thông tin người dùng dựa trên tên đăng nhập
+        if (accountInfo.value) {
+            fetchUserInfo(accountInfo.value.account);
+        }
+    }
+});
+
+async function fetchUserInfo(username: string) {
+    try {
+        const response = await axios.get(`http://localhost:8080/users/account/${username}`);
+        userInfo.value = response.data;
+
+        // Đảo ngược chuỗi dob thành định dạng ngày/tháng/năm
+        if (userInfo.value && userInfo.value.dob) {
+            const parts = userInfo.value.dob.split('-');
+            const reversedDob = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            userInfo.value.dob = reversedDob;
+            console.log('Thông tin người dùng:' + userInfo.value.dob);
+        }
+
+
+    } catch (error) {
+        console.error('Lỗi khi lấy thông tin người dùng:', error);
+    }
+}
+</script>
 
 <style scoped>
 .account-content {
@@ -130,7 +177,7 @@
     width: 300px;
     max-width: 50%;
     font-size: 18px;
-    color: rgba(0,0,0,.5333333333);
+    color: rgba(0, 0, 0, .5333333333);
 }
 
 .account-info-value {

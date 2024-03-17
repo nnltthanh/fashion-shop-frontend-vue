@@ -49,7 +49,7 @@ const collectionList = [
     <ProductList />
 
     <div v-for="(item, index) in collectionList">
-        <Banner :banner="item.banner" :key="index"/>
+        <Banner :banner="item.banner" :key="index" />
         <ProductListFixed :collection="item" :key="index" />
     </div>
 

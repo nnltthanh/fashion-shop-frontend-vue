@@ -1,6 +1,19 @@
 <template>
   <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
   <div class="max-md:gap-3 max-md:flex-col min-h-screen h-screen flex">
+    <!-- Thông báo lỗi -->
+    <div v-if="isLoginFailed"
+      class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-100 text-red-700 p-6 text-center text-lg z-50 rounded-md"
+      role="alert">
+      <span class="font-medium">Lỗi!</span> Đăng nhập không thành công. Vui lòng thử lại.
+    </div>
+
+    <div v-if="isWrongPass"
+      class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-100 text-red-700 p-6 text-center text-lg z-50 rounded-md"
+      role="alert">
+      <span class="font-medium">Lỗi!</span> Các thông tin không trùng khớp. Vui lòng thử lại.
+    </div>
+
     <div class="max-md:h-[250px] lg:flex-auto bg-[#191a24] flex items-center px-10">
       <img class="w-full h-full object-cover opacity-[35%]" src="../assets/img_login.jpg" alt="" />
     </div>
@@ -12,12 +25,12 @@
         </div>
         <div class="w-full flex flex-col items-center justify-center mt-10">
           <div class="w-full">
-            <AInput name="username" label="Tên đăng nhập"
+            <AInput v-model="name" name="name" label="Tên đăng nhập"
               style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
               placeholder=" Nhập tên đăng nhập..." />
           </div>
           <div class="w-full mt-2">
-            <AInput name="password" label="Mật khẩu"
+            <AInput v-model="password" name="password" label="Mật khẩu"
               style-custom="border-[#AFA2C3] py-3 p-2 border-[1px] border-[#3E334E] cursor-text" is-required
               placeholder=" Nhập mật khẩu..." type="password" />
           </div>
@@ -28,8 +41,7 @@
             </RouterLink>
           </div>
           <div class="w-full flex gap-3 mt-3">
-            <button class="bg-[#3E334E] text-white flex-[1] w-full py-3 font-bold rounded-lg" @click="onLogin">
-              <!-- <button class="bg-[#3E334E] text-white flex-[1] w-full py-3 font-bold rounded-lg" @click=""> -->
+            <button @click="onLogin" class="bg-[#3E334E] text-white flex-[1] w-full py-3 font-bold rounded-lg">
               Đăng nhập
             </button>
             <RouterLink to="/register"
@@ -102,18 +114,68 @@
 </style>
 
 <script setup>
-import { ref } from "vue"
-import { useForm } from 'vee-validate'
-import * as yup from 'yup'
-// import { useRouter } from 'vue-router'
-// import { initAuthStore } from '@/stores'
-// import { loginApi } from '@/services/auth.service'
-import AInput from '../components/AInput.vue'
+import { useForm } from 'vee-validate';
+import * as yup from 'yup';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import AInput from '@/components/AInput.vue';
+import { ref } from 'vue';
+import bcrypt from 'bcryptjs';
+
+const isLoginFailed = ref(false);
+const isWrongPass = ref(false);
+const router = useRouter();
+
+const login = async (data) => {
+  try {
+    console.log('Login data:', {
+      account: data.name,
+    });
+
+    // Sử dụng hashedPassword thay vì data.password khi gửi đi
+    const response = await axios.post(`http://localhost:8080/customers/login`, {
+      account: data.name,
+    });
+
+    // Kiểm tra xem API có trả về dữ liệu hay không
+    if (response.data) {
+      const hashedPasswordFromAPI = response.data.password;
+      bcrypt.compare(data.password, hashedPasswordFromAPI, (err, result) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        if (result) {
+          console.log('Mật khẩu khớp.');
+
+          // Lưu thông tin tài khoản vào localStorage
+          localStorage.setItem('account', JSON.stringify(response.data));
+
+          router.push('/home');
+        } else {
+          console.log('Mật khẩu không khớp.');
+          isWrongPass.value = true;
+          setTimeout(() => {
+            isWrongPass.value = false;
+          }, 5000);
+        }
+      });
+    } else {
+      console.error('Không có dữ liệu trả về từ API.');
+    }
+  } catch (error) {
+    console.error(error);
+    isLoginFailed.value = true; // Set the flag to true
+    setTimeout(() => {
+      isLoginFailed.value = false; // Clear the flag after 5 seconds
+    }, 5000);
+  }
+};
 
 // Validate password have min 8, have number vs uppercase
 const { handleSubmit } = useForm({
   validationSchema: yup.object({
-    username: yup.string().required("Tên đăng nhập là trường bắt buộc"),
+    name: yup.string().required("Tên đăng nhập là trường bắt buộc"),
     password: yup
       .string()
       .matches(/^(?=.*[A-Za-z])(?=.*\d).+$/, 'Mật khẩu phải chứa ít nhất 1 số và 1 chữ cái')
@@ -124,7 +186,9 @@ const { handleSubmit } = useForm({
 })
 
 const onLogin = () => {
-  handleSubmit(submit)()
-}
+  console.log('diem1')
+  handleSubmit(async (values) => {
+    await login(values);
+  })();
+};
 </script>
-
