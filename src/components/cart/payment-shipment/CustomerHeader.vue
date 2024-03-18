@@ -9,22 +9,9 @@ const VND = new Intl.NumberFormat('vi-VN', {
   currency: 'VND',
 });
 
-const user1 = {
-    "id": 1,
-    "account": "nnlthanh20",
-    "password": "123456@",
-    "name": "Lam Thanh",
-    "address": null,
-    "phone": null,
-    "email": "thanhngn20@gmail.com",
-    "avatar": null,
-    "dob": null,
-    "createdAt": "2024-03-11 15:14:04",
-    "updatedAt": null,
-    "roles": []
-}
+const customerInfo = JSON.parse(localStorage.getItem('account'));
 
-console.log(user1)
+console.log(customerInfo)
 
 </script>
 
@@ -33,7 +20,7 @@ console.log(user1)
     <div class="cart-coolcash-boxd-wrapper">
       <div class="cart-coolcash-boxd-grid">
         <div class="cart-coolcash-boxd-left">
-          <a href="#" class="cart-coolcash-boxd-name"> Hi, {{ user1.name }} </a>
+          <a href="#" class="cart-coolcash-boxd-name"> Hi, {{ customerInfo.name }} </a>
           <p class="cart-coolcash-boxd-content-text">
             Tổng đơn
              <!-- (8 sản phẩm) -->

@@ -1,3 +1,27 @@
+<script setup lang="ts">
+import { ref, onMounted, inject } from 'vue';
+import CartService from "@/services/cart.service";
+
+const { cartService }: { cartService: CartService } = inject('cartService')!;
+
+const responseCode = ref(null);
+
+const getQueryParamByName = (name) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+// Call the function to get the value of the 'paramName' query parameter
+onMounted(() => {
+  responseCode.value = getQueryParamByName('vnp_ResponseCode');
+  if (responseCode.value == '00') {
+    console.log("Giao dịch thành công");
+    cartService.addOrderToSuccessful(getQueryParamByName('orderId'));
+  }
+});
+
+</script>
+
 <template>
   <div class="account-content my-50">
     <div id="info-tab" class="account-info">

@@ -12,14 +12,12 @@
         </div>
 
         <div class="cart-items">
-          <DefaultCartItem v-for="(cartItem, idx) in cartItems" :key="idx" 
-          :cartDetail="cartItem" 
-          />
+          <DefaultCartItem v-for="(cartItem, idx) in cartItems" :key="idx" :cartDetail="cartItem" />
         </div>
       </div>
     </div>
   </div>
-<!--   
+  <!--   
   <div class="cart-viewing-users mgt--10">
     <i>Có <b>4</b> người đang thêm cùng sản phẩm giống bạn vào giỏ hàng.</i>
   </div>
@@ -34,7 +32,7 @@
     <div class="pricing-info-item">
       <p>Tạm tính</p>
       <p class="pricing-info-sub">
-        <span> {{ formattedSalePrice }}</span>
+        <span> {{ VND.format(cartService.total?.value) }}</span>
         <!-- <span class="pricing-info-saving"
           ><i>(tiết kiệm <span class="text--primary">940k)</span></i></span
         > -->
@@ -43,30 +41,30 @@
     <div class="pricing-info-item">
       <p>Giảm giá</p>
       <p class="">
-        <span>{{ discount }}</span>
+        <span>{{ VND.format(cartService.discount?.value) }}</span>
       </p>
     </div>
     <div class="pricing-info-item">
       <p>Phí giao hàng</p>
       <p class="">
-        <span v-if="shipCost.value == 0">Miễn phí</span>
-        <span v-if="shipCost.value != 0"> {{ formattedShipCost }}</span>
+        <span v-if="cartService.shipCost?.value == 0">Miễn phí</span>
+        <span v-if="cartService.shipCost?.value != 0"> {{ VND.format(cartService.shipCost!.value) }}</span>
       </p>
     </div>
     <div class="divider"></div>
     <div class="pricing-info-item pricing-info-total">
       <p style="align-items: center">Tổng</p>
       <p class="">
-        <span class="pricing-info-total total"> {{ subTotal }}</span>
+        <span class="pricing-info-total total"> {{ VND.format(cartService.subTotal?.value) }}</span>
         <span v-if="discount > 0" style="color: red; display: block; font-size: 12px">(Đã giảm 940k trên giá gốc)</span>
       </p>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import CartService from "@/services/cart.service";
-import { inject, onMounted, ref } from "vue";
+import { inject, onMounted, ref, computed } from "vue";
 import DefaultCartItem, { ProductDetailObject } from "./cart-item/DefaultCartItem.vue";
 import GiftCartItem from "./cart-item/GiftCartItem.vue";
 import SoldOutCartItem from "./cart-item/SoldOutCartItem.vue";
@@ -81,76 +79,30 @@ export type CartDetailObject = {
   productDetail: ProductDetailObject
 }
 
-export default {
-  components: {
-    DefaultCartItem,
-    GiftCartItem,
-    SoldOutCartItem,
-    ProductPromotion,
-    DiscountBlock,
-    ProductPromotionItem
-  },
+const { cartService }: { cartService: CartService } = inject('cartService')!;
 
-  data() {
-    return {
-      cartItems: ref<CartDetailObject[]>([]),
-      formattedPrice: ref<string>(0),
-      formattedSalePrice: ref<string>(0),
-      discount: ref(0),
-      shipCost: ref(30000),
-      formattedShipCost: ref<string>(0),
-      subTotal: ref<string>(0),
-      formattedSubTotal: ref<string>(0),
-      cartDetailIds: [] as number[],
-      
-    }
-  },
+const VNDFormatter = new Intl.NumberFormat('vi-VN', {
+  style: 'currency',
+  currency: 'VND',
+});
 
-  created() {
-    const VND = new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    });
+const VND = computed(() => ({
+  format: (value: number) => VNDFormatter.format(value)
+}));
 
-    onMounted(async () => {
-      const { cartService }: { cartService: CartService } = inject('cartService')!;
+const cartItems = ref<CartDetailObject[]>([]);
+const setup = async () => {
+  await cartService.getCart();
+  cartItems.value = cartService.cartItems?._rawValue;
+  cartService.cartDetailsToOrder.value = cartItems?._rawValue.map(item => item.id);
 
-      (await cartService.getCart());
+  setTimeout(() => {
+    cartService.subTotal.value = Number(cartService.total.value) + Number(cartService.shipCost.value) | 0; // checkkk
+  }, 500);
+}
 
-      this.cartItems = cartService.cartItems._rawValue;
+setup();
 
-      let total = 0;
-      let salePriceTotal = 0;
-      this.cartItems.forEach(item => {
-        total += Number(item.total);
-        let salePrice = item.total * (1 - item.productDetail.product.salePercent / 100);
-        salePrice = Math.floor(salePrice / 1000);
-        salePrice *= 1000;
-        salePriceTotal += salePrice;
-        this.cartDetailIds.push(Number(item.id));
-      });
-
-      this.formattedPrice = VND.format(total);
-      // let salePrice = total * (1 - props.cartDetail.productDetail.product.salePercent / 100);
-      // salePrice = Math.floor(salePrice / 1000);
-      // salePrice *= 1000;
-      console.log(salePriceTotal)
-      this.formattedSalePrice = VND.format(salePriceTotal);
-
-      this.formattedShipCost = VND.format(this.shipCost);
-
-      let fees = salePriceTotal - this.discount + this.shipCost;
-
-      this.subTotal = VND.format(fees);
-      const regularArray = Object.keys(this.cartDetailIds).map(key => this.cartDetailIds[Number(key)]);
-      this.formattedSubTotal = VND.format(this.subTotal);
-      console.log(regularArray, fees);
-
-      cartService.getAllCartDetailsToOrder(regularArray, fees);
-
-    });
-  },
-};
 </script>
 
 <style scope>

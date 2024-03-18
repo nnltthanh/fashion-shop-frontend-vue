@@ -113,7 +113,7 @@ const formatedSalePrice = computed(() => {
 
 const modifyColorLink = (url) => {
     const pattern = /\/width=\d+,height=\d+,quality=\d+/;
-    const modifiedURL = url.replace(pattern, "/format=auto");
+    const modifiedURL = url?.replace(pattern, "/format=auto");
     return modifiedURL;
 }
 
@@ -130,7 +130,7 @@ const getColorActive = (detail) => {
     activeColor.value = Object.assign(activeColor.value,
         {
             'color': detail.color,
-            'imageLinks': (detail.imageLinks.split(", ")).map((item) => ({
+            'imageLinks': (detail.imageLinks?.split(", ")).map((item) => ({
                 'link': item,
                 'isActive': false,
             })),
@@ -195,7 +195,7 @@ const retrieveProductDetail = async (productId, id) => {
         productDetailActive.value = await ProductService.getDetail(productId, id);
         activeColor.value = {
             'color': productDetailActive.value.color,
-            'imageLinks': (productDetailActive.value.imageLinks.split(", ")).map((item) => ({
+            'imageLinks': (productDetailActive.value?.imageLinks.split(", ")).map((item) => ({
                 'link': item,
                 'isActive': false,
             })),
@@ -242,7 +242,7 @@ onBeforeMount(() => {
                             <div class="product-single__inner">
                                 <div class="thumbnails">
                                     <a href="#" class="image">
-                                        <img :src="modifyColorLink(activeColorInGallery.link)" :alt="product.value.name">
+                                        <img :src="modifyColorLink(activeColorInGallery.link)" :alt="product.value?.name">
                                     </a>
                                 </div>
                             </div>
@@ -253,7 +253,7 @@ onBeforeMount(() => {
                                             style="opacity: 1; width: 240px; transform: translate3d(0px, 0px, 0px);">
                                             <div v-for="(item, index) in activeColor.value.imageLinks" :key="index" class="image image-lazyload is-current product-single__gallery-slide" :class="item.isActive ? 'product-single__gallery-current' : ''"
                                                 style="width: 40px;" @click="toggleActiveRadio(index, activeColor.value.imageLinks)">
-                                                <img loading="lazy" :src="item.link" :alt="productDetailActive.value.name">
+                                                <img loading="lazy" :src="item.link" :alt="productDetailActive.value?.name">
                                             </div>
                                         </div>
                                     </div>
@@ -264,7 +264,7 @@ onBeforeMount(() => {
                     <div class="product-single__summary">
                         <div class="product-single__sticky">
                             <h1 class="product-single__title">
-                                {{ product.value.name }}
+                                {{ product.value?.name }}
                                 <span class="product-grid__sub-title">Mỏng nhẹ</span>
                             </h1>
                             <a href="#" class="product-single__ratings scroll-to-step">

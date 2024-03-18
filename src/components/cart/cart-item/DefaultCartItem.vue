@@ -30,9 +30,8 @@ export type ProductDetailObject = {
 }
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
-
 const props = defineProps<{
-  cartDetail: CartDetailObject
+  cartDetail: CartDetailObject,
 }>();
 
 const isVisible = ref(true);
@@ -40,15 +39,46 @@ const isVisible = ref(true);
 const quantityRef = ref(props.cartDetail.quantity);
 const productDetail = ref(props.cartDetail.productDetail);
 
+setTimeout(() => {
+  cartService.total.value += Math.floor(props.cartDetail.total * (100 - props.cartDetail.productDetail?.product.salePercent) / 100000) * 1000;
+}, 100);
+
 const increaseQuantity = () => {
   if (Number(productDetail.value.quantity) > Number(quantityRef.value)) {
     quantityRef.value = Number(quantityRef.value) + 1;
+    props.cartDetail.total += productDetail.value.product.price;
+    props.cartDetail.quantity++;
+
+    let salePrice = productDetail.value.product.price * (1 - props.cartDetail.productDetail.product.salePercent / 100);
+    salePrice = Math.floor(salePrice / 1000);
+    salePrice *= 1000;
+
+    cartService.total.value += Number(salePrice);
+    cartService.subTotal.value += Number(salePrice);
+    console.log(cartService.total.value, salePrice);
   }
 };
 
-const decreaseQuantity = () => {
-  if (Number(quantityRef.value) > 1) {
+const decreaseQuantity = async () => {
+  if (Number(quantityRef.value) > 0) {
+    
+    if (Number(quantityRef.value) == 1) {
+      deleteItem();
+    }
+
     quantityRef.value = Number(quantityRef.value) - 1;
+    props.cartDetail.total -= productDetail.value.product.price;
+
+    props.cartDetail.quantity--;
+
+    let salePrice = productDetail.value.product.price * (1 - props.cartDetail.productDetail.product.salePercent / 100);
+    salePrice = Math.floor(salePrice / 1000);
+    salePrice *= 1000;
+
+    cartService.total.value -= Number(salePrice);
+    cartService.subTotal.value -= Number(salePrice);
+    console.log(cartService.total.value, salePrice);
+
   }
 };
 
@@ -70,13 +100,25 @@ const formattedSalePrice = computed(() => {
 
 const deleteItem = async () => {
   (await cartService.deleteCartDetail(props.cartDetail.id));
-  cartService.subTotal.value -= props.cartDetail.total * props.cartDetail.quantity * (1 - props.cartDetail.productDetail.product.salePercent / 100);
-  cartService.cartDetailsToOrder.value.pop(props.cartDetail.id)
-  const regularArray = Object.keys(cartService.cartDetailsToOrder.value).map((key)=>cartService.cartDetailsToOrder.value[Number(key)]);
-            console.log(regularArray);
-  console.log(regularArray.pop(props.cartDetail.id))
-  cartService.cartDetailsToOrder.value = regularArray;
-  console.log(cartService.subTotal.value)
+  if (quantityRef.value != 0) {
+    let salePrice = props.cartDetail.total * (1 - props.cartDetail.productDetail.product.salePercent / 100);
+    salePrice = Math.floor(salePrice / 1000);
+    salePrice *= 1000;
+
+    cartService.total.value -= salePrice;
+    cartService.subTotal.value -= salePrice;
+    quantityRef.value = 0;
+
+    if (cartService.total.value < 0) {
+      cartService.total.value = 0;
+    }
+    
+    cartService.cartDetailsToOrder.value.pop(props.cartDetail.id)
+    const regularArray = Object.keys(cartService.cartDetailsToOrder.value).map((key) => cartService.cartDetailsToOrder.value[Number(key)]);
+
+    cartService.cartDetailsToOrder.value = regularArray;
+  }
+
   isVisible.value = false;
 
 }
@@ -88,8 +130,8 @@ const deleteItem = async () => {
     <div class="cart-item-thumbnail">
       <div class="cart-item-thumbnail-image">
         <div class="cart-item-thumbnail-block">
-          <img :src="productDetail.product.imageData.base64String.toString()"
-            :alt="productDetail.product.name.toString()" style="opacity: 1" />
+          <img :src="productDetail.imageLinks?.split(',')[0].toString()" :alt="productDetail.product.name.toString()"
+            style="opacity: 1" />
 
           <div class="cart-item-multiselect">
             <label for="select65798ace52b8b42f52482b67a90e7f17" class="custom-checkbox-label"><span

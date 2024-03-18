@@ -113,23 +113,25 @@
 }
 </style>
 
-<script setup>
+<script setup lang="ts">
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import AInput from '@/components/AInput.vue';
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import bcrypt from 'bcryptjs';
+import CartService from '@/services/cart.service';
 
 const isLoginFailed = ref(false);
 const isWrongPass = ref(false);
 const router = useRouter();
-
+const cartService : { cartService: CartService } = inject('cartService')!;
 const login = async (data) => {
   try {
     console.log('Login data:', {
       account: data.name,
+      userId: data.id
     });
 
     // Sử dụng hashedPassword thay vì data.password khi gửi đi
@@ -147,6 +149,8 @@ const login = async (data) => {
         }
         if (result) {
           console.log('Mật khẩu khớp.');
+
+          cartService.customerId = response.data.id;
 
           // Lưu thông tin tài khoản vào localStorage
           localStorage.setItem('account', JSON.stringify(response.data));
@@ -186,7 +190,6 @@ const { handleSubmit } = useForm({
 })
 
 const onLogin = () => {
-  console.log('diem1')
   handleSubmit(async (values) => {
     await login(values);
   })();

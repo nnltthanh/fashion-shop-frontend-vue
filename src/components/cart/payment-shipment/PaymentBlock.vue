@@ -20,10 +20,10 @@ import { inject, ref } from 'vue';
     let data = {
       status: "PENDING_PAYMENT"
     };
-    paymentUrl.value = (await cartService!.addCartDetailToOrder(data, paymentOption.value));
-    console.log(paymentUrl.value)
+    paymentUrl.value = (await cartService!.addCartDetailToOrder_payment(data, paymentOption.value)).data;
+    if (paymentUrl.value != null)
+      window.open(paymentUrl.value, '_blank'); 
 
-    window.location.href = paymentUrl.value;
   }
 
 </script>

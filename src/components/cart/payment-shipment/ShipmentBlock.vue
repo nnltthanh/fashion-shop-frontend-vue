@@ -17,20 +17,7 @@ export default {
     const activeDistrict = ref("Chọn Quận / Huyện");
     const activeVillage = ref("Chọn Phường / Xã");
 
-    const user1 = {
-      "id": 1,
-      "account": "nnlthanh20",
-      "password": "123456@",
-      "name": "Lam Thanh",
-      "address": null,
-      "phone": "0124567892",
-      "email": "thanhngn20@gmail.com",
-      "avatar": null,
-      "dob": null,
-      "createdAt": "2024-03-11 15:14:04",
-      "updatedAt": null,
-      "roles": []
-    }
+    const customerInfo = JSON.parse(localStorage.getItem('account'));
 
     var cities: string[] = [];
     const districts: Ref<string[]> = ref<string[]>([]);
@@ -87,7 +74,7 @@ export default {
     });
 
     return {
-      user1,
+      customerInfo,
       toggleCityDropdown,
       toggleDistrictDropdown,
       toggleVillageDropdown,
@@ -121,19 +108,19 @@ export default {
   <div id="customer-info-block" customerinfo="[object Object]">
     <div class="grid">
       <div class="grid-column six-twelfths">
-        <input type="text" name="full_name" placeholder="Họ tên" v-model="user1.name" class="form-control" />
+        <input type="text" name="full_name" placeholder="Họ tên" v-model="customerInfo.name" class="form-control" />
       </div>
       <div class="grid-column six-twelfths">
-        <input type="tel" name="phone" placeholder="Số điện thoại" v-model="user1.phone" class="form-control" />
+        <input type="tel" name="phone" placeholder="Số điện thoại" v-model="customerInfo.phone" class="form-control" />
       </div>
     </div>
     <div class="grid">
       <div class="grid-column">
-        <input type="email" name="email" placeholder="Email" v-model="user1.email" class="form-control custom-cursor-default-hover" />
+        <input type="email" name="email" placeholder="Email" v-model="customerInfo.email" class="form-control custom-cursor-default-hover" />
       </div>
       <div class="grid-column">
         <div class="address-block">
-          <input type="text" name="address" v-model="user1.address" placeholder="Địa chỉ (ví dụ: 103 Vạn Phúc, phường Vạn Phúc)"
+          <input type="text" name="address" v-model="customerInfo.address" placeholder="Địa chỉ (ví dụ: 103 Vạn Phúc, phường Vạn Phúc)"
             autocomplete="off" class="form-control" />
         </div>
       </div>
