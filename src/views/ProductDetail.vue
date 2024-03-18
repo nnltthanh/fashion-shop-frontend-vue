@@ -199,8 +199,8 @@ const retrieveAllProductDetails = async (productId) => {
 
 const retrieveProductDetail = async (productId, id) => {
     try {
-        id = productDetails.value[0].id;
-        productDetailActive.value = await ProductService.getDetail(productId, id);
+        const detailId = productDetails.value[0].id;
+        productDetailActive.value = await ProductService.getDetail(productId, detailId);
         activeColor.value = {
             'color': productDetailActive.value.color,
             'imageLinks': (productDetailActive.value.imageLinks.split(", ")).map((item) => ({
