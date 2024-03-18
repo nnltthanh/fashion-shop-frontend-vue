@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BT Fashion Shop</title>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BT Fashion Shop</title>
 
-  <!-- Loại bỏ các trang không xuất hiện FChat -->
-  <script>
-    if (!['/login', '/register', '/login/employee', '/employee',].includes(window.location.pathname)) {
+    <!-- Loại bỏ các trang không xuất hiện FChat -->
+    <script>
+    if (!['/login', '/register', '/login/employee', '/employee', '/staff', ].includes(window.location.pathname)) {
       // Load script Fchat.vn
       const script = document.createElement("script");
       script.type = "text/javascript";
@@ -19,14 +19,14 @@
       document.head.appendChild(script);
     }
   </script>
-</head>
+  </head>
 
-<body>
-  <div id="app" class="container-fluid"></div>
-  <script type="module" src="/src/main.ts"></script>
-</body>
+  <body>
+    <div id="app" class="container-fluid"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 
-<style>
+  <style>
   #app {
     width: 100%;
     --bs-gutter-x: 0;

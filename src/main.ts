@@ -25,7 +25,7 @@ app.use(router);
 app.use(cors);
 
 // Create and use Pinia store
-const pinia = createPinia();
+// const pinia = createPinia();
 app.use(pinia);
 
 
