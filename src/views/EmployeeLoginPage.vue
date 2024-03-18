@@ -51,12 +51,10 @@ const login = async (data) => {
         console.log('Login data:', {
             account: data.name,
         });
-
         // Sử dụng hashedPassword thay vì data.password khi gửi đi
         const response = await axios.post(`http://localhost:8080/users/loginEmployee`, {
             account: data.name,
         });
-
         // Kiểm tra xem API có trả về dữ liệu hay không
         if (response.data) {
             const hashedPasswordFromAPI = response.data.password;
@@ -67,12 +65,18 @@ const login = async (data) => {
                 }
                 if (result) {
                     console.log('Mật khẩu khớp.');
-
                     // Lưu thông tin tài khoản vào localStorage
                     localStorage.setItem('account', JSON.stringify(response.data));
-                    console.log(response.data);
+                    if (response.data.userType == 'staff') {
+                        router.push('/staff')
+                    } else if (response.data.userType == 'manager') {
+                        router.push('/manager')
+                    } else if (response.data.userType == 'senior_manager') {
+                        router.push('/senior_manager')
+                    } else if (response.data.userType == 'admin') {
+                        router.push('admin')
+                    }
 
-                    router.push('/home');
                 } else {
                     console.log('Mật khẩu không khớp.');
                     isWrongPass.value = true;

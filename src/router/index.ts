@@ -80,6 +80,18 @@ const router = createRouter({
       path: '/staff',
       component: () => import('@/views/Staff.vue'),
     },
+    {
+      path: '/senior-manager',
+      component: () => import('@/views/SeniorManager.vue'),
+    },
+    {
+      path: '/admin',
+      component: () => import('@/views/Admin.vue'),
+    },
+    {
+      path: '/manager',
+      component: () => import('@/views/Manager.vue'),
+    },
   ],
 });
 
