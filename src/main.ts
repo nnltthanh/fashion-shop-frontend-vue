@@ -4,7 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import './assets/main.css';
 import './assets/index.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import store from './store';
+import pinia from './store/store';
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia';

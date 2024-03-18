@@ -121,12 +121,14 @@ import axios from 'axios';
 import AInput from '@/components/AInput.vue';
 import { ref, inject } from 'vue';
 import bcrypt from 'bcryptjs';
+import useUserStore from '@/store/userStore.js';
 import CartService from '@/services/cart.service';
 
 const isLoginFailed = ref(false);
 const isWrongPass = ref(false);
 const router = useRouter();
-const cartService : { cartService: CartService } = inject('cartService')!;
+const cartService : { cartService: CartService } = inject('cartService')!;const userStore = useUserStore();
+
 const login = async (data) => {
   try {
     console.log('Login data:', {
@@ -149,12 +151,12 @@ const login = async (data) => {
         }
         if (result) {
           console.log('Mật khẩu khớp.');
-
+          
+          // Lưu thông tin tài khoản vào localStorage
           cartService.customerId = response.data.id;
 
-          // Lưu thông tin tài khoản vào localStorage
           localStorage.setItem('account', JSON.stringify(response.data));
-
+          userStore.setUser(response.data);
           router.push('/home');
         } else {
           console.log('Mật khẩu không khớp.');
@@ -194,4 +196,4 @@ const onLogin = () => {
     await login(values);
   })();
 };
-</script>
+</script>@/store/store
