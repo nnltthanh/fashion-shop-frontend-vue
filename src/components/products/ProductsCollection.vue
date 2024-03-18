@@ -24,8 +24,43 @@ const retrieveProducts = async () => {
     }
 };
 
-const refreshList = () => {
-    retrieveProducts();
+const mapAllDetailsToProduct = () => {
+    products.value.forEach((product) => {
+        retrieveAllProductDetails(product.id);
+    });
+}
+
+const retrieveAllProductDetails = async (productId) => {
+    try {
+        const productDetails = await ProductService.getAllDetails(productId);
+        const product = products.value[productId];
+        const detailsList = { 'details': productDetails };
+        Object.keys(detailsList || {})
+        Object.assign(product, detailsList);
+        // productColors.value = _.uniqWith(productDetails.value.map(({ color, imageLinks, colorImage }) =>
+        //     ({ color, imageLinks, colorImage })
+        // ), _.isEqual);
+        // productsByColor.value = productDetails.value.filter((detail) =>
+        //     (detail.color === productColors.value.at(0).color));
+        // productSizes.value = _.uniqWith(productsByColor.value.map(({ size }) =>
+        //     ({ size })
+        // ), _.isEqual);
+        // productSizes.value = productSizes.value.map((item) => {
+        //     const matchedSize = sizes.find((size) => size.size === item.size);
+        //     if (matchedSize) {
+        //         return matchedSize;
+        //     } else {
+        //         return item;
+        //     }
+        // })
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const refreshList = async () => {
+    await retrieveProducts();
+    mapAllDetailsToProduct();
 };
 
 refreshList();
@@ -78,7 +113,7 @@ refreshList();
                 <div class="collection-products__wrapper">
                     <div class="collection-products__content">
                         <div class="collection-products__grid row">
-                            <ProductCard v-for="product in products" :product="product" :gridCol="productPerRow"/>
+                            <ProductCard v-for="product in products" :product="product" :gridCol="productPerRow" />
                         </div>
                     </div>
                 </div>

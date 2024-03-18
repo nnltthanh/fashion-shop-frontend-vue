@@ -43,6 +43,12 @@ const activeSize = reactive({});
 
 const sizes = [
     {
+        size: 'S',
+        height: "1m50 - 1m59",
+        weight: "48kg - 54kg",
+        isChecked: false
+    },
+    {
         size: 'M',
         height: "1m60 - 1m65",
         weight: "55kg - 61kg",
@@ -166,9 +172,10 @@ const retrieveProduct = async (id) => {
     }
 };
 
-const retrieveAllProductDetails = async (id) => {
+const retrieveAllProductDetails = async (productId) => {
     try {
-        productDetails.value = await ProductService.getAllDetails(id);
+        productDetails.value = await ProductService.getAllDetails(productId);
+        retrieveProductDetail(productId.value, 0)
         productColors.value = _.uniqWith(productDetails.value.map(({ color, imageLinks, colorImage }) =>
             ({ color, imageLinks, colorImage })
         ), _.isEqual);
@@ -192,6 +199,7 @@ const retrieveAllProductDetails = async (id) => {
 
 const retrieveProductDetail = async (productId, id) => {
     try {
+        id = productDetails.value[0].id;
         productDetailActive.value = await ProductService.getDetail(productId, id);
         activeColor.value = {
             'color': productDetailActive.value.color,
