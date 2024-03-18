@@ -1,4 +1,18 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+
+const isLoggedIn = ref(false);
+
+onMounted(() => {
+    // Kiểm tra localStorage để xác định trạng thái đăng nhập
+    const loggedIn = localStorage.getItem('account');
+    if (loggedIn) {
+        isLoggedIn.value = true;
+    } else {
+        isLoggedIn.value = false;
+    }
+});
+</script>
 
 <template>
     <header class="header">
@@ -75,12 +89,10 @@
                     <ul class="dropdown-menu">
                         <li><router-link to="/account/info" class="dropdown-item">Thông tin tài khoản</router-link>
                         </li>
-                        <li><router-link to="/login" class="dropdown-item">Đăng xuất</router-link>
+                        <li v-if="isLoggedIn"><router-link to="/login" class="dropdown-item">Đăng xuất</router-link>
                         </li>
-                        <li>
-                            <hr class="dropdown-divider">
+                        <li v-if="!isLoggedIn"><router-link to="/login" class="dropdown-item">Đăng nhập</router-link>
                         </li>
-                        <li><router-link to="/login" class="dropdown-item">Đăng nhập</router-link></li>
                     </ul>
                 </div>
                 <div class="header_actions_button">
@@ -95,7 +107,6 @@
 </template>
 
 <style>
-
 .visible {
     visibility: visible;
     opacity: 1;

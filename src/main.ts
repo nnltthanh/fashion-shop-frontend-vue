@@ -28,7 +28,6 @@ app.use(cors);
 const pinia = createPinia();
 app.use(pinia);
 
-app.use(store);
 
 // Provide cartService
 app.provide('cartService', provideCartService());
