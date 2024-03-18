@@ -90,7 +90,8 @@ class CartService {
         const baseUri = this.getBaseUri();
         let data = {
             amount: this.subTotal.value,
-            method: "vnpay"
+            method: "vnpay",
+            status: "PENDING"
         }
 
         localStorage.setItem('amount', this.subTotal.value);
@@ -138,6 +139,16 @@ class CartService {
         return axios.get(`${baseUri}/customers/${this.customerId}/orders/${orderId}`);
     }
 
+    async getAllOrders() {
+        const baseUri = this.getBaseUri();
+        return axios.get(`${baseUri}/customers/${this.customerId}/orders`);
+    }
+
+    async getOrderDetailsByOrderId(orderId) {
+        const baseUri = this.getBaseUri();
+        return axios.get(`${baseUri}/customers/${this.customerId}/orders/${orderId}/details`);
+    }
+
     // getAllCartDetailsToOrder(cartDetailIds, subTotal) {
     //     this.cartDetailsToOrder.value = cartDetailIds;
     //     this.subTotal.value = subTotal;
@@ -150,7 +161,7 @@ class CartService {
 }
 
 const cartService = new CartService();
-
+console.log(cartService)
 export const provideCartService = () => {
     return {
         cartService,

@@ -155,7 +155,7 @@ header {
     background-color: rgb(10 10 10);
     height: 83px;
     padding: 0 64px;
-    z-index: 9999;
+    z-index: 9;
     width: 100% !important;
 }
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, inject } from 'vue';
 import CartService from "@/services/cart.service";
+import OrderCard from "./OrderCard.vue";
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
 
@@ -11,12 +12,18 @@ const getQueryParamByName = (name) => {
   return urlParams.get(name);
 }
 
+const orderItems = ref([]);
+
 // Call the function to get the value of the 'paramName' query parameter
-onMounted(() => {
+onMounted(async () => {
+  orderItems.value = (await cartService.getAllOrders()).data;
+  console.log(orderItems._rawValue);
+
   responseCode.value = getQueryParamByName('vnp_ResponseCode');
   if (responseCode.value == '00') {
     console.log("Giao dịch thành công");
     cartService.addOrderToSuccessful(getQueryParamByName('orderId'));
+    window.location.href = "http://localhost:8081/account/orders"
   }
 });
 
@@ -34,252 +41,11 @@ onMounted(() => {
       </div> -->
       <div>
         <div class="account-page-label">
-          Đơn hàng của bạn<span>: 2 đơn hàng</span>
+          Đơn hàng của bạn<span>: {{ orderItems.length }} đơn hàng</span>
         </div>
         <div class="orders-body mt-3">
           <div class="orders-wrapper">
-            <div href="#" class="order">
-              <div class="order-header">
-                <div>
-                  <p class="order-title">#78010670717</p>
-                  <p class="order-date">16.02.2024</p>
-                </div>
-                <div class="order-status-done">
-                  <span>Đã giao hàng</span>
-                </div>
-              </div>
-              <div class="order-body">
-                <div>
-                  <div class="order-item">
-                    <div class="order-item-thumbnail">
-                      <a href="#" target="_blank"
-                        ><img
-                          src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/February2024/joggerutdanang4.jpg"
-                          alt="Quần Jogger Nam UT đa năng"
-                        />
-                      </a>
-                    </div>
-                    <div class="order-item-info">
-                      <a href="#" target="_blank" class="order-item-title">
-                        Quần Jogger Nam UT đa năng
-                      </a>
-                      <div class="order-item-variant-label">Đen / L</div>
-                      <div class="order-item-quantity">x 1</div>
-                      <div class="order-item-price">499.000đ</div>
-                    </div>
-                  </div>
-                  <div class="order-item">
-                    <div class="order-item-thumbnail">
-                      <a href="#" target="_blank"
-                        ><img
-                          src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/December2023/boxer_short_ke_00016_copy.jpg"
-                          alt="Pack 3 Quần Shorts Nam kẻ sọc Basics"
-                        />
-                      </a>
-                    </div>
-                    <div class="order-item-info">
-                      <a href="#" target="_blank" class="order-item-title">
-                        Pack 3 Quần Shorts Nam kẻ sọc Basics
-                      </a>
-                      <div class="order-item-variant-label">Mix màu / 3XL</div>
-                      <div class="order-item-quantity">x 1</div>
-                      <div class="order-item-price">199.000đ</div>
-                    </div>
-                  </div>
-                  <div class="order-item">
-                    <div class="order-item-thumbnail">
-                      <a href="#" target="_blank"
-                        ><img
-                          src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/April2022/DSC05753_copy1.jpg"
-                          alt="Quà tặng - Áo thun thể thao nam ProMax-S1"
-                        />
-                      </a>
-                    </div>
-                    <div class="order-item-info">
-                      <a href="#" target="_blank" class="order-item-title">
-                        Quà tặng - Áo thun thể thao nam ProMax-S1
-                      </a>
-                      <div class="order-item-variant-label">Xanh Aqua / L</div>
-                      <div class="order-item-quantity">x 1</div>
-                      <div class="order-item-price">0₫</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="order-footer">
-                <div class="order-footer-left">
-                  <div>
-                    <!---->
-                    <a href="#" target="_blank" class="btn btn--outline"
-                      >Cần hỗ trợ</a
-                    >
-                  </div>
-                </div>
-                <div class="order-footer-right">
-                  <div><b>698.000đ</b></div>
-                </div>
-              </div>
-            </div>
-            <div href="#" class="order">
-              <div class="order-header">
-                <div>
-                  <p class="order-title">#78010670717</p>
-                  <p class="order-date">16.02.2024</p>
-                </div>
-                <div class="order-status-wait">
-                  <span>Chờ thanh toán...</span>
-                </div>
-              </div>
-              <div class="order-body">
-                <div>
-                  <div class="order-item">
-                    <div class="order-item-thumbnail">
-                      <a href="#" target="_blank"
-                        ><img
-                          src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/February2024/joggerutdanang4.jpg"
-                          alt="Quần Jogger Nam UT đa năng"
-                        />
-                      </a>
-                    </div>
-                    <div class="order-item-info">
-                      <a href="#" target="_blank" class="order-item-title">
-                        Quần Jogger Nam UT đa năng
-                      </a>
-                      <div class="order-item-variant-label">Đen / L</div>
-                      <div class="order-item-quantity">x 1</div>
-                      <div class="order-item-price">499.000đ</div>
-                    </div>
-                  </div>
-                  <div class="order-item">
-                    <div class="order-item-thumbnail">
-                      <a href="#" target="_blank"
-                        ><img
-                          src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/December2023/boxer_short_ke_00016_copy.jpg"
-                          alt="Pack 3 Quần Shorts Nam kẻ sọc Basics"
-                        />
-                      </a>
-                    </div>
-                    <div class="order-item-info">
-                      <a href="#" target="_blank" class="order-item-title">
-                        Pack 3 Quần Shorts Nam kẻ sọc Basics
-                      </a>
-                      <div class="order-item-variant-label">Mix màu / 3XL</div>
-                      <div class="order-item-quantity">x 1</div>
-                      <div class="order-item-price">199.000đ</div>
-                    </div>
-                  </div>
-                  <div class="order-item">
-                    <div class="order-item-thumbnail">
-                      <a href="#" target="_blank"
-                        ><img
-                          src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/April2022/DSC05753_copy1.jpg"
-                          alt="Quà tặng - Áo thun thể thao nam ProMax-S1"
-                        />
-                      </a>
-                    </div>
-                    <div class="order-item-info">
-                      <a href="#" target="_blank" class="order-item-title">
-                        Quà tặng - Áo thun thể thao nam ProMax-S1
-                      </a>
-                      <div class="order-item-variant-label">Xanh Aqua / L</div>
-                      <div class="order-item-quantity">x 1</div>
-                      <div class="order-item-price">0₫</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="order-footer">
-                <div class="order-footer-left">
-                  <div>
-                    <!---->
-                    <a href="#" target="_blank" class="btn btn--outline"
-                      >Cần hỗ trợ</a
-                    >
-                  </div>
-                </div>
-                <div class="order-footer-right">
-                  <div><b>698.000đ</b></div>
-                </div>
-              </div>
-            </div>
-            <div href="#" class="order">
-              <div class="order-header">
-                <div>
-                  <p class="order-title">#34563787096</p>
-                  <p class="order-date">16.02.2024</p>
-                </div>
-                <div class="order-status-wait">
-                  <span>Chờ thanh toán...</span>
-                </div>
-              </div>
-              <div class="order-body">
-                <div>
-                  <div class="order-item">
-                    <div class="order-item-thumbnail">
-                      <a href="#" target="_blank"
-                        ><img
-                          src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/February2024/joggerutdanang4.jpg"
-                          alt="Quần Jogger Nam UT đa năng"
-                      /></a>
-                    </div>
-                    <div class="order-item-info">
-                      <a href="#" target="_blank" class="order-item-title">
-                        Quần Jogger Nam UT đa năng
-                      </a>
-                      <div class="order-item-variant-label">Đen / L</div>
-                      <div class="order-item-quantity">x 1</div>
-                      <div class="order-item-price">499.000đ</div>
-                    </div>
-                  </div>
-                  <div class="order-item">
-                    <div class="order-item-thumbnail">
-                      <a href="#" target="_blank"
-                        ><img
-                          src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/December2023/boxer_short_ke_00016_copy.jpg"
-                          alt="Pack 3 Quần Shorts Nam kẻ sọc Basics"
-                      /></a>
-                    </div>
-                    <div class="order-item-info">
-                      <a href="#" target="_blank" class="order-item-title">
-                        Pack 3 Quần Shorts Nam kẻ sọc Basics
-                      </a>
-                      <div class="order-item-variant-label">Mix màu / 3XL</div>
-                      <div class="order-item-quantity">x 1</div>
-                      <div class="order-item-price">199.000đ</div>
-                    </div>
-                  </div>
-                  <div class="order-item">
-                    <div class="order-item-thumbnail">
-                      <a href="#" target="_blank"
-                        ><img
-                          src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/April2022/DSC05753_copy1.jpg"
-                          alt="Quà tặng - Áo thun thể thao nam ProMax-S1"
-                      /></a>
-                    </div>
-                    <div class="order-item-info">
-                      <a href="#" target="_blank" class="order-item-title">
-                        Quà tặng - Áo thun thể thao nam ProMax-S1
-                      </a>
-                      <div class="order-item-variant-label">Xanh Aqua / L</div>
-                      <div class="order-item-quantity">x 1</div>
-                      <div class="order-item-price">0₫</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="order-footer">
-                <div class="order-footer-left">
-                  <div>
-                    <a href="#" target="_blank" class="btn btn--outline"
-                      >Cần hỗ trợ
-                    </a>
-                  </div>
-                </div>
-                <div class="order-footer-right">
-                  <div><b>698.000đ</b></div>
-                </div>
-              </div>
-            </div>
+            <OrderCard v-for="(orderItem, idx) in orderItems.reverse()" :key="idx" :order="orderItem"/>
           </div>
         </div>
         <div id="loadingIndicator" class="loading-indicator">
@@ -326,6 +92,7 @@ a {
   margin-bottom: 27px;
 }
 
+/* 
 .order {
   position: relative;
   display: block;
@@ -459,10 +226,6 @@ a {
   display: flex;
 }
 
-/* .order-footer-left .btn:last-of-type {
-  margin-right: 0;
-} */
-
 .order-footer-left .btn {
   height: auto;
   padding: 0.5rem 2rem;
@@ -488,7 +251,7 @@ a {
 
 .order-footer-right {
   text-align: right;
-}
+} */
 
 .loading-indicator {
   display: none;

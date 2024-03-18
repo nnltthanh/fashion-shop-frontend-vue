@@ -23,7 +23,6 @@ import { inject, ref } from 'vue';
     paymentUrl.value = (await cartService!.addCartDetailToOrder_payment(data, paymentOption.value)).data;
     if (paymentUrl.value != null)
       window.open(paymentUrl.value, '_blank'); 
-
   }
 
 </script>

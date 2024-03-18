@@ -112,6 +112,7 @@ const formatedSalePrice = computed(() => {
 })
 
 const modifyColorLink = (url) => {
+    console.log(url);
     const pattern = /\/width=\d+,height=\d+,quality=\d+/;
     const modifiedURL = url?.replace(pattern, "/format=auto");
     return modifiedURL;
