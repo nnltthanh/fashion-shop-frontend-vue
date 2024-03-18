@@ -15,8 +15,8 @@ class ProductService {
     async get(id) {
         return (await this.api.get(`/${id}`)).data;
     }
-    async getAllDetails(id) {
-        return (await this.api.get(`/${id}/details`)).data;
+    async getAllDetails(productId) {
+        return (await this.api.get(`/${productId}/details`)).data;
     }
     async getDetail(productId, id) {
         return (await this.api.get(`/${productId}/details/${id}`)).data;
