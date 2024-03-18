@@ -4,7 +4,7 @@ import './assets/slick-1.8.1/slick/slick.css';
 import './assets/main.css';
 import './assets/index.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import store from './store';
+import pinia from './store/store';
 
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -13,9 +13,10 @@ import router from './router'
 
 const app = createApp(App)
 
-app.use(store)
 
 app.use(router)
+
+app.use(pinia)
 
 app.mount('#app')
 
