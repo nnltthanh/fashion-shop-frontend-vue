@@ -118,7 +118,6 @@ const formatedSalePrice = computed(() => {
 })
 
 const modifyColorLink = (url) => {
-    console.log(url);
     const pattern = /\/width=\d+,height=\d+,quality=\d+/;
     const modifiedURL = url?.replace(pattern, "/format=auto");
     return modifiedURL;
@@ -200,7 +199,10 @@ const retrieveAllProductDetails = async (productId) => {
 
 const retrieveProductDetail = async (productId, id) => {
     try {
-        const detailId = productDetails.value[0].id;
+        let detailId = id;
+        if (productDetails.value[0] !== undefined ) {
+            detailId = productDetails.value[0].id;
+        }
         productDetailActive.value = await ProductService.getDetail(productId, detailId);
         activeColor.value = {
             'color': productDetailActive.value.color,
