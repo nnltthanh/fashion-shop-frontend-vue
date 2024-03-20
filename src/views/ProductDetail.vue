@@ -80,6 +80,8 @@ const sizes = [
     },
 ];
 
+const sizeOrder = ["S", "M", "L", "XL", "2XL", "3XL"];
+
 const productSizes = ref([]);
 
 const productId = computed(() => {
@@ -155,6 +157,7 @@ const getColorActive = (detail) => {
             return item;
         }
     });
+    productSizes.value.sort((a, b) => sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size));
     productSizes.value.forEach((item) => item.isChecked = false);
 }
 
@@ -192,6 +195,8 @@ const retrieveAllProductDetails = async (productId) => {
                 return item;
             }
         })
+        productSizes.value.sort((a, b) => sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size));
+        productSizes.value.forEach((item) => item.isChecked = false);
     } catch (error) {
         console.log(error);
     }
@@ -200,7 +205,7 @@ const retrieveAllProductDetails = async (productId) => {
 const retrieveProductDetail = async (productId, id) => {
     try {
         let detailId = id;
-        if (productDetails.value[0] !== undefined ) {
+        if (productDetails.value[0] !== undefined) {
             detailId = productDetails.value[0].id;
         }
         productDetailActive.value = await ProductService.getDetail(productId, detailId);
@@ -253,7 +258,8 @@ onBeforeMount(() => {
                             <div class="product-single__inner">
                                 <div class="thumbnails">
                                     <a href="#" class="image">
-                                        <img :src="modifyColorLink(activeColorInGallery.link)" :alt="product.value?.name">
+                                        <img :src="modifyColorLink(activeColorInGallery.link)"
+                                            :alt="product.value?.name">
                                     </a>
                                 </div>
                             </div>
@@ -262,9 +268,13 @@ onBeforeMount(() => {
                                     <div class="product-single__gallery-list draggable">
                                         <div class="product-single__gallery-track"
                                             style="opacity: 1; width: 240px; transform: translate3d(0px, 0px, 0px);">
-                                            <div v-for="(item, index) in activeColor.value.imageLinks" :key="index" class="image image-lazyload is-current product-single__gallery-slide" :class="item.isActive ? 'product-single__gallery-current' : ''"
-                                                style="width: 40px;" @click="toggleActiveRadio(index, activeColor.value.imageLinks)">
-                                                <img loading="lazy" :src="item.link" :alt="productDetailActive.value?.name">
+                                            <div v-for="(item, index) in activeColor.value.imageLinks" :key="index"
+                                                class="image image-lazyload is-current product-single__gallery-slide"
+                                                :class="item.isActive ? 'product-single__gallery-current' : ''"
+                                                style="width: 40px;"
+                                                @click="toggleActiveRadio(index, activeColor.value.imageLinks)">
+                                                <img loading="lazy" :src="item.link"
+                                                    :alt="productDetailActive.value?.name">
                                             </div>
                                         </div>
                                     </div>
