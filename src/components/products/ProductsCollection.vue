@@ -24,6 +24,14 @@ const retrieveProducts = async () => {
     }
 };
 
+const removeTypeFilter = (filter) => {
+    filter.isActive = false;
+    let index = productStore.filterList.types.indexOf(filter);
+    if (index > -1) {
+        productStore.filterList.types.splice(index, 1);
+    }
+}
+
 const mapAllDetailsToProduct = () => {
     products.value.forEach((product) => {
         retrieveAllProductDetails(product.id);
@@ -33,7 +41,7 @@ const mapAllDetailsToProduct = () => {
 const retrieveAllProductDetails = async (productId) => {
     try {
         const productDetails = await ProductService.getAllDetails(productId);
-        const product = products.value[productId];
+        const product = products.value[productId - 1];
         const detailsList = { 'details': productDetails };
         Object.keys(detailsList || {})
         Object.assign(product, detailsList);
@@ -72,11 +80,14 @@ refreshList();
             <div class="collection-filter-selected">
                 <div class="collection-filter-selected__wrapper">
                     <h5 class="collection-filter-selected__count">{{ productSize }} kết quả</h5>
-                    <div class="collection-filter-selected__box">
-                        <button class="collection-filter-selected__item">
-                            Áo
-                            <span>x</span>
-                        </button>
+                    <div class="collection-filter-selected__box" v-if="productStore.filterList.types.length > 0">
+                        <div v-for="(item, index) in productStore.filterList.types">
+                            <button v-if="item.isActive == true" :key="index" class="collection-filter-selected__item">
+                                {{ item.label }}
+                                <span @click="removeTypeFilter(item)">x</span>
+                            </button>
+                        </div>
+
                         <a href="https://www.coolmate.me/collections?sort=new" id="removeAllFilterSelected"
                             style="color: rgb(47, 90, 207); margin-left: 12px;">
                             Xóa lọc

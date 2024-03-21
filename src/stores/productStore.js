@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 export const useProductStore = defineStore('product', {
     state: () => ({
         allProducts: [],
-        filterList: [],
+        filterList: {},
         filteredType: null,
         activeIndex: -1,
         productCount: Number,

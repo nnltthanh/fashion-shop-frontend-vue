@@ -29,23 +29,27 @@ const typeList = reactive([
 
 const sizeList = reactive([
     {
-        size: 29,
+        size: 'S  ',
         isActive: false
     },
     {
-        size: 30,
+        size: 'M  ',
         isActive: false
     },
     {
-        size: 31,
+        size: 'L  ',
         isActive: false
     },
     {
-        size: 32,
+        size: "XL ",
         isActive: false
     },
     {
-        size: 33,
+        size: "2XL",
+        isActive: false
+    },
+    {
+        size: "3XL",
         isActive: false
     },
 ]);
@@ -120,15 +124,15 @@ const filtersList = {
     purposes: ref([]),
 };
 
-const handleFilterList = (category, name) => {
+const handleFilterList = (category, filter) => {
     if (typeof filtersList[category].value == 'string' || filtersList[category].value instanceof String) {
-        filtersList[category].value = name;
+        filtersList[category].value = filter;
     } else {
-        let index = filtersList[category].value.indexOf(name);
+        let index = filtersList[category].value.indexOf(filter);
         if (index > -1) {
             filtersList[category].value.splice(index, 1);
         } else {
-            filtersList[category].value.push(name);
+            filtersList[category].value.push(filter);
         }
     }
     productStore.setFilterList(filtersList);
@@ -146,6 +150,8 @@ const toggleActiveRadio = (index, list) => {
     });
     item.isActive = true;
 }
+
+productStore.setFilterList(filtersList);
 </script>
 
 <template>
@@ -170,7 +176,7 @@ const toggleActiveRadio = (index, list) => {
                         <li v-for="(item, index) in typeList" :key="index" class="filter-select-material__item"
                             :class="{ selected: item.isActive }" @click="toggleActive(index, typeList)">
                             <div class="filter-select-material__checkbox">
-                                <input type="checkbox" value="false" @click="handleFilterList('types', item.name)">
+                                <input type="checkbox" value="false" @click="handleFilterList('types', item)">
                                 <label>{{ item.label }}</label>
                             </div>
                         </li>
@@ -183,7 +189,7 @@ const toggleActiveRadio = (index, list) => {
                     <ul class="filter-select-size">
                         <li v-for="(item, index) in sizeList" :key="index" data-type="size"
                             class="filter-select-size__item" :class="{ selected: item.isActive }"
-                            @click="toggleActive(index, sizeList); handleFilterList('sizes', item.size)">
+                            @click="toggleActive(index, sizeList); handleFilterList('sizes', item)">
                             <button class="filter-select-size__button">
                                 <span class="filter-select-size__label">{{ item.size }}</span>
                             </button>
@@ -196,7 +202,7 @@ const toggleActiveRadio = (index, list) => {
                     </h5>
                     <ul class="filter-select-color">
                         <li v-for="(item, index) in colorList" :key="index" :class="{ selected: item.isActive }"
-                            @click="toggleActiveRadio(index, colorList); handleFilterList('colors', item.color)"
+                            @click="toggleActiveRadio(index, colorList); handleFilterList('colors', item)"
                             class="filter-select-color__item">
                             <div class="filter-select-color__button" :style="{ backgroundColor: item.hexCode }"></div>
                             <label class="filter-select-color__label">
@@ -213,7 +219,7 @@ const toggleActiveRadio = (index, list) => {
                         <li v-for="(item, index) in purposeList" :key="index" class="filter-select-material__item"
                             :class="{ selected: item.isActive }" @click="toggleActive(index, purposeList)">
                             <div class="filter-select-material__checkbox">
-                                <input type="checkbox" value="false" @click="handleFilterList('purposes', item.name)">
+                                <input type="checkbox" value="false" @click="handleFilterList('purposes', item)">
                                 <label>{{ item.name }}</label>
                             </div>
                         </li>
@@ -368,6 +374,7 @@ input {
 }
 
 .filter-select-size__button {
+    width: 66px;
     padding: 0.375rem 1.5rem;
     margin-right: 8px;
     display: flex;
