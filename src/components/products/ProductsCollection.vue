@@ -8,10 +8,21 @@ const productStore = useProductStore()
 
 const products = ref([]);
 
+const filteredProducts = computed(() => {
+    return products.value.filter((product) => {
+        return product.type === activeTypes.value.find((type) => type === product.type);
+    });
+});
+
+
+const activeTypes = computed(() => {
+    return productStore.filterList.types.map((type) => (type.name))
+});
+
 const productPerRow = 'col-3';
 
 const productSize = computed(() => {
-    let size = products.value.length;
+    let size = filteredProducts.value.length;
     productStore.setProductCount(size);
     return size;
 });
@@ -19,10 +30,26 @@ const productSize = computed(() => {
 const retrieveProducts = async () => {
     try {
         products.value = await ProductService.getAll();
+        filteredProducts.value = [1, 2, 3, 4];
     } catch (error) {
         console.log(error);
     }
 };
+
+// const retrieveFilteredProductsByTypes = async () => {
+//     try {
+//         filteredProducts.value = await ProductService.findProductsByTypes(["SHIRTS", "PANTS"]);
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
+
+const removeAllTypesFilter = (filtersList) => {
+    filtersList.forEach((filter) => {
+        filter.isActive = false;
+    });
+    filtersList.length = 0;
+}
 
 const removeTypeFilter = (filter) => {
     filter.isActive = false;
@@ -45,22 +72,7 @@ const retrieveAllProductDetails = async (productId) => {
         const detailsList = { 'details': productDetails };
         Object.keys(detailsList || {})
         Object.assign(product, detailsList);
-        // productColors.value = _.uniqWith(productDetails.value.map(({ color, imageLinks, colorImage }) =>
-        //     ({ color, imageLinks, colorImage })
-        // ), _.isEqual);
-        // productsByColor.value = productDetails.value.filter((detail) =>
-        //     (detail.color === productColors.value.at(0).color));
-        // productSizes.value = _.uniqWith(productsByColor.value.map(({ size }) =>
-        //     ({ size })
-        // ), _.isEqual);
-        // productSizes.value = productSizes.value.map((item) => {
-        //     const matchedSize = sizes.find((size) => size.size === item.size);
-        //     if (matchedSize) {
-        //         return matchedSize;
-        //     } else {
-        //         return item;
-        //     }
-        // })
+        
     } catch (error) {
         console.log(error);
     }
@@ -69,6 +81,7 @@ const retrieveAllProductDetails = async (productId) => {
 const refreshList = async () => {
     await retrieveProducts();
     mapAllDetailsToProduct();
+    // retrieveFilteredProductsByTypes();
 };
 
 refreshList();
@@ -88,7 +101,7 @@ refreshList();
                             </button>
                         </div>
 
-                        <a href="https://www.coolmate.me/collections?sort=new" id="removeAllFilterSelected"
+                        <a @click.prevent="removeAllTypesFilter(productStore.filterList.types)" href="" id="removeAllFilterSelected"
                             style="color: rgb(47, 90, 207); margin-left: 12px;">
                             Xóa lọc
                         </a>
@@ -124,7 +137,7 @@ refreshList();
                 <div class="collection-products__wrapper">
                     <div class="collection-products__content">
                         <div class="collection-products__grid row">
-                            <ProductCard v-for="product in products" :product="product" :gridCol="productPerRow" />
+                            <ProductCard v-for="product in filteredProducts" :product="product" :gridCol="productPerRow" />
                         </div>
                     </div>
                 </div>

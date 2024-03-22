@@ -27,5 +27,8 @@ class ProductService {
     async delete(id) {
         return (await this.api.delete(`/${id}`)).data;
     }
+    async findProductsByTypes(types) {
+        return (await this.api.get("/filtered/type")).data;
+    }
 }
 export default new ProductService();

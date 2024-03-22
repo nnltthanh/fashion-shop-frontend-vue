@@ -124,6 +124,13 @@ const filtersList = {
     purposes: ref([]),
 };
 
+const removeAllTypesFilter = (filtersList) => {
+    filtersList.forEach((filter) => {
+        filter.isActive = false;
+    });
+    filtersList.length = 0;
+}
+
 const handleFilterList = (category, filter) => {
     if (typeof filtersList[category].value == 'string' || filtersList[category].value instanceof String) {
         filtersList[category].value = filter;
@@ -162,7 +169,7 @@ productStore.setFilterList(filtersList);
                     {{ productStore.productCount }} kết quả
                 </div>
                 <div class="collection-left-filter__empty" style="">
-                    <a href="https://www.coolmate.me/collections?sort=new" id="removeAllFilterSticky">
+                    <a @click.prevent="removeAllTypesFilter(filtersList.types.value)" href="https://www.coolmate.me/collections?sort=new" id="removeAllFilterSticky">
                         Xóa lọc
                     </a>
                 </div>
