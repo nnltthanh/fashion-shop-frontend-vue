@@ -1,22 +1,3 @@
-<script setup lang="ts">
-import { ref, onMounted, inject } from 'vue';
-import CartService from "@/services/cart.service";
-
-const { cartService }: { cartService: CartService } = inject('cartService')!;
-
-const isLoggedIn = ref(false);
-
-onMounted(() => {
-    // Kiểm tra localStorage để xác định trạng thái đăng nhập
-    const loggedIn = localStorage.getItem('account');
-    if (loggedIn) {
-        isLoggedIn.value = true;
-    } else {
-        isLoggedIn.value = false;
-    }
-});
-</script>
-
 <template>
     <header class="header">
         <nav class="navbar navbar-expand-sm">
@@ -111,7 +92,10 @@ onMounted(() => {
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
+import CartService from "@/services/cart.service";
+
+const { cartService }: { cartService: CartService } = inject('cartService')!;
 
 const isLoggedIn = ref(false);
 
