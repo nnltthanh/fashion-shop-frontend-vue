@@ -20,7 +20,6 @@
     "bootstrap": "^5.3.3",
     "bootstrap-vue": "^2.23.1",
     "cors": "^2.8.5",
-    "dvhcvn": "^1.1.20240201",
     "jquery": "^3.7.1",
     "lodash": "^4.17.21",
     "pinia": "^2.1.7",

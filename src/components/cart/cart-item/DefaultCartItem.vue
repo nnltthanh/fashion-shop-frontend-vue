@@ -42,10 +42,6 @@ const isChecked = ref(false);
 const quantityRef = ref(props.cartDetail.quantity);
 const productDetail = ref(props.cartDetail.productDetail);
 
-// setTimeout(() => {
-//   cartService.total.value += Math.floor(props.cartDetail.total * (100 - props.cartDetail.productDetail?.product.salePercent) / 100000) * 1000;
-// }, 100);
-
 const increaseQuantity = async () => {
   if (Number(productDetail.value.quantity) > Number(quantityRef.value)) {
     quantityRef.value = Number(quantityRef.value) + 1;
@@ -114,7 +110,7 @@ const formattedSalePrice = computed(() => {
 
 const deleteItem = async () => {
   (await cartService.deleteCartDetail(props.cartDetail.id));
-  
+
   if (quantityRef.value != 0) {
     let salePrice = props.cartDetail.total * (1 - props.cartDetail.productDetail.product.salePercent / 100);
     salePrice = Math.floor(salePrice / 1000);
@@ -180,14 +176,9 @@ const addToOrder = (event) => {
     <div class="cart-item-thumbnail">
       <div class="cart-item-thumbnail-image">
         <div class="cart-item-thumbnail-block">
-          <img :src="productDetail.imageLinks?.split(', ')[0].toString()" :alt="productDetail.product.name.toString()"
-            style="opacity: 1" />
+          <img :src="productDetail.imageLinks?.split(', ')[0].toString().replace('width=80,height=80', 'width=300,height=442')" :alt="productDetail.product.name.toString()"
+            style="opacity: 1">
 
-          <!-- <div class="cart-item-multiselect">
-            <label for="select65798ace52b8b42f52482b67a90e7f17" class="custom-checkbox-label"><span
-                class="custom-checkbox"><input type="checkbox" id="select65798ace52b8b42f52482b67a90e7f17" />
-                <span class="checkmark active"></span></span></label>
-          </div> -->
         </div>
       </div>
     </div>
@@ -195,8 +186,9 @@ const addToOrder = (event) => {
       <div class="cart-item-content-wrapper">
         <div class="cart-item-content-inner" style="opacity: 1">
           <h3 class="cart-item-title">
-            <a href="/product/quan-ut-jogger-da-nang-co-gian" target="_blank">{{ productDetail.product.name.toString()
-              }}</a>
+            <router-link :to="{name: 'product', params: { id: productDetail.product.id.toString() }}" class="header_actions_button-link">
+              {{ productDetail.product.name.toString() }}</router-link>
+            <!-- <a href="/product/quan-ut-jogger-da-nang-co-gian" target="_blank"></a> -->
           </h3>
           <div class="cart-item-variant"> {{ productDetail.color.toString() }} / {{ productDetail.size.toString() }}
           </div>

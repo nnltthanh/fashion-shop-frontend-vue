@@ -1,6 +1,4 @@
 <script lang="ts">
-import data from "@/assets/data/dvhcvn.json";
-import { findLevel1ByName } from "dvhcvn";
 import { onMounted, ref, type Ref, inject } from "vue";
 import CartService from '@/services/cart.service';
 
@@ -19,15 +17,17 @@ export default {
     const showCityDropdown = ref(false);
     const showDistrictDropdown = ref(false);
     const showVillageDropdown = ref(false);
+    const showShippingServiceDropdown = ref(false);
 
     const activeCityIndex = ref<number | null>(null);
     const activeDistrictIndex = ref<number | null>(null);
     const activeVillageIndex = ref<number | null>(null);
+    const activeShippingServiceIndex = ref<number | null>(null);
 
-    const activeCity = ref("Chọn Tỉnh / Thành");
-    const activeDistrict = ref("Chọn Quận / Huyện");
-    const activeVillage = ref("Chọn Phường / Xã");
-
+    const activeCity = ref<{ name: string, id: number }>({ name: "Chọn Tỉnh / Thành", id: -1 });
+    const activeDistrict = ref<{ name: string, id: number }>({ name: "Chọn Quận / Huyện", id: -1 });
+    const activeVillage = ref<{ name: string, id: number, code: number }>({ name: "Chọn Phường / Xã", id: -1, code: -1 });
+    const activeShippingService = ref<any>({ short_name: "Chọn dịch vụ vận chuyển" });
 
     let orderShipment: Shipment = {
       shipCost: 30000,
@@ -44,22 +44,23 @@ export default {
 
     const customerInfo = JSON.parse(localStorage.getItem('account')!);
 
-    if (customerInfo.province) {
-      activeCity.value = customerInfo.province
-    }
+    // if (customerInfo.province) {
+    //   activeCity.value.name = customerInfo.province
+    // }
 
-    if (customerInfo.province) {
-      activeDistrict.value = customerInfo.district
-    }
+    // if (customerInfo.district) {
+    //   activeDistrict.value.name = customerInfo.district
+    // }
 
-    if (customerInfo.province) {
-      activeVillage.value = customerInfo.ward
-    }
+    // if (customerInfo.ward) {
+    //   activeVillage.value.name = customerInfo.ward
+    // }
 
-    var cities: string[] = [];
-    const districts: Ref<string[]> = ref<string[]>([]);
+    var cities: { name: string, id: number }[] = [];
+    const districts: Ref<{ name: string, id: number }[]> = ref<{ name: string, id: number }[]>([]);
     var districtsFullInfo: any[] = [];
-    const villages: Ref<string[]> = ref<string[]>([]);
+    const villages: Ref<{ name: string, id: number, code: number }[]> = ref<{ name: string, id: number, code: number }[]>([]);
+    const shippingServices: Ref<any[]> = ref([]);
 
     const setActiveCity = (index: number) => {
       activeCityIndex.value = index;
@@ -73,50 +74,121 @@ export default {
       activeVillageIndex.value = index;
     };
 
-    const toggleCityDropdown = () => {
+    const setActiveShippingService = (index: number) => {
+      activeShippingServiceIndex.value = index;
+    };
+
+    const toggleCityDropdown = async () => {
       showCityDropdown.value = !showCityDropdown.value;
 
-      if (activeCityIndex.value == null && activeCity.value != "Chọn Tỉnh / Thành") return;
+      if (activeCityIndex.value == null && activeCity.value.name != "Chọn Tỉnh / Thành") return;
 
       if (!showCityDropdown.value) {
         activeCity.value = cities[activeCityIndex.value!];
-        districts.value = findLevel1ByName(activeCity.value)!.children!.sort()
-          .map((d) => d.name);
-        districtsFullInfo = findLevel1ByName(activeCity.value)!
-          .children!.sort()
-          .map((d) => d.children);
+
+        let response = (await cartService.getDistrict(activeCity.value.id)).data.data.map(
+          res => { return { name: res.DistrictName, id: res.DistrictID } }
+        );
+
+        districts.value = response;
+        districts.value.sort(sortByName);
+
       }
     };
 
-    const toggleDistrictDropdown = () => {
+    const toggleDistrictDropdown = async () => {
       if (districts.value.length === 0) return;
       showDistrictDropdown.value = !showDistrictDropdown.value;
 
-      if (activeDistrictIndex.value == null && activeDistrict.value != "Chọn Quận / Huyện") return;
+      if (activeDistrictIndex.value == null && activeDistrict.value.name != "Chọn Quận / Huyện") return;
 
       if (!showDistrictDropdown.value) {
         activeDistrict.value = districts.value[activeDistrictIndex.value!];
-        villages.value = districtsFullInfo[activeDistrictIndex.value!].map(
-          (d) => d.name
+
+        let response = (await cartService.getWard(activeDistrict.value.id)).data.data.map(
+          res => { return { name: res.WardName, id: res.WardID, code: res.WardCode } }
         );
+
+        villages.value = response;
+        villages.value.sort(sortByName);
+
       }
     };
 
-    const toggleVillageDropdown = () => {
+    const toggleVillageDropdown = async () => {
       if (activeDistrictIndex.value === null) return;
       showVillageDropdown.value = !showVillageDropdown.value;
 
-      if (activeVillageIndex.value == null && activeVillage.value != "Chọn Phường / Xã") return;
+      if (activeVillageIndex.value == null && activeVillage.value.name != "Chọn Phường / Xã") return;
 
       if (!showVillageDropdown.value) {
         activeVillage.value = villages.value[activeVillageIndex.value!];
+        let response = await cartService.getShippingService(1572, activeDistrict.value.id); // 1572 : Quận Ninh Kiều
+
+        shippingServices.value = response.data.data;
+        console.log(shippingServices.value[0].service_id)
+
+        let feeResponse = await cartService.getShipCost(1572, "550113", shippingServices.value[0].service_id, activeDistrict.value.id, activeVillage.value.code);
+
+        console.log("fee: ", feeResponse.data.data.total);
+
+        cartService.shipCost.value = feeResponse.data.data.total;
+        cartService.subTotal.value = cartService.total.value + cartService.shipCost.value - cartService.discount.value;
+
       }
     };
 
-    onMounted(() => {
-      data.forEach((city) => cities.push(city.name));
-      cities.sort();
+    const toggleShippingServiceDropdown = async () => {
+
+      showShippingServiceDropdown.value = !showShippingServiceDropdown.value;
+
+      if (activeShippingServiceIndex.value === null) return;
+
+      if (activeShippingServiceIndex.value == null && activeShippingService.value.short_name != "Chọn dịch vụ vận chuyển") return;
+
+      if (!showShippingServiceDropdown.value) {
+        activeShippingService.value = shippingServices.value[activeShippingServiceIndex.value!];
+        console.log(activeShippingService.value)
+      }
+
+      let response = await cartService.getShipCost(1572, "550113", activeShippingService.value.service_id, activeDistrict.value.id, activeVillage.value.code);
+
+      console.log("fee: ", response.data.data.total);
+
+      cartService.shipCost.value = response.data.data.total;
+      cartService.subTotal.value = cartService.total.value + cartService.shipCost.value - cartService.discount.value;
+
+    };
+
+    onMounted(async () => {
+      // data.forEach((city) => cities.push(city.name));
+      const response = await cartService.getCity();
+
+      response.data.data.forEach(city => {
+        let maxLength = 0;
+        let cityWithFullTitle = '';
+        city.NameExtension.forEach(province => {
+          if (province.length > maxLength) {
+            maxLength = province.length;
+            cityWithFullTitle = province;
+          }
+        });
+        cities.push({ name: cityWithFullTitle, id: city.ProvinceID })
+      });
+      cities.sort(sortByName);
     });
+
+    const sortByName = (a, b) => {
+      if (a.name > b.name) {
+        return 1;
+      }
+
+      if (a.name < b.name) {
+        return -1;
+      }
+
+      return 0;
+    }
 
     return {
       customerInfo,
@@ -135,6 +207,11 @@ export default {
       activeCity,
       activeDistrict,
       activeVillage,
+      showShippingServiceDropdown,
+      shippingServices,
+      activeShippingService,
+      toggleShippingServiceDropdown,
+      setActiveShippingService
     };
   },
 };
@@ -177,13 +254,13 @@ export default {
           <div @click="toggleCityDropdown" id="vs1-combobox" role="combobox" :aria-expanded="showCityDropdown"
             aria-owns="vs1-listbox" aria-label="Search for option" class="vs-dropdown-toggle">
             <div class="vs-selected-options">
-              <span class="vs-selected"> {{ activeCity }}</span>
+              <span class="vs-selected"> {{ activeCity.name }}</span>
               <input aria-autocomplete="list" aria-labelledby="vs1-combobox" aria-controls="vs1-listbox" type="search"
                 autocomplete="off" class="vs-search" />
               <ul class="city-list" v-show="showCityDropdown" id="vs1-listbox" role="listbox" aria-label="cities">
                 <li v-for="(city, index) in cities" class="city-option" role="option" :id="'city-' + index"
                   @mouseover="setActiveCity(index)">
-                  {{ city }}
+                  {{ city.name }}
                 </li>
               </ul>
             </div>
@@ -213,14 +290,14 @@ export default {
           <div @click="toggleDistrictDropdown" id="vs2-combobox" role="combobox" :aria-expanded="showDistrictDropdown"
             aria-owns="vs2-listbox" aria-label="Search for option" class="vs-dropdown-toggle">
             <div class="vs-selected-options">
-              <span class="vs-selected"> {{ activeDistrict }}</span>
+              <span class="vs-selected"> {{ activeDistrict.name }}</span>
               <input aria-autocomplete="list" aria-labelledby="vs2-combobox" aria-controls="vs2-listbox" type="search"
                 autocomplete="off" class="vs-search" />
               <ul class="district-list" v-show="showDistrictDropdown" id="vs2-listbox" role="listbox"
                 aria-label="districts">
                 <li v-for="(district, index2) in districts" class="district-option" role="option"
                   :id="'district-' + index2" @mouseover="setActiveDistrict(index2)" :key="index2">
-                  {{ district }}
+                  {{ district.name }}
                 </li>
               </ul>
             </div>
@@ -249,14 +326,14 @@ export default {
           <div @click="toggleVillageDropdown" id="vs3-combobox" role="combobox" :aria-expanded="showVillageDropdown"
             aria-owns="vs3-listbox" aria-label="Search for option" class="vs-dropdown-toggle">
             <div class="vs-selected-options">
-              <span class="vs-selected"> {{ activeVillage }}</span>
+              <span class="vs-selected"> {{ activeVillage.name }}</span>
               <input aria-autocomplete="list" aria-labelledby="vs3-combobox" aria-controls="vs3-listbox" type="search"
                 autocomplete="off" class="vs-search" />
               <ul class="village-list" v-show="showVillageDropdown" id="vs3-listbox" role="listbox"
                 aria-label="villages">
                 <li v-for="(village, index) in villages" class="village-option" role="option" :id="'village-' + index"
                   @mouseover="setActiveVillage(index)">
-                  {{ village }}
+                  {{ village.name }}
                 </li>
               </ul>
             </div>
@@ -282,6 +359,38 @@ export default {
         </div>
       </div>
     </div>
+    <!-- <div class="grid">
+      <div class="grid-column">
+        <div dir="auto" class="v-select vue-select vs--single vs--searchable" name="shipping-service"
+          id="shipping-service">
+          <div @click="toggleShippingServiceDropdown" id="vs4-combobox" role="combobox"
+            :aria-expanded="showShippingServiceDropdown" aria-owns="vs4-listbox" aria-label="Search for option"
+            class="vs-dropdown-toggle">
+            <div class="vs-selected-options">
+              <span class="vs-selected"> {{ activeShippingService.short_name }}</span>
+              <input aria-autocomplete="list" aria-labelledby="vs4-combobox" aria-controls="vs4-listbox" type="search"
+                autocomplete="off" class="vs-search" />
+              <ul class="shipping-service-list" v-show="showShippingServiceDropdown" id="vs4-listbox" role="listbox"
+                aria-label="shippingServices">
+                <li v-for="(shippingService, index) in shippingServices" class="shipping-service-option" role="option"
+                  :id="'shipping-service-' + index" @mouseover="setActiveShippingService(index)">
+                  {{ shippingService.short_name }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="vs-actions">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="10" role="presentation"
+                class="vs-open-indicator">
+                <path
+                  d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z">
+                </path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
     <div class="grid">
       <div class="grid-column">
         <input type="text" name="cnote" placeholder="Ghi chú thêm (Ví dụ: Giao hàng giờ hành chính)"
@@ -533,7 +642,8 @@ export default {
 
 .city-list,
 .district-list,
-.village-list {
+.village-list,
+.shipping-service-list {
   display: block;
   background-color: white;
   z-index: 99;
@@ -546,7 +656,8 @@ export default {
 
 .city-option,
 .district-option,
-.village-option {
+.village-option,
+.shipping-service-option {
   margin: 2px 0px 2px;
   font-size: 14px;
   padding-bottom: 2px;
@@ -556,7 +667,8 @@ export default {
 
 .city-option:hover,
 .district-option:hover,
-.village-option:hover {
+.village-option:hover,
+.shipping-service-option:hover {
   background-color: #333;
   color: #fff;
 }
