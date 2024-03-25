@@ -92,7 +92,8 @@ onMounted(() => {
                     <ul class="dropdown-menu">
                         <li><router-link to="/account/info" class="dropdown-item">Thông tin tài khoản</router-link>
                         </li>
-                        <li v-if="isLoggedIn"><router-link to="/login" class="dropdown-item">Đăng xuất</router-link>
+                        <li v-if="isLoggedIn" @click="logOut()"><router-link to="/login" class="dropdown-item">Đăng
+                                xuất</router-link>
                         </li>
                         <li v-if="!isLoggedIn"><router-link to="/login" class="dropdown-item">Đăng nhập</router-link>
                         </li>
@@ -108,6 +109,29 @@ onMounted(() => {
         </nav>
     </header>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+
+const isLoggedIn = ref(false);
+
+const logOut = () => {
+    // Xóa tài khoản khỏi localStorage
+    localStorage.removeItem('account');
+    // Đặt trạng thái đăng nhập về false
+    isLoggedIn.value = false;
+}
+
+onMounted(() => {
+    // Kiểm tra localStorage để xác định trạng thái đăng nhập
+    const loggedIn = localStorage.getItem('account');
+    if (loggedIn) {
+        isLoggedIn.value = true;
+    } else {
+        isLoggedIn.value = false;
+    }
+});
+</script>
 
 <style>
 .visible {

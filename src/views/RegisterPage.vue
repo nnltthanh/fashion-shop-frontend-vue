@@ -64,18 +64,15 @@ const register = async (data) => {
     try {
         // Băm mật khẩu trước khi gửi đi
         const hashedPassword = await bcrypt.hash(data.password, 10);
-
         console.log('Registration data:', {
             account: data.name,
             password: hashedPassword,
         });
-
         // Sử dụng hashedPassword thay vì data.password khi gửi đi
         const response = await axios.post(`http://localhost:8080/customers/register`, {
             account: data.name,
             password: hashedPassword,
         });
-
         console.log(response.data);
         router.push('/login');
     } catch (error) {
