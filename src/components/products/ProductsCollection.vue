@@ -20,7 +20,7 @@ const filteredProducts = computed(() => {
         return value !== null && value !== undefined;
     });
 
-    if (!isInitialized) {
+    if (!isInitialized || Object.keys(productStore.filterList).length === 0) {
         result = products.value;
     } else {
         result = products.value.filter((product) => {
