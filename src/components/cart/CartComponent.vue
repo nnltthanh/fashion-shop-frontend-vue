@@ -6,7 +6,7 @@
 
       <div v-if="cartItems.length > 0">
         <div class="cart-items-header">
-          <span>Mô tả sản phẩm</span>
+          <span style="margin-left: 24px;">Mô tả sản phẩm</span>
           <span>Số lượng</span>
           <span>Giá</span>
         </div>
@@ -94,7 +94,7 @@ const cartItems = ref<CartDetailObject[]>([]);
 const setup = async () => {
   await cartService.getCart();
   cartItems.value = cartService.cartItems?._rawValue;
-  cartService.cartDetailsToOrder.value = cartItems?._rawValue.map(item => item.id);
+  // cartService.cartDetailsToOrder.value = cartItems?._rawValue.map(item => item.id);
 
   setTimeout(() => {
     cartService.subTotal.value = Number(cartService.total.value) + Number(cartService.shipCost.value) | 0; // checkkk

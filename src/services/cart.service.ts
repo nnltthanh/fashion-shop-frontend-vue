@@ -11,6 +11,7 @@ class CartService {
     public discount?;
     public subTotal?;
     public customerId!: number;
+    public cartQuantity;
 
     constructor() {
         this.cartItems = ref<number[]>([]);
@@ -20,6 +21,7 @@ class CartService {
         this.total = ref<number>(0);
         this.discount = ref<number>(0);
         this.subTotal = ref<number>(0);
+        this.cartQuantity = ref<number>(0);
         if (localStorage.getItem('account')) {
             this.customerId = JSON.parse(localStorage.getItem('account')!).id || 0;
         }
@@ -28,7 +30,7 @@ class CartService {
     public async getCart() {
         try {
             const baseUri = this.getBaseUri();
-            const response = await axios.get<CartDetailObject>(`${baseUri}/customers/${this.customerId}/cart`);
+            const response = await axios.get<CartDetailObject[]>(`${baseUri}/customers/${this.customerId}/cart`);
             this.cartItems.value = response.data;
 
             // this.subTotal.value = 0;
@@ -36,9 +38,13 @@ class CartService {
             // this.cartItems._rawValue.forEach(element => {
             //     this.subTotal.value += element.total;
             // });
+            this.cartQuantity.value = 0;
 
             this.subTotal.value = this.total.value + this.shipCost.value - this.discount.value;
-
+            response.data?.forEach(element => {
+                this.cartQuantity.value += element.quantity;
+            });
+            
             return response.data;
         } catch (error) {
             console.error(error);
@@ -52,6 +58,7 @@ class CartService {
             data.total = this.subTotal.value;
             const response = await axios.post(`${baseUri}/customers/${this.customerId}/orders`, data);
             this.orderId.value = response.data.id;
+            
             return response.data;
         } catch (error) {
             console.error(error);
@@ -65,7 +72,8 @@ class CartService {
             productDetail: productDetail,
             quantity: quantity
         }
-        return axios.post(`${baseUri}/customers/${this.customerId}/cart`, cartDetail);
+        this.cartQuantity.value += quantity;
+        return await axios.post(`${baseUri}/customers/${this.customerId}/cart`, cartDetail);
     }
 
     async addCartDetailToOrder_payment(data, paymentOption) {
@@ -73,9 +81,17 @@ class CartService {
 
             const newOrder = await this.createOrder(data);
             this.orderId.value = newOrder.id;
+            
+            const shipment = this.createShipment(JSON.parse(localStorage.getItem('orderShipment')!));
 
             if (paymentOption == "vnpay") {
                 return (await this.paymentByVNPay(this.orderId.value));
+            }
+
+            if (paymentOption == "COD") {
+                (await this.paymentByCOD(this.orderId.value));
+                (await this.addOrderToSuccessful(this.orderId.value));
+                window.location.href = "http://localhost:8081/account/orders";
             }
 
             return true;
@@ -106,6 +122,26 @@ class CartService {
         });
     }
 
+    async paymentByCOD(orderId: Number) {
+        const baseUri = this.getBaseUri();
+        let data = {
+            amount: this.subTotal.value,
+            method: "COD",
+            status: "COD"
+        }
+
+        localStorage.setItem('amount', this.subTotal.value);
+
+        localStorage.setItem('cartDetails', this.cartDetailsToOrder.value.toString());
+
+        return axios.post(`${baseUri}/payment/${orderId}/cod`, data, {
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "*/*",
+            }
+        });
+    }
+
     async addOrderToSuccessful(orderId: number) {
         const baseUri = this.getBaseUri();
 
@@ -125,8 +161,14 @@ class CartService {
 
         localStorage.removeItem('amount');
 
+        // update payment
         await axios.put(`${baseUri}/customers/${this.customerId}/orders/${this.orderId.value}`, data);
 
+    }
+
+    async createShipment(data) {
+        const baseUri = this.getBaseUri();
+        return (await axios.post(`${baseUri}/shipment/${this.orderId.value}`, data)).data;
     }
 
     async deleteCartDetail(cartDetailId) {
@@ -163,6 +205,7 @@ class CartService {
 const cartService = new CartService();
 console.log(cartService)
 export const provideCartService = () => {
+    cartService.getCart();
     return {
         cartService,
     };

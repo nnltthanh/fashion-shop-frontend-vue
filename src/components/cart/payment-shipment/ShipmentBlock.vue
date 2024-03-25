@@ -1,10 +1,21 @@
 <script lang="ts">
 import data from "@/assets/data/dvhcvn.json";
 import { findLevel1ByName } from "dvhcvn";
-import { onMounted, ref, type Ref } from "vue";
+import { onMounted, ref, type Ref, inject } from "vue";
+import CartService from '@/services/cart.service';
+
+
+export type Shipment = {
+  shipCost: number,
+  method: string,
+  status: string,
+}
+
 
 export default {
   setup() {
+    const { cartService }: { cartService: CartService } = inject('cartService')!;
+
     const showCityDropdown = ref(false);
     const showDistrictDropdown = ref(false);
     const showVillageDropdown = ref(false);
@@ -17,7 +28,33 @@ export default {
     const activeDistrict = ref("Chọn Quận / Huyện");
     const activeVillage = ref("Chọn Phường / Xã");
 
-    const customerInfo = JSON.parse(localStorage.getItem('account'));
+
+    let orderShipment: Shipment = {
+      shipCost: 30000,
+      method: "road",
+      status: "pending"
+    }
+
+    if (localStorage.getItem('orderShipment') != null) {
+      orderShipment = JSON.parse(localStorage.getItem('orderShipment')!);
+    } else {
+      console.log(JSON.stringify(orderShipment))
+      localStorage.setItem('orderShipment', JSON.stringify(orderShipment));
+    }
+
+    const customerInfo = JSON.parse(localStorage.getItem('account')!);
+
+    if (customerInfo.province) {
+      activeCity.value = customerInfo.province
+    }
+
+    if (customerInfo.province) {
+      activeDistrict.value = customerInfo.district
+    }
+
+    if (customerInfo.province) {
+      activeVillage.value = customerInfo.ward
+    }
 
     var cities: string[] = [];
     const districts: Ref<string[]> = ref<string[]>([]);
@@ -38,6 +75,9 @@ export default {
 
     const toggleCityDropdown = () => {
       showCityDropdown.value = !showCityDropdown.value;
+
+      if (activeCityIndex.value == null && activeCity.value != "Chọn Tỉnh / Thành") return;
+
       if (!showCityDropdown.value) {
         activeCity.value = cities[activeCityIndex.value!];
         districts.value = findLevel1ByName(activeCity.value)!.children!.sort()
@@ -52,6 +92,8 @@ export default {
       if (districts.value.length === 0) return;
       showDistrictDropdown.value = !showDistrictDropdown.value;
 
+      if (activeDistrictIndex.value == null && activeDistrict.value != "Chọn Quận / Huyện") return;
+
       if (!showDistrictDropdown.value) {
         activeDistrict.value = districts.value[activeDistrictIndex.value!];
         villages.value = districtsFullInfo[activeDistrictIndex.value!].map(
@@ -63,6 +105,9 @@ export default {
     const toggleVillageDropdown = () => {
       if (activeDistrictIndex.value === null) return;
       showVillageDropdown.value = !showVillageDropdown.value;
+
+      if (activeVillageIndex.value == null && activeVillage.value != "Chọn Phường / Xã") return;
+
       if (!showVillageDropdown.value) {
         activeVillage.value = villages.value[activeVillageIndex.value!];
       }
@@ -116,12 +161,13 @@ export default {
     </div>
     <div class="grid">
       <div class="grid-column">
-        <input type="email" name="email" placeholder="Email" v-model="customerInfo.email" class="form-control custom-cursor-default-hover" />
+        <input type="email" name="email" placeholder="Email" v-model="customerInfo.email"
+          class="form-control custom-cursor-default-hover" />
       </div>
       <div class="grid-column">
         <div class="address-block">
-          <input type="text" name="address" v-model="customerInfo.address" placeholder="Địa chỉ (ví dụ: 103 Vạn Phúc, phường Vạn Phúc)"
-            autocomplete="off" class="form-control" />
+          <input type="text" name="address" v-model="customerInfo.address"
+            placeholder="Địa chỉ (ví dụ: 103 Vạn Phúc, phường Vạn Phúc)" autocomplete="off" class="form-control" />
         </div>
       </div>
     </div>

@@ -30,18 +30,21 @@ export type ProductDetailObject = {
 }
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
+cartService.cartDetailsToOrder.value = []
+
 const props = defineProps<{
   cartDetail: CartDetailObject,
 }>();
 
 const isVisible = ref(true);
+const isChecked = ref(false);
 
 const quantityRef = ref(props.cartDetail.quantity);
 const productDetail = ref(props.cartDetail.productDetail);
 
-setTimeout(() => {
-  cartService.total.value += Math.floor(props.cartDetail.total * (100 - props.cartDetail.productDetail?.product.salePercent) / 100000) * 1000;
-}, 100);
+// setTimeout(() => {
+//   cartService.total.value += Math.floor(props.cartDetail.total * (100 - props.cartDetail.productDetail?.product.salePercent) / 100000) * 1000;
+// }, 100);
 
 const increaseQuantity = () => {
   if (Number(productDetail.value.quantity) > Number(quantityRef.value)) {
@@ -53,15 +56,19 @@ const increaseQuantity = () => {
     salePrice = Math.floor(salePrice / 1000);
     salePrice *= 1000;
 
-    cartService.total.value += Number(salePrice);
-    cartService.subTotal.value += Number(salePrice);
-    console.log(cartService.total.value, salePrice);
+    if (isChecked.value) {
+      cartService.total.value += Number(salePrice);
+      cartService.subTotal.value += Number(salePrice);
+      cartService.cartQuantity.value++;
+      console.log(cartService.total.value, salePrice);
+    }
+
   }
 };
 
 const decreaseQuantity = async () => {
   if (Number(quantityRef.value) > 0) {
-    
+
     if (Number(quantityRef.value) == 1) {
       deleteItem();
     }
@@ -75,9 +82,12 @@ const decreaseQuantity = async () => {
     salePrice = Math.floor(salePrice / 1000);
     salePrice *= 1000;
 
-    cartService.total.value -= Number(salePrice);
-    cartService.subTotal.value -= Number(salePrice);
-    console.log(cartService.total.value, salePrice);
+    if (isChecked.value) {
+      cartService.total.value -= Number(salePrice);
+      cartService.subTotal.value -= Number(salePrice);
+      cartService.cartQuantity.value--;
+      console.log(cartService.total.value, salePrice);
+    }
 
   }
 };
@@ -105,39 +115,71 @@ const deleteItem = async () => {
     salePrice = Math.floor(salePrice / 1000);
     salePrice *= 1000;
 
-    cartService.total.value -= salePrice;
-    cartService.subTotal.value -= salePrice;
-    quantityRef.value = 0;
+    if (isChecked.value) {
+      cartService.total.value -= salePrice;
+      cartService.subTotal.value -= salePrice;
+      cartService.cartQuantity.value -= quantityRef.value as number;
+      quantityRef.value = 0;
 
-    if (cartService.total.value < 0) {
-      cartService.total.value = 0;
+      if (cartService.total.value < 0) {
+        cartService.total.value = 0;
+      }
+
+      cartService.cartDetailsToOrder.value.pop(props.cartDetail.id)
+      const regularArray = Object.keys(cartService.cartDetailsToOrder.value).map((key) => cartService.cartDetailsToOrder.value[Number(key)]);
+
+      cartService.cartDetailsToOrder.value = regularArray;
     }
-    
-    cartService.cartDetailsToOrder.value.pop(props.cartDetail.id)
-    const regularArray = Object.keys(cartService.cartDetailsToOrder.value).map((key) => cartService.cartDetailsToOrder.value[Number(key)]);
-
-    cartService.cartDetailsToOrder.value = regularArray;
   }
 
   isVisible.value = false;
 
 }
 
+const addToOrder = (event) => {
+  isChecked.value = event.target.checked;
+  console.log('Checked:', isChecked);
+
+  let cartDetailPrice = Math.floor(props.cartDetail.total * (100 - props.cartDetail.productDetail?.product.salePercent) / 100000) * 1000;
+
+  if (isChecked.value) {
+    cartService.cartDetailsToOrder.value.push(props.cartDetail.id);
+    setTimeout(() => {
+      cartService.total.value += cartDetailPrice;
+      cartService.subTotal.value += cartDetailPrice;
+    }, 100);
+  } else {
+    cartService.cartDetailsToOrder.value.pop(props.cartDetail.id);
+    setTimeout(() => {
+      cartService.total.value -= cartDetailPrice;
+      cartService.subTotal.value -= cartDetailPrice;
+    }, 100);
+  }
+
+  console.log("add to order", cartService.cartDetailsToOrder._rawValue)
+}
+
 </script>
 
 <template>
   <div class="cart-item" v-if="isVisible">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" :checked="false"
+        @change="addToOrder($event)">
+      <label class="form-check-label" for="flexCheckDefault">
+      </label>
+    </div>
     <div class="cart-item-thumbnail">
       <div class="cart-item-thumbnail-image">
         <div class="cart-item-thumbnail-block">
-          <img :src="productDetail.imageLinks?.split(',')[0].toString()" :alt="productDetail.product.name.toString()"
+          <img :src="productDetail.imageLinks?.split(', ')[0].toString()" :alt="productDetail.product.name.toString()"
             style="opacity: 1" />
 
-          <div class="cart-item-multiselect">
+          <!-- <div class="cart-item-multiselect">
             <label for="select65798ace52b8b42f52482b67a90e7f17" class="custom-checkbox-label"><span
                 class="custom-checkbox"><input type="checkbox" id="select65798ace52b8b42f52482b67a90e7f17" />
-                <span class="checkmark"></span></span></label>
-          </div>
+                <span class="checkmark active"></span></span></label>
+          </div> -->
         </div>
       </div>
     </div>
@@ -341,14 +383,14 @@ img:not(.home-banner) {
   padding: 0;
 }
 
-.cart-item-multiselect .checkmark {
+/* .cart-item-multiselect .checkmark {
   border-bottom: 4px solid #2f5acf;
   border-right: 4px solid #2f5acf;
   width: 12px;
   height: 20px;
-}
+} */
 
-.custom-checkbox .checkmark {
+/* .custom-checkbox .checkmark {
   transform: translate(-50%, -63%) rotate(45deg);
   border-bottom: 3px solid #2f5acf;
   border-right: 3px solid #2f5acf;
@@ -357,11 +399,12 @@ img:not(.home-banner) {
   border-radius: 0;
   background-color: transparent;
   cursor: pointer;
-}
+} */
 
 .custom-checkbox .checkmark,
 .custom-radio .checkmark {
-  display: none;
+  /* display: none; */
+  z-index: 100;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -582,6 +625,12 @@ input {
   color: #242424;
   padding: 0;
   cursor: pointer;
+}
+
+.checkmark-toggle {
+  width: 40px;
+  height: 40px;
+  background-color: #2f5acf;
 }
 </style>
 import { number } from 'yup';

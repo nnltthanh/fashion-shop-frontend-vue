@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
+import CartService from "@/services/cart.service";
+
+const { cartService }: { cartService: CartService } = inject('cartService')!;
 
 const isLoggedIn = ref(false);
 
@@ -99,7 +102,7 @@ onMounted(() => {
                     <router-link to="/cart" class="header_actions_button-link">
                         <i class="fa-solid fa-cart-shopping"></i>
                     </router-link>
-                    <span class="cart-count">0</span>
+                    <span class="cart-count"> {{ cartService.cartQuantity }}</span>
                 </div>
             </div>
         </nav>
@@ -166,7 +169,7 @@ header {
     background-color: rgb(10 10 10);
     height: 83px;
     padding: 0 64px;
-    z-index: 9;
+    z-index: 999;
     width: 100% !important;
 }
 

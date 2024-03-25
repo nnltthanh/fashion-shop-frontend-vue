@@ -39,7 +39,7 @@ setTimeout(async () => {
                 <div v-for="(orderDetail, idx) in orderDetails" :key="idx" class="order-item">
                     <div class="order-item-thumbnail">
                         <a href="#" target="_blank"><img
-                                :src="orderDetail.productDetail.imageLinks?.split(',')[0].toString()"
+                                :src="orderDetail.productDetail.imageLinks?.split(', ')[0].toString()"
                                 :alt="orderDetail.productDetail.product.name.toString()" />
                         </a>
                     </div>
