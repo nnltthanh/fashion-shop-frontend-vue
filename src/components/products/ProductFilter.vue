@@ -66,7 +66,7 @@ const colorList = reactive([
         isActive: false
     },
     {
-        color: 'Xanh navy',
+        color: 'Xanh Navy',
         hexCode: '#125799',
         isActive: false
     },
@@ -131,8 +131,22 @@ const removeAllTypesFilter = (filtersList) => {
     filtersList.length = 0;
 }
 
+const removeAllFilter = (filtersList) => {
+    Object.keys(filtersList).forEach(key => {
+        if (!Array.isArray(filtersList[key])) {
+            filtersList[key].isActive = 'false';
+            filtersList[key] = {};
+        } else {
+            filtersList[key].forEach((filter) => {
+                filter.isActive = false;
+            });
+            filtersList[key].length = 0;
+        }
+    })
+}
+
 const handleFilterList = (category, filter) => {
-    if (typeof filtersList[category].value == 'string' || filtersList[category].value instanceof String) {
+    if (!Array.isArray(filtersList[category].value)) {
         filtersList[category].value = filter;
     } else {
         let index = filtersList[category].value.indexOf(filter);
@@ -169,7 +183,7 @@ productStore.setFilterList(filtersList);
                     {{ productStore.productCount }} kết quả
                 </div>
                 <div class="collection-left-filter__empty" style="">
-                    <a @click.prevent="removeAllTypesFilter(filtersList.types.value)" href="https://www.coolmate.me/collections?sort=new" id="removeAllFilterSticky">
+                    <a @click.prevent="removeAllFilter(filtersList)" href="https://www.coolmate.me/collections?sort=new" id="removeAllFilterSticky">
                         Xóa lọc
                     </a>
                 </div>

@@ -9,14 +9,54 @@ const productStore = useProductStore()
 const products = ref([]);
 
 const filteredProducts = computed(() => {
-    return products.value.filter((product) => {
-        return product.type === activeTypes.value.find((type) => type === product.type);
+    let result;
+    const isInitialized = Object.values(productStore.filterList).some(value => {
+        if (Array.isArray(value)) {
+            return value.length > 0;
+        }
+        if (typeof value === 'string') {
+            return value.trim() !== '';
+        }
+        return value !== null && value !== undefined;
     });
+
+    if (!isInitialized) {
+        result = products.value;
+    } else {
+        result = products.value.filter((product) => {
+            // if (activeTypes.value.includes(product.type)) {
+            if (activeTypes.value.length > 0 && activeSizes.value.length === 0 && activeColor.value === '') {
+                return product.details.some(detail => activeTypes.value.includes(detail.product.type));
+            } else if (activeTypes.value.length > 0 && activeSizes.value.length > 0 && activeColor.value === '') {
+                return product.details.some(detail => activeTypes.value.includes(detail.product.type) && activeSizes.value.includes(detail.size));
+            } else if (activeTypes.value.length > 0 && activeSizes.value.length === 0 && activeColor.value !== '') {
+                return product.details.some(detail => activeTypes.value.includes(detail.product.type) && activeColor.value.color === detail.color);
+            } else if (activeTypes.value.length === 0 && activeSizes.value.length > 0 && activeColor.value === '') {
+                return product.details.some(detail => activeSizes.value.includes(detail.size));
+            } else if (activeTypes.value.length === 0 && activeSizes.value.length === 0 && activeColor.value !== '') {
+                return product.details.some(detail => detail.color === activeColor.value.color);
+            } else if (activeTypes.value.length === 0 && activeSizes.value.length > 0 && activeColor.value !== '') {
+                return product.details.some(detail => activeSizes.value.includes(detail.size) && detail.color === activeColor.value.color);
+            } else if (activeTypes.value.length > 0 && activeSizes.value.length > 0 && activeColor.value !== '') {
+                return product.details.some(detail => activeTypes.value.includes(detail.product.type) && activeSizes.value.includes(detail.size) && detail.color === activeColor.value.color);
+            }
+            return product;
+        })
+    }
+    return result;
 });
 
 
 const activeTypes = computed(() => {
-    return productStore.filterList.types.map((type) => (type.name))
+    return productStore.filterList.types.map((type) => (type.name));
+});
+
+const activeSizes = computed(() => {
+    return productStore.filterList.sizes.map((item) => { return (item.size).trim() });
+});
+
+const activeColor = computed(() => {
+    return productStore.filterList.colors;
 });
 
 const productPerRow = 'col-3';
@@ -44,11 +84,18 @@ const retrieveProducts = async () => {
 //     }
 // };
 
-const removeAllTypesFilter = (filtersList) => {
-    filtersList.forEach((filter) => {
-        filter.isActive = false;
-    });
-    filtersList.length = 0;
+const removeAllFilter = (filtersList) => {
+    Object.keys(filtersList).forEach(key => {
+        if (!Array.isArray(filtersList[key])) {
+            filtersList[key].isActive = 'false';
+            filtersList[key] = {};
+        } else {
+            filtersList[key].forEach((filter) => {
+                filter.isActive = false;
+            });
+            filtersList[key].length = 0;
+        }
+    })
 }
 
 const removeTypeFilter = (filter) => {
@@ -72,7 +119,7 @@ const retrieveAllProductDetails = async (productId) => {
         const detailsList = { 'details': productDetails };
         Object.keys(detailsList || {})
         Object.assign(product, detailsList);
-        
+
     } catch (error) {
         console.log(error);
     }
@@ -101,8 +148,8 @@ refreshList();
                             </button>
                         </div>
 
-                        <a @click.prevent="removeAllTypesFilter(productStore.filterList.types)" href="" id="removeAllFilterSelected"
-                            style="color: rgb(47, 90, 207); margin-left: 12px;">
+                        <a @click.prevent="removeAllFilter(productStore.filterList)" href=""
+                            id="removeAllFilterSelected" style="color: rgb(47, 90, 207); margin-left: 12px;">
                             Xóa lọc
                         </a>
                     </div>
@@ -137,7 +184,8 @@ refreshList();
                 <div class="collection-products__wrapper">
                     <div class="collection-products__content">
                         <div class="collection-products__grid row">
-                            <ProductCard v-for="product in filteredProducts" :product="product" :gridCol="productPerRow" />
+                            <ProductCard v-for="product in filteredProducts" :product="product"
+                                :gridCol="productPerRow" />
                         </div>
                     </div>
                 </div>

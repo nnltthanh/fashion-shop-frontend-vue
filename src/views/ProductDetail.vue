@@ -204,10 +204,10 @@ const retrieveAllProductDetails = async (productId) => {
 
 const retrieveProductDetail = async (productId, id) => {
     try {
-        let detailId = id;
-        if (productDetails.value[0] !== undefined) {
-            detailId = productDetails.value[0].id;
-        }
+        // let detailId = id;
+        // if (productDetails.value[0] !== undefined) {
+        let detailId = productDetails.value[0].id;
+        // }
         productDetailActive.value = await ProductService.getDetail(productId, detailId);
         activeColor.value = {
             'color': productDetailActive.value.color,
