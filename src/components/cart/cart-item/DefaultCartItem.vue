@@ -46,11 +46,13 @@ const productDetail = ref(props.cartDetail.productDetail);
 //   cartService.total.value += Math.floor(props.cartDetail.total * (100 - props.cartDetail.productDetail?.product.salePercent) / 100000) * 1000;
 // }, 100);
 
-const increaseQuantity = () => {
+const increaseQuantity = async () => {
   if (Number(productDetail.value.quantity) > Number(quantityRef.value)) {
     quantityRef.value = Number(quantityRef.value) + 1;
     props.cartDetail.total += productDetail.value.product.price;
     props.cartDetail.quantity++;
+
+    await cartService.updateCartDetail(props.cartDetail);
 
     let salePrice = productDetail.value.product.price * (1 - props.cartDetail.productDetail.product.salePercent / 100);
     salePrice = Math.floor(salePrice / 1000);
@@ -77,6 +79,8 @@ const decreaseQuantity = async () => {
     props.cartDetail.total -= productDetail.value.product.price;
 
     props.cartDetail.quantity--;
+
+    await cartService.updateCartDetail(props.cartDetail);
 
     let salePrice = productDetail.value.product.price * (1 - props.cartDetail.productDetail.product.salePercent / 100);
     salePrice = Math.floor(salePrice / 1000);
@@ -110,22 +114,27 @@ const formattedSalePrice = computed(() => {
 
 const deleteItem = async () => {
   (await cartService.deleteCartDetail(props.cartDetail.id));
+  
   if (quantityRef.value != 0) {
     let salePrice = props.cartDetail.total * (1 - props.cartDetail.productDetail.product.salePercent / 100);
     salePrice = Math.floor(salePrice / 1000);
     salePrice *= 1000;
 
+    cartService.cartItems.value.pop(props.cartDetail.id);
+
+    cartService.cartQuantity.value -= quantityRef.value as number;
+    quantityRef.value = 0;
+
     if (isChecked.value) {
       cartService.total.value -= salePrice;
       cartService.subTotal.value -= salePrice;
-      cartService.cartQuantity.value -= quantityRef.value as number;
-      quantityRef.value = 0;
 
       if (cartService.total.value < 0) {
         cartService.total.value = 0;
       }
 
-      cartService.cartDetailsToOrder.value.pop(props.cartDetail.id)
+      cartService.cartDetailsToOrder.value.pop(props.cartDetail.id);
+
       const regularArray = Object.keys(cartService.cartDetailsToOrder.value).map((key) => cartService.cartDetailsToOrder.value[Number(key)]);
 
       cartService.cartDetailsToOrder.value = regularArray;
@@ -156,7 +165,6 @@ const addToOrder = (event) => {
     }, 100);
   }
 
-  console.log("add to order", cartService.cartDetailsToOrder._rawValue)
 }
 
 </script>

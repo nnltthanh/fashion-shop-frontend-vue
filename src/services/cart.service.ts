@@ -191,11 +191,10 @@ class CartService {
         return axios.get(`${baseUri}/customers/${this.customerId}/orders/${orderId}/details`);
     }
 
-    // getAllCartDetailsToOrder(cartDetailIds, subTotal) {
-    //     this.cartDetailsToOrder.value = cartDetailIds;
-    //     this.subTotal.value = subTotal;
-    //     console.log(this.subTotal.value)
-    // }
+    async updateCartDetail(cartDetail) {
+        const baseUri = this.getBaseUri();
+        return axios.put(`${baseUri}/customers/${this.customerId}/cart/${cartDetail.id}`, cartDetail);
+    }
 
     getBaseUri() {
         return import.meta.env.VITE_BACKEND_BASE_URL;
