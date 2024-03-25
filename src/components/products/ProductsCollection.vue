@@ -87,7 +87,7 @@ const retrieveProducts = async () => {
 const removeAllFilter = (filtersList) => {
     Object.keys(filtersList).forEach(key => {
         if (!Array.isArray(filtersList[key])) {
-            filtersList[key].isActive = 'false';
+            filtersList[key].isActive = false;
             filtersList[key] = {};
         } else {
             filtersList[key].forEach((filter) => {

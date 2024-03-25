@@ -54,7 +54,7 @@ const sizeList = reactive([
     },
 ]);
 
-const colorList = reactive([
+const colorList = ref([
     {
         color: 'Đen',
         hexCode: '#000',
@@ -132,15 +132,25 @@ const removeAllTypesFilter = (filtersList) => {
 }
 
 const removeAllFilter = (filtersList) => {
+    console.log(filtersList);
     Object.keys(filtersList).forEach(key => {
-        if (!Array.isArray(filtersList[key])) {
-            filtersList[key].isActive = 'false';
-            filtersList[key] = {};
+        if (!Array.isArray(filtersList[key].value)) {
+            console.log('Ok');
+            if (colorList.value.includes(filtersList[key].value)) {
+                colorList.value.forEach((item) => {
+                    if (item.color === filtersList[key].value.color) {
+                        item.isActive = false;
+                    }
+                });
+            }
+            filtersList[key].value.isActive = false;
+            filtersList[key].value = {};
+            
         } else {
-            filtersList[key].forEach((filter) => {
+            filtersList[key].value.forEach((filter) => {
                 filter.isActive = false;
             });
-            filtersList[key].length = 0;
+            filtersList[key].value.length = 0;
         }
     })
 }
