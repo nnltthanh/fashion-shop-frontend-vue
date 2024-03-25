@@ -54,9 +54,7 @@ const collectionList = [
     </div>
 
     <CareShare />
-
     <CollectionList />
-
     <CategoryList />
 
     <Footer />

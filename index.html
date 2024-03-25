@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
@@ -9,8 +8,7 @@
 
     <!-- Loại bỏ các trang không xuất hiện FChat -->
     <script>
-    if (!['/login', '/register', '/login/employee', '/employee', '/staff', ].includes(window.location.pathname)) {
-      // Load script Fchat.vn
+    if (!['/login', '/register', '/login/employee', '/employee', '/staff', '/manager', '/admin', '/senior-manager', ].includes(window.location.pathname)) {
       const script = document.createElement("script");
       script.type = "text/javascript";
       script.src =
@@ -32,5 +30,4 @@
     --bs-gutter-x: 0;
   }
 </style>
-
 </html>

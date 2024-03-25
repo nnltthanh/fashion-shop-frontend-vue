@@ -65,16 +65,22 @@ const login = async (data) => {
                 }
                 if (result) {
                     console.log('Mật khẩu khớp.');
-                    // Lưu thông tin tài khoản vào localStorage
-                    localStorage.setItem('account', JSON.stringify(response.data));
                     if (response.data.userType == 'staff') {
+                        // Lưu thông tin tài khoản vào localStorage
+                        localStorage.setItem('accountStaff', JSON.stringify(response.data));
                         router.push('/staff')
                     } else if (response.data.userType == 'manager') {
+                        // Lưu thông tin tài khoản vào localStorage
+                        localStorage.setItem('accountManager', JSON.stringify(response.data));
                         router.push('/manager')
                     } else if (response.data.userType == 'senior_manager') {
-                        router.push('/senior_manager')
+                        // Lưu thông tin tài khoản vào localStorage
+                        localStorage.setItem('accountSeniorManager', JSON.stringify(response.data));
+                        router.push('/senior-manager')
                     } else if (response.data.userType == 'admin') {
-                        router.push('admin')
+                        // Lưu thông tin tài khoản vào localStorage
+                        localStorage.setItem('accountAdmin', JSON.stringify(response.data));
+                        router.push('/admin')
                     }
 
                 } else {

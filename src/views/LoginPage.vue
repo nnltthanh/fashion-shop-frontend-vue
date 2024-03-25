@@ -14,6 +14,12 @@
       <span class="font-medium">Lỗi!</span> Các thông tin không trùng khớp. Vui lòng thử lại.
     </div>
 
+    <div v-if="isloggedInOK"
+      class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-100 text-green-700 p-6 text-center text-lg z-50 rounded-md"
+      role="alert">
+      <span class="font-medium">Đăng nhập thành công!</span>
+    </div>
+
     <div class="max-md:h-[250px] lg:flex-auto bg-[#191a24] flex items-center px-10">
       <img class="w-full h-full object-cover opacity-[35%]" src="../assets/img_login.jpg" alt="" />
     </div>
@@ -126,8 +132,9 @@ import CartService from '@/services/cart.service';
 
 const isLoginFailed = ref(false);
 const isWrongPass = ref(false);
+const isloggedInOK = ref(false);
 const router = useRouter();
-const cartService : { cartService: CartService } = inject('cartService')!;const userStore = useUserStore();
+const cartService: { cartService: CartService } = inject('cartService')!; const userStore = useUserStore();
 
 const login = async (data) => {
   try {
@@ -151,13 +158,20 @@ const login = async (data) => {
         }
         if (result) {
           console.log('Mật khẩu khớp.');
-          
+          isloggedInOK.value = true;
+          setTimeout(() => {
+            isloggedInOK.value = false;
+          }, 1500);
+
           // Lưu thông tin tài khoản vào localStorage
           cartService.customerId = response.data.id;
 
           localStorage.setItem('account', JSON.stringify(response.data));
           userStore.setUser(response.data);
-          router.push('/home');
+          setTimeout(() => {
+            router.push('/home');
+          }, 1500);
+
         } else {
           console.log('Mật khẩu không khớp.');
           isWrongPass.value = true;
