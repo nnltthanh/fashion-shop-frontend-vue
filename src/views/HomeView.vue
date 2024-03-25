@@ -1,5 +1,5 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref, computed, onMounted, inject } from 'vue';
 import Header from '@/components/common/Header.vue';
 import Carousel from '@/components/common/Carousel.vue';
 import Banner from '@/components/common/Banner.vue';
@@ -9,6 +9,12 @@ import CareShare from '@/components/common/CareShare.vue';
 import CollectionList from '@/components/common/CollectionList.vue';
 import CategoryList from '@/components/common/CategoryList.vue';
 import Footer from '@/components/common/Footer.vue';
+
+import CartService from "@/services/cart.service";
+
+const { cartService }: { cartService: CartService } = inject('cartService')!;
+
+cartService.getCart();
 
 const collectionList = [
     {

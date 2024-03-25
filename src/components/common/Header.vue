@@ -71,7 +71,7 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <ul class="dropdown-menu">
-                        <li><router-link to="/account/info" class="dropdown-item">Thông tin tài khoản</router-link>
+                        <li v-if="isLoggedIn"><router-link to="/account/info" class="dropdown-item">Thông tin tài khoản</router-link>
                         </li>
                         <li v-if="isLoggedIn" @click="logOut()"><router-link to="/login" class="dropdown-item">Đăng
                                 xuất</router-link>

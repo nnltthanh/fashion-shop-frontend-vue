@@ -165,12 +165,13 @@ const login = async (data) => {
 
           // Lưu thông tin tài khoản vào localStorage
           cartService.customerId = response.data.id;
-
+          console.log(cartService.customerId)
           localStorage.setItem('account', JSON.stringify(response.data));
+
           userStore.setUser(response.data);
           setTimeout(() => {
             router.push('/home');
-          }, 1500);
+          }, 1000);
 
         } else {
           console.log('Mật khẩu không khớp.');

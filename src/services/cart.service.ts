@@ -28,28 +28,29 @@ class CartService {
     }
 
     public async getCart() {
-        try {
-            const baseUri = this.getBaseUri();
-            const response = await axios.get<CartDetailObject[]>(`${baseUri}/customers/${this.customerId}/cart`);
-            this.cartItems.value = response.data;
-
-            // this.subTotal.value = 0;
-            this.total.value = 0;
-            // this.cartItems._rawValue.forEach(element => {
-            //     this.subTotal.value += element.total;
-            // });
-            this.cartQuantity.value = 0;
-
-            this.subTotal.value = this.total.value + this.shipCost.value - this.discount.value;
-            response.data?.forEach(element => {
-                this.cartQuantity.value += element.quantity;
-            });
-
-            return response.data;
-        } catch (error) {
-            console.error(error);
-            throw error;
+        const baseUri = this.getBaseUri();
+        if (localStorage.getItem('account')) {
+            this.customerId = JSON.parse(localStorage.getItem('account')!).id || 0;
         }
+
+        const response = await axios.get<CartDetailObject[]>(`${baseUri}/customers/${this.customerId}/cart`);
+        this.cartItems.value = response.data;
+
+        // this.subTotal.value = 0;
+        this.total.value = 0;
+        // this.cartItems._rawValue.forEach(element => {
+        //     this.subTotal.value += element.total;
+        // });
+        this.cartQuantity.value = 0;
+
+        this.subTotal.value = this.total.value + this.shipCost.value - this.discount.value;
+        response.data.forEach(element => {
+            this.cartQuantity.value += element.quantity;
+            console.log(this.cartQuantity._rawValue)
+        });
+
+        return response.data;
+
     }
 
     async createOrder(data) {
