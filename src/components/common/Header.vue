@@ -62,7 +62,7 @@
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </a>
                         <input class="header_actions_search-control" type="text" name="search" id="search-input"
-                            placeholder="Tìm kiếm sản phẩm..." @click="isSearchActive = true"/>
+                            placeholder="Tìm kiếm sản phẩm..." @click="isSearchActive = true" />
                     </label>
                 </div>
                 <div class="header_actions_button dropdown-center">
@@ -92,7 +92,7 @@
                         <div class="header-search__wrapper">
                             <label class="header-search__field">
                                 <input id="input-spotlight" type="text" name="search" placeholder="Tìm kiếm sản phẩm..."
-                                    autocomplete="off" class="header-search__control one-whole">
+                                    autocomplete="off" class="header-search__control one-whole" v-model="searchText">
                             </label>
                             <button class="homepage-search__close"
                                 style="top: 13px; right: -100px; width: unset; height: unset; z-index: 10;"><svg
@@ -111,7 +111,7 @@
                         <div class="spotlight-header-search__float">
                             <div class="spotlight-search-content is-active">
                                 <div class="spotlight-search-content__wrapper">
-                                    <div class="spotlight-search-content__inner is-active">
+                                    <div v-if="searchResultProducts.length > 0" class="spotlight-search-content__inner is-active">
                                         <div class="spotlight-search-content__topkeyword is-active">
                                             <div class="homepage-search__content one-whole" style="display: block;">
                                                 <h4 class="homepage-search__description" style="text-align: left;">
@@ -133,14 +133,14 @@
                                             <div>
                                                 <div class="grid-view grid--four-columns recent-product-list">
 
-                                                    <div v-for="(item, index) in recentViewProducts" :key="index"
+                                                    <div v-for="(item, index) in searchResultProducts" :key="index"
                                                         class="grid__column">
                                                         <router-link :to="{
-                                                                name: 'product',
-                                                                params: {
-                                                                    id: item.id,
-                                                                },
-                                                            }" :product-id="item.id" class="recent-product__item">
+                        name: 'product',
+                        params: {
+                            id: item.id,
+                        },
+                    }" :product-id="item.id" class="recent-product__item">
                                                             <div class="recent-product__thumbnail">
                                                                 <img loading="lazy" :src="item.imageData.base64String"
                                                                     :alt="item.name" class="home-banner">
@@ -155,6 +155,14 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div v-else class="spotlight-header-search is-active">
+                                        <div class="spotlight-header-search__suggestions">
+                                            <ul id="search-suggestions" class="search-suggestions"></ul>
+                                        </div>
+                                        <div class="spotlight-header-search__wrapper" style="justify-content: center;">
+                                            <div class="text--center"><i>Không tìm thấy kết quả phù hợp!</i></div>
                                         </div>
                                     </div>
                                 </div>
@@ -179,6 +187,12 @@ const isLoggedIn = ref(false);
 
 const isSearchActive = ref(false);
 
+const searchText = ref('');
+
+const handleViewWhenSearch = () => {
+
+}
+
 const logOut = () => {
     // Xóa tài khoản khỏi localStorage
     localStorage.removeItem('account');
@@ -187,6 +201,21 @@ const logOut = () => {
 }
 
 const products = ref([]);
+
+const searchResultProducts = computed(() => {
+    let regex = new RegExp('^.*' + searchText.value.toLowerCase().trim() + '.*$');
+    let from = "àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ",
+        to = "aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy";
+    if (searchText.value === '') {
+        return products.value.slice(0, 4);
+    }
+    return (products.value.filter((item) => {
+        // for (let i = 0, l = from.length; i < l; i++) {
+        //     item.name = item.name.replace(RegExp(from[i], "gi"), to[i]);
+        // }
+        return regex.test(item.name.toLowerCase());
+    })).slice(0, 4);
+});
 
 const recentViewProducts = computed(() => {
     return products.value.slice(0, 4);
@@ -302,6 +331,10 @@ a {
     width: 25%;
 }
 
+.text--center {
+    text-align: center;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -340,6 +373,12 @@ a {
 
 ul {
     padding-left: 0 !important;
+}
+
+@media (max-width: 1660px) {
+    .spotlight-header-search__wrapper {
+        padding: 0 80px;
+    }
 }
 
 header {
@@ -642,6 +681,42 @@ header {
 .spotlight-search-content__topkeyword.is-active {
     display: block;
 }
+
+.spotlight-header-search {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    z-index: 1;
+    display: none;
+    width: 100%;
+}
+
+.spotlight-header-search.is-active {
+    display: block;
+    opacity: 1;
+    pointer-events: visible;
+    visibility: visible;
+}
+
+.spotlight-header-search__suggestions {
+    display: flex;
+    align-content: center;
+    padding: 20px 80px;
+    border-bottom: 1px solid #e6e6e6;
+    margin-bottom: 30px;
+}
+
+.spotlight-header-search .search-suggestions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+}
+
+.spotlight-header-search__wrapper {
+    padding: 0 80px 25px;
+}
+
 
 .homepage-search__description {
     text-align: center;
