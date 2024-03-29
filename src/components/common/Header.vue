@@ -62,7 +62,7 @@
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </a>
                         <input class="header_actions_search-control" type="text" name="search" id="search-input"
-                            placeholder="Tìm kiếm sản phẩm..." />
+                            placeholder="Tìm kiếm sản phẩm..." @click="isSearchActive = true"/>
                     </label>
                 </div>
                 <div class="header_actions_button dropdown-center">
@@ -71,7 +71,8 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <ul class="dropdown-menu">
-                        <li v-if="isLoggedIn"><router-link to="/account/info" class="dropdown-item">Thông tin tài khoản</router-link>
+                        <li v-if="isLoggedIn"><router-link to="/account/info" class="dropdown-item">Thông tin tài
+                                khoản</router-link>
                         </li>
                         <li v-if="isLoggedIn" @click="logOut()"><router-link to="/login" class="dropdown-item">Đăng
                                 xuất</router-link>
@@ -86,18 +87,97 @@
                     </router-link>
                     <span class="cart-count"> {{ cartService.cartQuantity }}</span>
                 </div>
+                <div class="header-search" :class="isSearchActive ? 'is-active' : ''">
+                    <form action="" method="GET">
+                        <div class="header-search__wrapper">
+                            <label class="header-search__field">
+                                <input id="input-spotlight" type="text" name="search" placeholder="Tìm kiếm sản phẩm..."
+                                    autocomplete="off" class="header-search__control one-whole">
+                            </label>
+                            <button class="homepage-search__close"
+                                style="top: 13px; right: -100px; width: unset; height: unset; z-index: 10;"><svg
+                                    width="18" height="18" viewBox="0 0 22 22" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg" @click.prevent="isSearchActive = false">
+                                    <g opacity="0.6">
+                                        <path
+                                            d="M0.710153 1.39081C1.10215 0.719768 1.8828 0.603147 2.4538 1.13033L20.9665 18.2226C21.5375 18.7498 21.6826 19.7211 21.2906 20.3922V20.3922C20.8986 21.0632 20.118 21.1798 19.547 20.6526L1.03426 3.56039C0.463267 3.0332 0.318158 2.06185 0.710153 1.39081V1.39081Z"
+                                            fill="black"></path>
+                                        <path
+                                            d="M0.821701 20.5854C0.421822 19.9218 0.552504 18.9506 1.11359 18.4163L19.4354 0.967765C19.9965 0.433427 20.7755 0.538253 21.1754 1.2019V1.2019C21.5753 1.86555 21.4446 2.83671 20.8835 3.37105L2.56168 20.8196C2.00059 21.3539 1.22158 21.2491 0.821701 20.5854V20.5854Z"
+                                            fill="black"></path>
+                                    </g>
+                                </svg></button>
+                        </div>
+                        <div class="spotlight-header-search__float">
+                            <div class="spotlight-search-content is-active">
+                                <div class="spotlight-search-content__wrapper">
+                                    <div class="spotlight-search-content__inner is-active">
+                                        <div class="spotlight-search-content__topkeyword is-active">
+                                            <div class="homepage-search__content one-whole" style="display: block;">
+                                                <h4 class="homepage-search__description" style="text-align: left;">
+                                                    Từ khóa nổi bật ngày hôm nay
+                                                </h4>
+                                                <div class="homepage-search__buttons">
+                                                    <a href="#" class="homepage-search__button">Tập gym</a>
+                                                    <a href="#" class="homepage-search__button"> Áo Basic</a>
+                                                    <a href="#" class="homepage-search__button"> Excool</a>
+                                                    <a href="#" class="homepage-search__button"> Jeans</a>
+                                                    <a href="#" class="homepage-search__button"> Chạy bộ</a>
+                                                    <a href="#" class="homepage-search__button"> Gym</a>
+                                                    <a href="#" class="homepage-search__button"> Polo</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="spotlight-search-content__recentview is-active">
+                                            <h4>Sản phẩm đã xem gần đây</h4>
+                                            <div>
+                                                <div class="grid-view grid--four-columns recent-product-list">
+
+                                                    <div v-for="(item, index) in recentViewProducts" :key="index"
+                                                        class="grid__column">
+                                                        <router-link :to="{
+                                                                name: 'product',
+                                                                params: {
+                                                                    id: item.id,
+                                                                },
+                                                            }" :product-id="item.id" class="recent-product__item">
+                                                            <div class="recent-product__thumbnail">
+                                                                <img loading="lazy" :src="item.imageData.base64String"
+                                                                    :alt="item.name" class="home-banner">
+                                                            </div>
+
+                                                            <div class="recent-product__content">
+                                                                <p class="recent-product__title">
+                                                                    {{ item.name }}
+                                                                </p>
+                                                            </div>
+                                                        </router-link>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="spotlight-header-search__background" @click="isSearchActive = false"></div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </nav>
     </header>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, inject } from 'vue';
+import { ref, onMounted, inject, computed } from 'vue';
+import ProductService from "@/services/product.service";
 import CartService from "@/services/cart.service";
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
 
 const isLoggedIn = ref(false);
+
+const isSearchActive = ref(false);
 
 const logOut = () => {
     // Xóa tài khoản khỏi localStorage
@@ -106,7 +186,26 @@ const logOut = () => {
     isLoggedIn.value = false;
 }
 
+const products = ref([]);
+
+const recentViewProducts = computed(() => {
+    return products.value.slice(0, 4);
+})
+
+const retrieveProducts = async () => {
+    try {
+        products.value = await ProductService.getAll();
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const closeSearch = () => {
+
+};
+
 onMounted(() => {
+    retrieveProducts();
     // Kiểm tra localStorage để xác định trạng thái đăng nhập
     const loggedIn = localStorage.getItem('account');
     if (loggedIn) {
@@ -118,6 +217,51 @@ onMounted(() => {
 </script>
 
 <style>
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #231f20;
+    font-weight: 400;
+}
+
+.h4,
+h4 {
+    font-size: 17px;
+}
+
+img {
+    text-indent: -9999px;
+    color: transparent;
+    border-style: none;
+    vertical-align: middle;
+    max-width: 100%;
+    height: auto;
+}
+
+img.hover {
+    display: none;
+}
+
+a {
+    background-color: transparent;
+    text-decoration: none;
+    color: inherit;
+    transition: all .2s;
+}
+
+.mt-0 {
+    margin-top: 0;
+}
+
+.one-whole {
+    width: 100%;
+}
+
 .visible {
     visibility: visible;
     opacity: 1;
@@ -128,6 +272,34 @@ onMounted(() => {
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s 2s, opacity 2s linear;
+}
+
+.grid-view {
+    display: flex;
+    display: -webkit-flex;
+    -moz-flex-direction: row;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-left: -9px;
+    margin-right: -9px;
+    padding: 0;
+    position: relative;
+    float: none;
+}
+
+.grid__column {
+    position: relative;
+    box-sizing: border-box;
+    min-height: 1px;
+    vertical-align: top;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 9px;
+    width: 100%;
+}
+
+.grid--four-columns>.grid__column {
+    width: 25%;
 }
 
 @keyframes fadeIn {
@@ -176,7 +348,6 @@ header {
     display: flex;
     background-color: rgb(10 10 10);
     height: 83px;
-    padding: 0 64px;
     z-index: 999;
     width: 100% !important;
 }
@@ -192,6 +363,7 @@ header {
 }
 
 .navbar {
+    padding: 0 64px;
     --bs-navbar-padding-y: 0px !important;
 }
 
@@ -346,6 +518,193 @@ header {
     font-size: 10px;
     font-weight: 700;
     pointer-events: none;
+}
+
+.header-search {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    background-color: #fff;
+    transition: all .3s;
+}
+
+.header-search.is-active {
+    z-index: 10;
+    opacity: 1;
+    pointer-events: visible;
+    visibility: visible;
+}
+
+.header-search>form {
+    width: 100%;
+    height: 107px;
+    display: flex;
+    background: #fff;
+}
+
+.header-search__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 532px;
+    margin: 0 auto;
+    transition: all .3s;
+    padding-left: 16px;
+    padding-right: 16px;
+    position: relative;
+}
+
+.header-search__field {
+    flex: 1;
+    max-width: 100%;
+    transition: all .3s;
+    position: relative;
+}
+
+.header-search__control {
+    border: 0;
+    background-color: hsla(0, 0%, 83.1%, .4);
+    box-shadow: none;
+    height: 50px;
+    padding: 0 20px;
+    border-radius: 33px;
+}
+
+.homepage-search__close {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background-color: #0000;
+    border: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spotlight-header-search__float {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: visible;
+    transition: all .3s;
+    margin-top: 107px;
+}
+
+.spotlight-search-content {
+    border-bottom: 1px solid #d9d9d9;
+    display: none;
+    transition: all .2s;
+}
+
+.spotlight-search-content.is-active {
+    background: #fff;
+    display: block;
+    width: 1000px;
+    overflow: hidden;
+    border-radius: 10px;
+    margin: 10px auto 0;
+}
+
+.spotlight-search-content__wrapper {
+    position: relative;
+    min-height: 200px;
+    background-color: #fff;
+    z-index: 10;
+}
+
+.spotlight-search-content__inner {
+    display: none;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-direction: column;
+    row-gap: 50px;
+    padding: 50px 80px 20px;
+}
+
+.spotlight-search-content__inner.is-active {
+    display: flex;
+}
+
+.spotlight-search-content__topkeyword {
+    display: none;
+}
+
+.spotlight-search-content__topkeyword.is-active {
+    display: block;
+}
+
+.homepage-search__description {
+    text-align: center;
+    margin-bottom: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+.homepage-search__buttons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+}
+
+.homepage-search__button,
+.product-search {
+    display: flex;
+    align-items: center;
+}
+
+.homepage-search__button {
+    justify-content: center;
+    padding: 0.475rem 0.75rem;
+    border-radius: 1rem;
+    border: 1px solid #d9d9d9;
+    white-space: nowrap;
+    line-height: 1rem;
+    font-size: .75rem;
+}
+
+.spotlight-search-content__recentview {
+    width: 100%;
+    height: 422px;
+    display: none;
+}
+
+.spotlight-search-content__recentview.is-active {
+    display: block;
+}
+
+.spotlight-search-content__recentview .recent-product__thumbnail {
+    max-height: 280px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.spotlight-search-content__recentview h4 {
+    font-size: 17px;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #231f20;
+    font-weight: 400;
+}
+
+.spotlight-header-search__background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all .3s;
+    background: rgba(0, 0, 0, .6);
 }
 
 input {
