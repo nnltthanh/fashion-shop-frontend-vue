@@ -81,7 +81,6 @@ export type Review = {
 }
 
 const saveReview = async (orderDetail: OrderDetail, idx: number) => {
-    isReviewed(orderDetail.id);
     let orderDetailId = orderDetail.id;
     let productId = orderDetail.productDetail.product.id;
 
