@@ -227,15 +227,11 @@ const searchResultProducts = computed(() => {
     let from = "àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ",
         to = "aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy";
     if (searchText.value === '') {
-        productStore.setSearchText(searchText.value);
-        productStore.setSearchResults([]);
         return products.value.slice(0, 4);
     }
-    productStore.setSearchText(searchText.value);
-    productStore.setSearchResults((products.value.filter((item) => {
+    return (products.value.filter((item) => {
         return regex.test(item.name.toLowerCase());
-    })));
-    return productStore.searchResults.slice(0, 4);
+    })).slice(0, 4);
 });
 
 const recentViewProducts = computed(() => {

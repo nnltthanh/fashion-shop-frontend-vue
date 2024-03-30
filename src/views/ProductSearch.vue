@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onBeforeMount, onMounted } from 'vue';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
 import ProductCard from '@/components/products/ProductCard.vue';
@@ -9,13 +9,17 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
-const searchQuery = ref(route.query.q || '');
+const searchQuery = computed(() => {
+    return route.query.q || '';
+});
 
 const productStore = useProductStore()
 
 const products = ref([]);
 
 const productPerRow = 'col-2-4';
+
+const firstSearch = ref(true);
 
 const retrieveProducts = async () => {
     try {
@@ -25,11 +29,27 @@ const retrieveProducts = async () => {
     }
 };
 
+const searchResultProducts = computed(() => {
+    let regex = new RegExp('^.*' + searchQuery.value.toLowerCase().trim() + '.*$');
+    let from = "àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ",
+        to = "aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy";
+    if (searchQuery.value !== '') {
+        firstSearch.value = false;
+        return products.value.filter((item) => {
+            return regex.test(item.name.toLowerCase());
+        });
+    }
+});
+
 const refreshList = () => {
     retrieveProducts();
 };
 
-refreshList();
+
+onMounted(() => {
+    refreshList();
+})
+
 </script>
 
 <template>
@@ -142,16 +162,25 @@ refreshList();
                 </div>
             </div>
         </div>
-        <section class="search-listings">
+        <section v-if="searchResultProducts.length > 0 || !firstSearch" class="search-listings">
             <div class="search-results__container container--full">
                 <h1 class="search-listings__heading">
                     Kết quả
                 </h1>
                 <div class="grid-view grid--five-columns">
-                    <ProductCard v-for="product in products" :product="product" :gridCol="productPerRow" class="grid__column"/>
+                    <ProductCard v-for="product in searchResultProducts" :product="product" :gridCol="productPerRow"
+                        class="grid__column" />
                 </div>
             </div>
         </section>
+        <div v-else
+            style="display: flex; flex: 1 1 0%; justify-content: center; align-items: center; padding: 15px; text-align: center; margin-bottom: 30px">
+            <div>
+                <div>Không tìm thấy sản phẩm phù hợp theo yêu cầu của bạn!</div>
+                <div>Vui lòng <b><u><RouterLink to="/">quay lại trang chủ</RouterLink></u></b> để tiếp tục mua sắm bạn nhé!
+                </div>
+            </div>
+        </div>
     </main>
     <Footer />
 </template>

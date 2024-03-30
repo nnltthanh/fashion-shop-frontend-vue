@@ -3,12 +3,10 @@ import { defineStore } from 'pinia';
 export const useProductStore = defineStore('product', {
     state: () => ({
         allProducts: [],
-        searchResults: [],
         filterList: {},
         filteredType: null,
         activeIndex: -1,
         productCount: Number,
-        searchText: String,
     }),
     getters: {
 
