@@ -22,11 +22,11 @@
             </div>
             <transition name="fade">
                 <div v-if="showOrderDropdown">
-                    <div
+                    <div @click="clickCustomer()"
                         class="p-2.5 mt-3 flex items-center  ml-5 rounded-md px-4 duration-300 cursor-pointer hover:bg-orange-600 text-white">
                         <span class="text-[15px] ml-4 text-gray-200 font-bold">Khách hàng</span>
                     </div>
-                    <div
+                    <div @click="clickEmployee()"
                         class="p-2.5 mt-3 flex items-center  ml-5 rounded-md px-4 duration-300 cursor-pointer hover:bg-orange-600 text-white">
                         <span class="text-[15px] ml-4 text-gray-200 font-bold">Nhân viên</span>
                     </div>
@@ -65,9 +65,18 @@
                 </div>
             </div>
             <!-- Content -->
-            <div class="p-4 font-extrabold overflow-hidden">
+            <div class="px-4 pb-4 pt-2 font-extrabold overflow-hidden">
                 <div v-if="showPersonalInfo">
                     <PersonalInformation />
+                </div>
+                <div v-else-if="showUser">
+                    <AllUser />
+                </div>
+                <div v-else-if="showCustomer">
+                    <CustomerManagement />
+                </div>
+                <div v-else-if="showEmployee">
+                    <EmployeeManagement />
                 </div>
             </div>
         </div>
@@ -79,23 +88,46 @@ import { ref, onMounted, onBeforeMount } from 'vue';
 import axios from 'axios';
 import router from '@/router';
 import PersonalInformation from '@/components/admin/PersonalInformation.vue';
-
+import CustomerManagement from '@/components/admin/CustomerManagement.vue';
+import AllUser from '@/components/admin/AllUser.vue';
+import EmployeeManagement from '@/components/admin/EmployeeManagement.vue';
 
 const showSidebar = ref(false);
 const showPersonalInfo = ref(true);
-
-
+const showUser = ref(false);
+const showCustomer = ref(false);
+const showEmployee = ref(false);
 const showOrderDropdown = ref(false);
 
 const clickUserManagement = (section) => {
     if (section === 'user') {
         showOrderDropdown.value = !showOrderDropdown.value;
         showPersonalInfo.value = false;
+        showUser.value = true;
+        showCustomer.value = false;
+        showEmployee.value = false;
     }
 };
 
 const clickPersonalInfo = () => {
     showPersonalInfo.value = true;
+    showUser.value = false;
+    showCustomer.value = false;
+    showEmployee.value = false;
+}
+
+const clickEmployee = () => {
+    showPersonalInfo.value = false;
+    showUser.value = false;
+    showCustomer.value = false;
+    showEmployee.value = true;
+}
+
+const clickCustomer = () => {
+    showPersonalInfo.value = false;
+    showUser.value = false;
+    showCustomer.value = true;
+    showEmployee.value = false;
 }
 
 interface AccountInfo {
@@ -110,12 +142,10 @@ interface AccountInfo {
 
 const accountInfo = ref<AccountInfo | null>(null);
 const userInfo = ref<AccountInfo | null>(null);
-
 const isLoggedIn = ref(false);
 const isDataLoaded = ref(false);
 
 onBeforeMount(() => {
-    // Lấy thông tin tài khoản từ localStorage
     const storedAccount = localStorage.getItem('accountAdmin');
     if (storedAccount) {
         accountInfo.value = JSON.parse(storedAccount);
@@ -144,7 +174,6 @@ async function fetchUserInfo(username: string) {
 }
 
 const logOut = () => {
-    // Xóa tài khoản khỏi localStorage
     localStorage.removeItem('accountAdmin');
     isLoggedIn.value = false;
     router.push('/login/employee');

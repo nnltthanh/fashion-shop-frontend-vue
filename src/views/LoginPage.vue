@@ -7,19 +7,21 @@
       role="alert">
       <span class="font-medium">Lỗi!</span> Đăng nhập không thành công. Vui lòng thử lại.
     </div>
-
     <div v-if="isWrongPass"
       class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-100 text-red-700 p-6 text-center text-lg z-50 rounded-md"
       role="alert">
       <span class="font-medium">Lỗi!</span> Các thông tin không trùng khớp. Vui lòng thử lại.
     </div>
-
     <div v-if="isloggedInOK"
       class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-100 text-green-700 p-6 text-center text-lg z-50 rounded-md"
       role="alert">
       <span class="font-medium">Đăng nhập thành công!</span>
     </div>
-
+    <div v-if="islocked"
+      class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-100 text-red-700 p-6 text-center text-lg z-50 rounded-md"
+      role="alert">
+      <span class="font-medium">Tài khoản của bạn đã bị khoá do vi phạm chính sách.</span>
+    </div>
     <div class="max-md:h-[250px] lg:flex-auto bg-[#191a24] flex items-center px-10">
       <img class="w-full h-full object-cover opacity-[35%]" src="../assets/img_login.jpg" alt="" />
     </div>
@@ -55,43 +57,17 @@
               Đăng ký
             </RouterLink>
           </div>
-
           <div class="w-full flex  justify-center gap-3 mt-4">HOẶC </div>
-
           <div class="w-full flex gap-3 mt-4">
             <div class="flex justify-center w-full">
-              <button
-                class="social-button flex items-center bg-white border border-gray-300 rounded-lg shadow-md max-w-xs px-8 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                  viewBox="-0.5 0 48 48" version="1.1">
-                  <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                    <g id="Color-" transform="translate(-401.000000, -860.000000)">
-                      <g id="Google" transform="translate(401.000000, 860.000000)">
-                        <path
-                          d="M9.82727273,24 C9.82727273,22.4757333 10.0804318,21.0144 10.5322727,19.6437333 L2.62345455,13.6042667 C1.08206818,16.7338667 0.213636364,20.2602667 0.213636364,24 C0.213636364,27.7365333 1.081,31.2608 2.62025,34.3882667 L10.5247955,28.3370667 C10.0772273,26.9728 9.82727273,25.5168 9.82727273,24"
-                          id="Fill-1" fill="#FBBC05"> </path>
-                        <path
-                          d="M23.7136364,10.1333333 C27.025,10.1333333 30.0159091,11.3066667 32.3659091,13.2266667 L39.2022727,6.4 C35.0363636,2.77333333 29.6954545,0.533333333 23.7136364,0.533333333 C14.4268636,0.533333333 6.44540909,5.84426667 2.62345455,13.6042667 L10.5322727,19.6437333 C12.3545909,14.112 17.5491591,10.1333333 23.7136364,10.1333333"
-                          id="Fill-2" fill="#EB4335"> </path>
-                        <path
-                          d="M23.7136364,37.8666667 C17.5491591,37.8666667 12.3545909,33.888 10.5322727,28.3562667 L2.62345455,34.3946667 C6.44540909,42.1557333 14.4268636,47.4666667 23.7136364,47.4666667 C29.4455,47.4666667 34.9177955,45.4314667 39.0249545,41.6181333 L31.5177727,35.8144 C29.3995682,37.1488 26.7323182,37.8666667 23.7136364,37.8666667"
-                          id="Fill-3" fill="#34A853"> </path>
-                        <path
-                          d="M46.1454545,24 C46.1454545,22.6133333 45.9318182,21.12 45.6113636,19.7333333 L23.7136364,19.7333333 L23.7136364,28.8 L36.3181818,28.8 C35.6879545,31.8912 33.9724545,34.2677333 31.5177727,35.8144 L39.0249545,41.6181333 C43.3393409,37.6138667 46.1454545,31.6490667 46.1454545,24"
-                          id="Fill-4" fill="#4285F4"> </path>
-                      </g>
-                    </g>
-                  </g>
-                </svg>
-                <span>Đăng nhập với Google</span>
-              </button>
+              <GoogleLogin :callback="loginGG" prompt auto-login />
             </div>
           </div>
           <div class="w-full flex gap-3 mt-3">
             <div class="flex justify-center w-full">
               <button
-                class="social-button flex items-center bg-white border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                class="social-button flex items-center bg-white border border-gray-300 rounded shadow-md max-w-xs px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                <svg class="h-6 w-3 mr-2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                   viewBox="0 0 48 48" version="1.1">
                   <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                     <g id="Color-" transform="translate(-200.000000, -160.000000)" fill="#4460A0">
@@ -103,7 +79,8 @@
                     </g>
                   </g>
                 </svg>
-                <span>Đăng nhập với Facebook</span>
+                <span>Đăng nhập với Facebook
+                </span>
               </button>
             </div>
           </div>
@@ -133,6 +110,7 @@ import CartService from '@/services/cart.service';
 const isLoginFailed = ref(false);
 const isWrongPass = ref(false);
 const isloggedInOK = ref(false);
+const islocked = ref(false);
 const router = useRouter();
 const cartService: { cartService: CartService } = inject('cartService')!; const userStore = useUserStore();
 
@@ -142,17 +120,23 @@ const login = async (data) => {
       account: data.name,
       userId: data.id
     });
-
     // Sử dụng hashedPassword thay vì data.password khi gửi đi
     const response = await axios.post(`http://localhost:8080/customers/login`, {
       account: data.name,
     });
+    // console.log(response.data.locked + "aaaa")
 
     // Kiểm tra xem API có trả về dữ liệu hay không
     if (response.data) {
       const hashedPasswordFromAPI = response.data.password;
       bcrypt.compare(data.password, hashedPasswordFromAPI, (err, result) => {
-        if (err) {
+        if (response.data.locked) {
+          islocked.value = true;
+          setTimeout(() => {
+            islocked.value = false;
+          }, 1500);
+          return;
+        } else if (err) {
           console.error(err);
           return;
         }
@@ -192,6 +176,55 @@ const login = async (data) => {
     }, 5000);
   }
 };
+
+
+interface UserData {
+  name: string;
+  picture: string;
+  email: string;
+}
+
+const userData = ref<UserData | null>(null);
+
+
+import { decodeCredential } from 'vue3-google-login'
+const loginGG = async (response) => {
+  const result = decodeCredential(response.credential);
+  userData.value = result;
+  console.log("Handle the userData", userData.value.name);
+  try {
+    const response = await axios.post(`http://localhost:8080/customers/loginGoogle`, {
+      account: userData.value?.name,
+      avatar: userData.value?.picture,
+      email: userData.value?.email,
+    });
+
+    if (response.data) {
+      isloggedInOK.value = true;
+      setTimeout(() => {
+        isloggedInOK.value = false;
+      }, 1500);
+      cartService.customerId = response.data.id;
+      console.log(cartService.customerId)
+      localStorage.setItem('account', JSON.stringify(response.data));
+
+      userStore.setUser(response.data);
+      setTimeout(() => {
+        router.push('/home');
+      }, 1000);
+    } else {
+      console.error('Không có dữ liệu trả về từ API.');
+      console.error(response.status);
+
+    }
+  } catch (error) {
+    console.error(error);
+    isLoginFailed.value = true;
+    setTimeout(() => {
+      isLoginFailed.value = false;
+    }, 5000);
+  }
+}
 
 // Validate password have min 8, have number vs uppercase
 const { handleSubmit } = useForm({

@@ -7,11 +7,11 @@
                     0 }}
                 </div>
                 <div class="border-b-2 mt-2 border-neutral-200 dark:border-white/10"></div>
-                <div class="relative overflow-x-auto mb-2 shadow-md sm:rounded-lg" style="max-height: 470px;">
+                <div class=" mt-2 relative overflow-x-auto mb-2 shadow-md" style="max-height: 510px;">
                     <table class="w-full text-sm text-left rtl:text-right mb-2">
                         <thead
-                            class="fixed-header text-center text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b mt-2 border-neutral-200 dark:border-white/10">
-                            <tr>
+                            class="fixed-header text-center text-gray-700 dark:bg-gray-700 dark:text-gray-400 mt-2 border-neutral-200 dark:border-white/10">
+                            <tr class="bg-gray-300">
                                 <th scope="col" class="px-6 py-3">
                                     Mã đơn hàng
                                 </th>
@@ -74,7 +74,6 @@
                     "Chưa cập nhật" }}</td>
                                 <td class="px-6 py-4">{{ order.warehouseId !== undefined ? order.warehouseId :
                                     "Chưa cập nhật" }}</td>
-
                             </tr>
                         </tbody>
                     </table>
@@ -83,7 +82,6 @@
         </div>
     </div>
 </template>
-
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
@@ -106,13 +104,11 @@ interface Order {
 interface Customer {
     id: string;
 }
-
 interface OrderDetail {
     id: string;
     productDetail: ProductDetail;
     quantity: string
 }
-
 interface ProductDetail {
     id: string;
     quantity: string
@@ -156,7 +152,6 @@ function formatDate(dateString) {
     const minutes = date.getMinutes();
     const seconds = date.getSeconds();
 
-    // Định dạng lại chuỗi ngày theo định dạng mong muốn
     const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
     return formattedDate;
 }
