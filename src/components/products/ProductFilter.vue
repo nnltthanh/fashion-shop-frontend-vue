@@ -120,7 +120,7 @@ const purposeList = reactive([
 const filtersList = {
     types: ref([]),
     sizes: ref([]),
-    colors: ref(''),
+    colors: ref({}),
     purposes: ref([]),
 };
 

@@ -24,6 +24,12 @@ export const useProductStore = defineStore('product', {
         clearFilteredType() {
             this.filteredType = null; // Clear the currentProduct data
         },
+        setSearchText(text) {
+            this.searchText = text;
+        },
+        setSearchResults(results) {
+            this.searchResults = results;
+        },
         setActiveIndex(index) {
             this.activeIndex = index;
         },

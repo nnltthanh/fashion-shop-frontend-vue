@@ -16,7 +16,11 @@ const filteredProducts = computed(() => {
         }
         if (typeof value === 'string') {
             return value.trim() !== '';
+        } else if (typeof value === 'object' && value.constructor === Object) {
+            console.log((Object.keys(value)).length);
+            return (Object.keys(value)).length > 0;
         }
+
         return value !== null && value !== undefined;
     });
 
@@ -25,21 +29,30 @@ const filteredProducts = computed(() => {
     } else {
         result = products.value.filter((product) => {
             // if (activeTypes.value.includes(product.type)) {
-            if (activeTypes.value.length > 0 && activeSizes.value.length === 0 && activeColor.value === '') {
+            if (activeTypes.value.length > 0 && activeSizes.value.length === 0 && (Object.keys(activeColor.value).length === 0)) {
+                console.log(1);
                 return product.details.some(detail => activeTypes.value.includes(detail.product.type));
-            } else if (activeTypes.value.length > 0 && activeSizes.value.length > 0 && activeColor.value === '') {
+            } else if (activeTypes.value.length > 0 && activeSizes.value.length > 0 && (Object.keys(activeColor.value).length === 0)) {
+                console.log(2);
                 return product.details.some(detail => activeTypes.value.includes(detail.product.type) && activeSizes.value.includes(detail.size));
-            } else if (activeTypes.value.length > 0 && activeSizes.value.length === 0 && activeColor.value !== '') {
+            } else if (activeTypes.value.length > 0 && activeSizes.value.length === 0 && (Object.keys(activeColor.value).length > 0)) {
+                console.log(activeColor.value);
+                console.log(3)
                 return product.details.some(detail => activeTypes.value.includes(detail.product.type) && activeColor.value.color === detail.color);
-            } else if (activeTypes.value.length === 0 && activeSizes.value.length > 0 && activeColor.value === '') {
+            } else if (activeTypes.value.length === 0 && activeSizes.value.length > 0 && (Object.keys(activeColor.value).length === 0)) {
+                console.log(4)
                 return product.details.some(detail => activeSizes.value.includes(detail.size));
-            } else if (activeTypes.value.length === 0 && activeSizes.value.length === 0 && activeColor.value !== '') {
+            } else if (activeTypes.value.length === 0 && activeSizes.value.length === 0 && (Object.keys(activeColor.value).length > 0)) {
+                console.log(5)
                 return product.details.some(detail => detail.color === activeColor.value.color);
-            } else if (activeTypes.value.length === 0 && activeSizes.value.length > 0 && activeColor.value !== '') {
+            } else if (activeTypes.value.length === 0 && activeSizes.value.length > 0 && (Object.keys(activeColor.value).length > 0)) {
+                console.log(6)
                 return product.details.some(detail => activeSizes.value.includes(detail.size) && detail.color === activeColor.value.color);
-            } else if (activeTypes.value.length > 0 && activeSizes.value.length > 0 && activeColor.value !== '') {
+            } else if (activeTypes.value.length > 0 && activeSizes.value.length > 0 && (Object.keys(activeColor.value).length > 0)) {
+                console.log(7)
                 return product.details.some(detail => activeTypes.value.includes(detail.product.type) && activeSizes.value.includes(detail.size) && detail.color === activeColor.value.color);
             }
+            console.log(8)
             return product;
         })
     }
