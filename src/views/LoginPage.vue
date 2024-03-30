@@ -199,6 +199,13 @@ const loginGG = async (response) => {
       email: userData.value?.email,
     });
 
+    if (response.data.locked) {
+      islocked.value = true;
+      setTimeout(() => {
+        islocked.value = false;
+      }, 1500);
+      return;
+    }
     if (response.data) {
       isloggedInOK.value = true;
       setTimeout(() => {

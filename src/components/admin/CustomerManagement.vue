@@ -89,9 +89,6 @@
                         <th scope="col" class="px-4 py-3">
                             Địa chỉ
                         </th>
-                        <th scope="col" class="px-4 py-3">
-                            Mật khẩu
-                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -129,11 +126,7 @@
                         </td>
                         <td class="px-4 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px">
                             {{ customer.address ? customer.address :
-                        "Chưa cập nhật" }}
-                        </td>
-                        <td class="px-4 py-4">
-                            {{ customer.password ? customer.password :
-                            "Đăng nhập bằng Google hoặc FaceBook" }}
+                            "Chưa cập nhật" }}
                         </td>
                     </tr>
                 </tbody>
