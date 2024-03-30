@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMounted, ref, type Ref, inject } from "vue";
-import CartService from '@/services/cart.service';
+import { CartService } from '@/services/cart.service';
 
 
 export type Shipment = {

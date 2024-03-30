@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import type { CartDetailObject } from '@/components/cart/CartComponent.vue';
 
-class CartService {
+export class CartService {
     public cartItems;
     public orderId?;
     public cartDetailsToOrder?;
@@ -184,17 +184,17 @@ class CartService {
 
     async getAllOrders() {
         const baseUri = this.getBaseUri();
-        return axios.get(`${baseUri}/customers/${this.customerId}/orders`);
+        return await axios.get(`${baseUri}/customers/${this.customerId}/orders`);
     }
 
     async getOrderDetailsByOrderId(orderId) {
         const baseUri = this.getBaseUri();
-        return axios.get(`${baseUri}/customers/${this.customerId}/orders/${orderId}/details`);
+        return await axios.get(`${baseUri}/customers/${this.customerId}/orders/${orderId}/details`);
     }
 
     async updateCartDetail(cartDetail) {
         const baseUri = this.getBaseUri();
-        return axios.put(`${baseUri}/customers/${this.customerId}/cart/${cartDetail.id}`, cartDetail);
+        return await axios.put(`${baseUri}/customers/${this.customerId}/cart/${cartDetail.id}`, cartDetail);
     }
 
     async getCity() {
@@ -264,7 +264,7 @@ class CartService {
             "to_ward_code": toWardCode,
             "height": 50,
             "length": 20,
-            "weight": 200,
+            "weight": 10,
             "width": 20,
             "insurance_value": 10000,
             "cod_failed_amount": 2000,

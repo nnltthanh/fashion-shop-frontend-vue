@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, inject } from 'vue';
-import CartService from "@/services/cart.service";
+import { CartService } from "@/services/cart.service";
 import OrderCard from "./OrderCard.vue";
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
 
-const responseCode = ref(null);
+const responseCode = ref<any>(null);
 
-const getQueryParamByName = (name) => {
+const getQueryParamByName = (name: string) => {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(name);
 }
@@ -17,12 +17,11 @@ const orderItems = ref([]);
 // Call the function to get the value of the 'paramName' query parameter
 onMounted(async () => {
   orderItems.value = (await cartService.getAllOrders()).data;
-  console.log(orderItems._rawValue);
 
   responseCode.value = getQueryParamByName('vnp_ResponseCode');
   if (responseCode.value == '00') {
     console.log("Giao dịch thành công");
-    cartService.addOrderToSuccessful(getQueryParamByName('orderId'));
+    cartService.addOrderToSuccessful(+getQueryParamByName('orderId')!);
     window.location.href = "http://localhost:8081/account/orders"
   }
 });
@@ -45,7 +44,7 @@ onMounted(async () => {
         </div>
         <div class="orders-body mt-3">
           <div class="orders-wrapper">
-            <OrderCard v-for="(orderItem, idx) in orderItems.reverse()" :key="idx" :order="orderItem"/>
+            <OrderCard v-for="(orderItem, idx) in orderItems" :key="idx" :order="orderItem"/>
           </div>
         </div>
         <div id="loadingIndicator" class="loading-indicator">

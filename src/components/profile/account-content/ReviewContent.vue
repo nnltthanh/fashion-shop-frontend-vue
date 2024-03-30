@@ -1,3 +1,34 @@
+<script setup lang="ts">
+import type { OrderDetail } from '@/components/staff/OrderTable.vue';
+import type { CartService } from '@/services/cart.service';
+import { defineProps, inject, ref } from 'vue';
+import { ReviewService } from '@/services/review.service'
+import type { Review } from './OrderCard.vue';
+
+const { cartService }: { cartService: CartService } = inject('cartService')!;
+
+const props = defineProps<{
+    order: any
+}>();
+
+const VND = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+});
+
+const reviews = ref<Review[]>([]);
+const customerRate = ref<string[]>([]);
+const customerReview = ref<string[]>([]);
+
+let reviewService = new ReviewService();
+
+setTimeout(async () => {
+    reviews.value = (await reviewService.getAllReviewByCustomerId(cartService.customerId)).data;
+    console.log(reviews.value)
+}, 1000);
+
+
+</script>
 <template>
   <div class="account-content my-50">
     <div id="info-tab" class="account-info">
@@ -6,63 +37,25 @@
       <div>
         <div class="grid-column mt-3">
           <div class="reviews-listing-items">
-            <div class="reviews-listing-item">
+            <div class="reviews-listing-item" v-for="(review, index) in reviews">
               <div class="reviews-listing-content">
                 <div class="reviews-rating">
-                  <div class="reviews-rating-star is-full"></div>
-                  <div class="reviews-rating-star is-full"></div>
-                  <div class="reviews-rating-star is-full"></div>
-                  <div class="reviews-rating-star is-full"></div>
-                  <div class="reviews-rating-star is-full"></div>
+                  <div :class="['reviews-rating-star', review.rate >= 1 ? 'is-active' : '']"></div>
+                  <div :class="['reviews-rating-star', review.rate >= 2 ? 'is-active' : '']"></div>
+                  <div :class="['reviews-rating-star', review.rate >= 3 ? 'is-active' : '']"></div>
+                  <div :class="['reviews-rating-star', review.rate >= 4 ? 'is-active' : '']"></div>
+                  <div :class="['reviews-rating-star', review.rate == 5 ? 'is-active' : '']"></div>
+                  
                 </div>
                 <div class="reviews-order">
-                  <div class="order-item-title">Áo thun thể thao nam ProMax-S1</div>
-                  <div class="order-item-variant-label">Xanh Aqua / L</div>
+                  <div class="order-item-title"> {{ review.orderDetail.productDetail.product.name }}</div>
+                  <div class="order-item-variant-label">
+                    {{ review.orderDetail.productDetail.color }} / {{ review.orderDetail.productDetail.size }}
+                  </div>
                 </div>
                 <div class="reviews-listing-description">
                   <p>
-                    Okeee
-                  </p>
-                  <!-- <div
-                    class="reviews-listing-gallery"
-                    rel-script="product-gallery-popup"
-                  >
-                    <a
-                      href="#"
-                      class="reviews-listing-image"
-                      rel-script="product-lightbox-gallery"
-                      data-index="0"
-                      data-image="https://i.pinimg.com/564x/0c/2a/0b/0c2a0bb82f4565303156c201d3276064.jpg"
-                    >
-                      <img
-                        src="https://i.pinimg.com/564x/0c/2a/0b/0c2a0bb82f4565303156c201d3276064.jpg"
-                        alt="0"
-                      />
-                    </a>
-                  </div> -->
-                  <p class="reviews-listing-feedback">
-                    Phản hồi
-                  </p>
-                  <span class="reviews-listing-date">16.02.2024 23:10</span>
-                </div>
-              </div>
-            </div>
-            <div class="reviews-listing-item">
-              <div class="reviews-listing-content">
-                <div class="reviews-rating">
-                  <div class="reviews-rating-star is-full"></div>
-                  <div class="reviews-rating-star is-full"></div>
-                  <div class="reviews-rating-star is-full"></div>
-                  <div class="reviews-rating-star is-full"></div>
-                  <div class="reviews-rating-star is-full"></div>
-                </div>
-                <div class="reviews-order">
-                  <div class="order-item-title">Quần Jogger Nam UT đa năng</div>
-                  <div class="order-item-variant-label">Trắng / M</div>
-                </div>
-                <div class="reviews-listing-description">
-                  <p>
-                    Okeee
+                    {{ review.content }}
                   </p>
                   <div
                     class="reviews-listing-gallery"
@@ -73,71 +66,20 @@
                       class="reviews-listing-image"
                       rel-script="product-lightbox-gallery"
                       data-index="0"
-                      data-image="https://i.pinimg.com/564x/0c/2a/0b/0c2a0bb82f4565303156c201d3276064.jpg"
+                      :data-image="review.orderDetail.productDetail.imageLinks?.split(', ')[0].toString().replace('width=80,height=80', 'width=300,height=442')"
                     >
+                    
                       <img
-                        src="https://i.pinimg.com/564x/0c/2a/0b/0c2a0bb82f4565303156c201d3276064.jpg"
+                        :src="review.orderDetail.productDetail.imageLinks?.split(', ')[0].toString().replace('width=80,height=80', 'width=300,height=442')"
                         alt="0"
                       />
                     </a>
+         
                   </div>
-                  <p class="reviews-listing-feedback">
+                  <!-- <p class="reviews-listing-feedback" *v-if="false">
                     Phản hồi
-                  </p>
-                  <span class="reviews-listing-date">16.02.2024 22:00</span>
-                </div>
-              </div>
-            </div>
-            <div class="reviews-listing-item">
-              <div class="reviews-listing-content">
-                <div class="reviews-rating">
-                  <div class="reviews-rating-star is-active"></div>
-                  <div class="reviews-rating-star is-active"></div>
-                  <div class="reviews-rating-star is-half"></div>
-                  <div class="reviews-rating-star"></div>
-                  <div class="reviews-rating-star"></div>
-                </div>
-                <div class="reviews-order">
-                  <div class="order-item-title">Pack 3 Quần Shorts Nam kẻ sọc Basics</div>
-                  <div class="order-item-variant-label">Mix màu / 3XL</div>
-                </div>
-                <div class="reviews-listing-description">
-                  <p>
-                    Sản phẩm okela nè
-                  </p>
-                  <div
-                    class="reviews-listing-gallery"
-                    rel-script="product-gallery-popup"
-                  >
-                    <a
-                      href="#"
-                      class="reviews-listing-image"
-                      rel-script="product-lightbox-gallery"
-                      data-index="0"
-                      data-image="https://i.pinimg.com/564x/82/74/c4/8274c45adcf0b0781ab95f9f6692bb2d.jpg"
-                    >
-                      <img
-                        src="https://i.pinimg.com/564x/82/74/c4/8274c45adcf0b0781ab95f9f6692bb2d.jpg"
-                        alt="0"
-                      />
-                    </a>
-                    <a
-                      href="#"
-                      class="reviews-listing-image"
-                      rel-script="product-lightbox-gallery"
-                      data-index="0"
-                      data-image="https://i.pinimg.com/564x/82/74/c4/8274c45adcf0b0781ab95f9f6692bb2d.jpg"
-                    >
-                      <img
-                        src="https://i.pinimg.com/564x/82/74/c4/8274c45adcf0b0781ab95f9f6692bb2d.jpg"
-                        alt="0"
-                      />
-                    </a>
-                  </div>
-                  <p class="reviews-listing-feedback">
-                    Phản hồi
-                  </p>
-                  <span class="reviews-listing-date"> 16.02.2024 19:14</span>
+                  </p> -->
+                  <span class="reviews-listing-date"> {{ review.createDate }}</span>
                 </div>
               </div>
             </div>

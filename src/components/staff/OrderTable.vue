@@ -88,6 +88,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import type { ProductObject } from '../cart/cart-item/DefaultCartItem.vue';
 
 interface Order {
     id: string,
@@ -107,15 +108,20 @@ interface Customer {
     id: string;
 }
 
-interface OrderDetail {
+export interface OrderDetail {
     id: string;
     productDetail: ProductDetail;
-    quantity: string
+    quantity: string,
+    total: number
 }
 
 interface ProductDetail {
     id: string;
-    quantity: string
+    quantity: string,
+    imageLinks: string,
+    product: ProductObject,
+    color: string,
+    size: string
 }
 
 const orders = ref<Order[]>();

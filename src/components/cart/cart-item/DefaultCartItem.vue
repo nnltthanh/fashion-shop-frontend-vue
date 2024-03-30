@@ -2,17 +2,17 @@
 
 import { computed, defineProps, ref, inject } from 'vue';
 import type { CartDetailObject } from '../CartComponent.vue';
-import CartService from "@/services/cart.service";
+import { CartService } from "../../../services/cart.service";
 
 export type ProductObject = {
-  id: Number,
+  id: number,
   name: String,
-  price: Number,
-  salePercent: Number,
+  price: number,
+  salePercent: number,
   type: String,
   material: String,
   imageData: {
-    id: Number,
+    id: number,
     base64String: String,
     type: String
   },
@@ -21,12 +21,13 @@ export type ProductObject = {
 }
 
 export type ProductDetailObject = {
-  id: Number,
+  id: number,
   size: String,
   color: String,
   unit: String,
-  quantity: Number,
-  product: ProductObject
+  quantity: number,
+  product: ProductObject,
+  imageLinks: string
 }
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
@@ -280,7 +281,7 @@ const addToOrder = (event) => {
           </div>
           <div class="cart-item-price">
             <span> {{ formattedSalePrice }} </span>
-            <del>{{ formattedPrice }}</del>
+            <del v-show="formattedSalePrice != formattedPrice">{{ formattedPrice }}</del>
           </div>
         </div>
         <button class="cart-item-remove" @click="deleteItem">

@@ -63,19 +63,14 @@
 </template>
 
 <script setup lang="ts">
-import CartService from "@/services/cart.service";
-import { inject, onMounted, ref, computed } from "vue";
-import DefaultCartItem, { ProductDetailObject } from "./cart-item/DefaultCartItem.vue";
-import GiftCartItem from "./cart-item/GiftCartItem.vue";
-import SoldOutCartItem from "./cart-item/SoldOutCartItem.vue";
-import DiscountBlock from "./discount/DiscountBlock.vue";
-import ProductPromotion from "./product-promotion/ProductPromotion.vue";
-import ProductPromotionItem from "./product-promotion/ProductPromotionItem.vue";
+import { CartService } from "../../services/cart.service";
+import { computed, inject, ref } from "vue";
+import DefaultCartItem, { type ProductDetailObject } from "./cart-item/DefaultCartItem.vue";
 
 export type CartDetailObject = {
-  id: Number,
-  quantity: Number,
-  total: Number,
+  id: number,
+  quantity: number,
+  total: number,
   productDetail: ProductDetailObject
 }
 

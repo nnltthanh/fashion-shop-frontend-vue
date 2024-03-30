@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { inject, defineProps, computed, watch, ref } from 'vue';
+import type { OrderDetail } from '@/components/staff/OrderTable.vue';
+import type { CartService } from '@/services/cart.service';
+import { defineProps, inject, ref } from 'vue';
+import { ReviewService } from '@/services/review.service'
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
+
 const props = defineProps<{
     order: any
 }>();
@@ -11,15 +15,101 @@ const VND = new Intl.NumberFormat('vi-VN', {
     currency: 'VND',
 });
 
-const orderDetails = ref([]);
-
+const orderDetails = ref<OrderDetail[]>([]);
+const customerRate = ref<string[]>([]);
+const customerReview = ref<string[]>([]);
+const isReviewed = ref(false)
 setTimeout(async () => {
     orderDetails.value = (await cartService.getOrderDetailsByOrderId(props.order.id)).data;
-    console.log(orderDetails.value);
 }, 1000);
 
-</script>
+const getReviewByOrderDetailId = async (orderDetailId) => {
+    let res = (await reviewService.getReviewByOrderDetailId(orderDetailId)).data;
+    if (res.data.length > 0) {
+        isReviewed.value = true;
+    }
 
+    isReviewed.value = false;
+}
+
+
+const getRatingTitle = (rating) => {
+    switch (rating) {
+        case 1:
+            return 'Tệ';
+        case 2:
+            return 'Tạm';
+        case 3:
+            return 'Ổn';
+        case 4:
+            return 'Tốt';
+        case 5:
+            return 'Xuất sắc';
+        default:
+            return '';
+    }
+}
+
+const highlightStars = (rating, idx) => {
+    for (let i = 1; i <= rating; i++) {
+        const star = document.querySelector(`.reviews-rating-star[value="${i}"].item-${idx}`);
+        star!.classList.add('is-full');
+    }
+}
+
+const removeHighlight = (idx) => {
+    const stars = document.querySelectorAll(`.reviews-rating-star.item-${idx}`);
+    stars.forEach(star => star.classList.remove('is-full'));
+}
+
+const rated = (rating, index) => {
+    removeHighlight(index);
+    highlightStars(rating, index);
+    customerRate.value[index] = rating;
+    const stars = document.querySelectorAll('.reviews-rating-star');
+}
+
+const reviewService = new ReviewService();
+
+export type Review = {
+    id: number;
+    content: string;
+    createDate: Date;
+    rate: number;
+    customerId: number;
+    orderDetail: OrderDetail;
+}
+
+const saveReview = async (orderDetail: OrderDetail, idx: number) => {
+    isReviewed(orderDetail.id);
+    let orderDetailId = orderDetail.id;
+    let productId = orderDetail.productDetail.product.id;
+
+    let data = {
+        content: customerReview.value[idx],
+        rate: customerRate.value[idx],
+    }
+
+    let response = await reviewService.postReview(productId, orderDetailId, data);
+    console.log(response);
+
+    const button = document.querySelector<HTMLElement>(`.btn-review-save.item-${idx}`);
+    if (button) {
+        button.style.pointerEvents = 'none';
+        button.classList.add('btn-review-save-disable');
+    }
+    const stars = document.querySelectorAll<HTMLElement>(`.reviews-rating-star.item-${idx}`);
+    stars.forEach(star => {
+        star.style.pointerEvents = 'none';
+    });
+    (document.querySelector(`.form-control.item-${idx}`) as HTMLTextAreaElement).readOnly = true;
+}
+
+const autoSaveReview = (idx: number) => {
+    console.log(customerReview.value[idx]);
+}
+
+</script>
 
 <template>
     <div href="#" class="order">
@@ -39,13 +129,12 @@ setTimeout(async () => {
                 <div v-for="(orderDetail, idx) in orderDetails" :key="idx" class="order-item">
                     <div class="order-item-thumbnail">
                         <a href="#" target="_blank"><img
-                                :src="orderDetail.productDetail.imageLinks?.split(', ')[0].toString()"
+                                :src="orderDetail.productDetail.imageLinks?.split(', ')[0].toString().replace('width=80,height=80', 'width=300,height=442')"
                                 :alt="orderDetail.productDetail.product.name.toString()" />
                         </a>
                     </div>
                     <div class="order-item-info">
                         <a href="#" target="_blank" class="order-item-title">
-                            <!-- Quần Jogger Nam UT đa năng -->
                             {{ orderDetail.productDetail.product.name }}
                         </a>
                         <div class="order-item-variant-label">{{ orderDetail.productDetail.color }} / {{
@@ -54,49 +143,82 @@ setTimeout(async () => {
                         <div class="order-item-price"> {{ VND.format(orderDetail.total) }}</div>
                     </div>
                 </div>
-                <!-- <div class="order-item">
-                    <div class="order-item-thumbnail">
-                        <a href="#" target="_blank"><img
-                                src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/December2023/boxer_short_ke_00016_copy.jpg"
-                                alt="Pack 3 Quần Shorts Nam kẻ sọc Basics" />
-                        </a>
-                    </div>
-                    <div class="order-item-info">
-                        <a href="#" target="_blank" class="order-item-title">
-                            Pack 3 Quần Shorts Nam kẻ sọc Basics
-                        </a>
-                        <div class="order-item-variant-label">Mix màu / 3XL</div>
-                        <div class="order-item-quantity">x 1</div>
-                        <div class="order-item-price">199.000đ</div>
-                    </div>
-                </div>
-                <div class="order-item">
-                    <div class="order-item-thumbnail">
-                        <a href="#" target="_blank"><img
-                                src="https://media.coolmate.me/cdn-cgi/image/width=160,height=181,quality=80/uploads/April2022/DSC05753_copy1.jpg"
-                                alt="Quà tặng - Áo thun thể thao nam ProMax-S1" />
-                        </a>
-                    </div>
-                    <div class="order-item-info">
-                        <a href="#" target="_blank" class="order-item-title">
-                            Quà tặng - Áo thun thể thao nam ProMax-S1
-                        </a>
-                        <div class="order-item-variant-label">Xanh Aqua / L</div>
-                        <div class="order-item-quantity">x 1</div>
-                        <div class="order-item-price">0₫</div>
-                    </div>
-                </div> -->
             </div>
         </div>
         <div class="order-footer">
             <div class="order-footer-left">
-                <div>
-                    <!---->
-                    <a href="#" target="_blank" class="btn btn--outline">Cần hỗ trợ</a>
-                </div>
+                <button type="button" class="btn btn--outline" data-bs-toggle="modal"
+                    :data-bs-target="`#order-${props.order.id}`" @click="true">
+                    Đánh giá
+                </button>
             </div>
             <div class="order-footer-right">
                 <div><b> {{ VND.format(order.total) }}</b></div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" :id="`order-${props.order.id}`" tabindex="-1" aria-labelledby="exampleModalLabel"
+            data-bs-backdrop="false" data-bs-focus="true" aria-hidden="false">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-title h4" id="exampleModalLabel">Đánh giá đơn hàng
+
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-for="(orderDetailReview, index) in orderDetails" :key="index" class="order-item">
+                            <div class="order-item-thumbnail">
+                                <a href="#" target="_blank"><img
+                                        :src="orderDetailReview.productDetail.imageLinks?.split(', ')[0].toString().replace('width=80,height=80', 'width=300,height=442')"
+                                        :alt="orderDetailReview.productDetail.product.name.toString()"
+                                        style="height: 150px; width: 100px;" />
+                                </a>
+                            </div>
+                            <div class="order-item-info">
+                                <a href="#" target="_blank" class="order-item-title">
+                                    {{ orderDetailReview.productDetail.product.name }}
+                                </a>
+                                <div class="order-item-variant-label">{{ orderDetailReview.productDetail.color }} /
+                                    {{ orderDetailReview.productDetail.size }}</div>
+                                <div class="order-item-price"> {{ VND.format(orderDetailReview.total) }}</div>
+                                <div class="reviews-rating">
+                                    <div :class="[
+                    'reviews-rating-star', `item-${index}`
+                ]" v-for="rating in 5" :key="rating" :value="rating" type="button" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" :title="getRatingTitle(rating)"
+                                        @click="rated(rating, index)">
+                                    </div>
+                                    <span>&nbsp; {{ getRatingTitle(customerRate[index]) }}</span>
+                                </div>
+                                <div class="grid">
+                                    <div class="grid-column d-flex align-items-end flex-column">
+                                        <textarea placeholder="Viết đánh giá..." :class="[
+                    'form-control', `item-${index}`
+                ]" style="
+                                                overflow-y: hidden;
+                                                resize: vertical;
+                                                min-height: 40px; 
+                                                height: auto;" v-model="customerReview[index]"
+                                            @input="autoSaveReview(index)">
+                                        </textarea>
+                                        <div :class="[
+                    'btn-review-save', `item-${index}`
+                ]" @click="saveReview(orderDetailReview, index)"
+                   >Lưu đánh giá
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Trở lại</button>
+                        <!-- <button type="button" class="btn btn-primary btn-save">Lưu</button> -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -236,7 +358,7 @@ setTimeout(async () => {
     display: flex;
 }
 
-.order-footer-left .btn {
+.btn {
     height: auto;
     padding: 0.5rem 2rem;
     border-radius: 100vmax;
@@ -261,5 +383,139 @@ setTimeout(async () => {
 
 .order-footer-right {
     text-align: right;
+}
+
+.modal {
+    --bs-modal-width: 700px;
+    --bs-modal-zindex: 1071;
+}
+
+.modal-body {
+    padding: 0px !important;
+}
+
+.modal-dialog-scrollable .modal-content {
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.grid {
+    display: flex;
+    display: -webkit-flex;
+    -moz-flex-direction: row;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-left: -9px;
+    margin-right: -9px;
+    padding: 0;
+    position: relative;
+    float: none;
+}
+
+
+.grid-column {
+    position: relative;
+    box-sizing: border-box;
+    min-height: 1px;
+    vertical-align: top;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 9px;
+    width: 100%;
+}
+
+
+.form-control:focus,
+.form-control:active .vs-dropdown-toggle:focus,
+.vs-dropdown-toggle:active {
+    border-color: inherit !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border: 1px solid #2f5acf !important;
+}
+
+
+.form-control {
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    box-sizing: border-box;
+    border-radius: 16px;
+    min-height: 40px;
+    width: 100%;
+    padding: 5px 20px;
+    transition: all 0.1s;
+}
+
+.btn-save {
+    background-color: #2f5acf;
+    color: #fff;
+    border: 2px solid #2f5acf;
+}
+
+.btn-save:hover,
+.btn-save:active {
+    background-color: #1c3a8e;
+    color: #fff;
+    border: 2px solid #1c3a8e;
+}
+
+.btn-cancel:hover {
+    background-color: #dddde6;
+    color: #000;
+    border: 2px solid #232325;
+}
+
+.btn-review-save {
+    border-radius: 4px;
+    background-color: #3060e2;
+    color: whitesmoke;
+    width: fit-content;
+    padding: 5px 10px;
+    margin-top: 10px
+}
+
+.btn-review-save-disable {
+    border-radius: 4px;
+    background-color: #b3c1e6;
+    color: whitesmoke;
+    width: fit-content;
+    padding: 5px 10px;
+    margin-top: 10px;
+}
+
+
+.reviews-rating {
+    display: flex;
+    align-items: center;
+    height: 1.5rem;
+
+}
+
+.reviews-rating-star.is-active,
+.reviews-rating-star.is-full {
+    background-image: url(https://www.coolmate.me/images/star.svg?2a5188496861d26e5547c524320ec875);
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 0 1px 1px;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: contain;
+}
+
+.reviews-rating-star {
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 0 1px 1px;
+    background-image: url(https://www.coolmate.me/images/star-new.svg?08a379c24952a980d5430515abb8be4e);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: contain;
+}
+
+.reviews-rating-star.is-half {
+    background-image: url(https://www.coolmate.me/images/star-half.svg?8aea9e9938db110e66ea06732737184a);
 }
 </style>
