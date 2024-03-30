@@ -1,5 +1,16 @@
 <template>
     <div class="max-md:gap-3 max-md:flex-col min-h-screen h-screen flex">
+        <div v-if="islocked"
+            class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-100 text-red-700 p-6 text-center text-lg z-50 rounded-md"
+            role="alert">
+            <span class="font-medium">Tài khoản của bạn đã bị khoá do vi phạm chính sách.</span>
+        </div>
+        <div v-if="isloggedInOK"
+            class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-100 text-green-700 p-6 text-center text-lg z-50 rounded-md"
+            role="alert">
+            <span class="font-medium">Đăng nhập thành công!</span>
+        </div>
+
         <div class="max-md:h-[250px] lg:flex-auto bg-slate-300 flex items-center px-10">
             <img class="w-full h-full object-cover opacity-[35%]" src="@/assets/img_employee_login.jpg" alt="" />
         </div>
@@ -45,6 +56,8 @@ import bcrypt from 'bcryptjs';
 const isLoginFailed = ref(false);
 const isWrongPass = ref(false);
 const router = useRouter();
+const islocked = ref(false);
+const isloggedInOK = ref(false);
 
 const login = async (data) => {
     try {
@@ -59,30 +72,48 @@ const login = async (data) => {
         if (response.data) {
             const hashedPasswordFromAPI = response.data.password;
             bcrypt.compare(data.password, hashedPasswordFromAPI, (err, result) => {
-                if (err) {
+                if (response.data.locked) {
+                    islocked.value = true;
+                    setTimeout(() => {
+                        islocked.value = false;
+                    }, 1500);
+                    return;
+                } else if (err) {
                     console.error(err);
                     return;
                 }
+
+                console.log('Mật khẩu khớp.');
+                isloggedInOK.value = true;
+                setTimeout(() => {
+                    isloggedInOK.value = false;
+                }, 1000);
                 if (result) {
-                    console.log('Mật khẩu khớp.');
                     if (response.data.userType == 'staff') {
                         // Lưu thông tin tài khoản vào localStorage
                         localStorage.setItem('accountStaff', JSON.stringify(response.data));
-                        router.push('/staff')
+                        setTimeout(() => {
+                            router.push('/staff')
+                        }, 1000);
                     } else if (response.data.userType == 'manager') {
                         // Lưu thông tin tài khoản vào localStorage
                         localStorage.setItem('accountManager', JSON.stringify(response.data));
-                        router.push('/manager')
+                        setTimeout(() => {
+                            router.push('/manager')
+                        }, 1000);
                     } else if (response.data.userType == 'senior_manager') {
                         // Lưu thông tin tài khoản vào localStorage
                         localStorage.setItem('accountSeniorManager', JSON.stringify(response.data));
-                        router.push('/senior-manager')
+                        setTimeout(() => {
+                            router.push('/senior-manager')
+                        }, 1000);
                     } else if (response.data.userType == 'admin') {
                         // Lưu thông tin tài khoản vào localStorage
                         localStorage.setItem('accountAdmin', JSON.stringify(response.data));
-                        router.push('/admin')
+                        setTimeout(() => {
+                            router.push('/admin')
+                        }, 1000);
                     }
-
                 } else {
                     console.log('Mật khẩu không khớp.');
                     isWrongPass.value = true;

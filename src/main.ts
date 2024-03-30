@@ -14,8 +14,16 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import cors from 'cors';
 import { provideCartService } from './services/cart.service';
+// import GAuth  from 'vue3-google-oauth2';
+import vue3GoogleLogin from 'vue3-google-login'
 
 const app = createApp(App);
+
+// const gAuthOptions = { clientId: '137267181828-nhfes7fqk7gkeguok8utbjmos597ovof.apps.googleusercontent.com', scope: 'email', prompt: 'consent', fetch_basic_profile: false }
+// app.use(GAuth, gAuthOptions)
+app.use(vue3GoogleLogin, {
+    clientId: '137267181828-nhfes7fqk7gkeguok8utbjmos597ovof.apps.googleusercontent.com'
+  })
 
 // Provide VueAxios and axios
 app.use(VueAxios, axios);
