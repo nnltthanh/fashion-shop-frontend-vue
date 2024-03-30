@@ -7,6 +7,8 @@ import ProductService from "@/services/product.service";
 import { useProductStore } from '@/stores/productStore';
 import { useRoute } from 'vue-router';
 
+let count = 0;
+
 const route = useRoute();
 
 const searchQuery = computed(() => {
@@ -33,11 +35,17 @@ const searchResultProducts = computed(() => {
     let regex = new RegExp('^.*' + searchQuery.value.toLowerCase().trim() + '.*$');
     let from = "àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ",
         to = "aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy";
+
+
     if (searchQuery.value !== '') {
-        firstSearch.value = false;
-        return products.value.filter((item) => {
+        const result = products.value.filter((item) => {
             return regex.test(item.name.toLowerCase());
         });
+        count++;
+        if (count == 2) {
+            firstSearch.value = false;
+        }
+        return result;
     }
 });
 
@@ -162,7 +170,8 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <section v-if="searchResultProducts.length > 0 || !firstSearch" class="search-listings">
+
+        <section v-if="searchResultProducts.length > 0 || firstSearch" class="search-listings">
             <div class="search-results__container container--full">
                 <h1 class="search-listings__heading">
                     Kết quả
@@ -177,7 +186,9 @@ onMounted(() => {
             style="display: flex; flex: 1 1 0%; justify-content: center; align-items: center; padding: 15px; text-align: center; margin-bottom: 30px">
             <div>
                 <div>Không tìm thấy sản phẩm phù hợp theo yêu cầu của bạn!</div>
-                <div>Vui lòng <b><u><RouterLink to="/">quay lại trang chủ</RouterLink></u></b> để tiếp tục mua sắm bạn nhé!
+                <div>Vui lòng <b><u>
+                            <RouterLink to="/">quay lại trang chủ</RouterLink>
+                        </u></b> để tiếp tục mua sắm bạn nhé!
                 </div>
             </div>
         </div>
