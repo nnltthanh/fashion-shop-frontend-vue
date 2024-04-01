@@ -34,6 +34,11 @@ export class ReviewService {
         return await axios.get(`${baseUri}/products/0/reviews/customer/${customerId}`);
     }
 
+    public async getAllReviewByOrderId(orderId) {
+        const baseUri = this.getBaseUri();
+        return await axios.get(`${baseUri}/products/0/reviews/orders/${orderId}`);
+    }
+
 
     getBaseUri() {
         return import.meta.env.VITE_BACKEND_BASE_URL;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CartService from '@/services/cart.service';
+import { CartService } from '@/services/cart.service';
 import { inject, ref } from 'vue';
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
@@ -18,11 +18,12 @@ const VND = new Intl.NumberFormat('vi-VN', {
 let paymentUrl = ref<string>();
 const placeOrder = async () => {
   let data = {
-    status: "PENDING_PAYMENT"
+    status: "PROCESSING"
   };
   paymentUrl.value = (await cartService!.addCartDetailToOrder_payment(data, paymentOption.value)).data;
   if (paymentUrl.value != null)
-    window.open(paymentUrl.value, '_blank');
+    window.location.href = paymentUrl.value;
+    // window.open(paymentUrl.value, '_blank');
 }
 
 </script>

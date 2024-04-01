@@ -8,12 +8,14 @@ import type { Review } from './OrderCard.vue';
 const { cartService }: { cartService: CartService } = inject('cartService')!;
 
 const props = defineProps<{
-    order: any
+  order: any
 }>();
 
+const isLoading = ref(true)
+
 const VND = new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
+  style: 'currency',
+  currency: 'VND',
 });
 
 const reviews = ref<Review[]>([]);
@@ -23,17 +25,21 @@ const customerReview = ref<string[]>([]);
 let reviewService = new ReviewService();
 
 setTimeout(async () => {
-    reviews.value = (await reviewService.getAllReviewByCustomerId(cartService.customerId)).data;
-    console.log(reviews.value)
+  reviews.value = (await reviewService.getAllReviewByCustomerId(cartService.customerId)).data;
+  console.log(reviews.value)
+  isLoading.value = false;
 }, 1000);
 
+const getImageData = (image) => {
+  return URL.createObjectURL(image);
+}
 
 </script>
 <template>
   <div class="account-content my-50">
     <div id="info-tab" class="account-info">
       <h2 class="account-page-title">Đánh giá và phản hồi</h2>
-      <!-- <div class="account-page-label mt-4">Bạn chưa có đánh giá nào...</div> -->
+      <div v-if="!isLoading && reviews.length == 0" class="account-page-label mt-4">Bạn chưa có đánh giá nào...</div>
       <div>
         <div class="grid-column mt-3">
           <div class="reviews-listing-items">
@@ -45,10 +51,14 @@ setTimeout(async () => {
                   <div :class="['reviews-rating-star', review.rate >= 3 ? 'is-active' : '']"></div>
                   <div :class="['reviews-rating-star', review.rate >= 4 ? 'is-active' : '']"></div>
                   <div :class="['reviews-rating-star', review.rate == 5 ? 'is-active' : '']"></div>
-                  
+
                 </div>
                 <div class="reviews-order">
-                  <div class="order-item-title"> {{ review.orderDetail.productDetail.product.name }}</div>
+                  <router-link
+                    :to="{ name: 'product', params: { id: review.orderDetail.productDetail.product.id.toString() } }">
+                    <div class="order-item-title"> {{ review.orderDetail.productDetail.product.name }}</div>
+                  </router-link>
+                  <!-- <div class="order-item-title"> {{ review.orderDetail.productDetail.product.name }}</div> -->
                   <div class="order-item-variant-label">
                     {{ review.orderDetail.productDetail.color }} / {{ review.orderDetail.productDetail.size }}
                   </div>
@@ -57,24 +67,12 @@ setTimeout(async () => {
                   <p>
                     {{ review.content }}
                   </p>
-                  <div
-                    class="reviews-listing-gallery"
-                    rel-script="product-gallery-popup"
-                  >
-                    <a
-                      href="#"
-                      class="reviews-listing-image"
-                      rel-script="product-lightbox-gallery"
-                      data-index="0"
-                      :data-image="review.orderDetail.productDetail.imageLinks?.split(', ')[0].toString().replace('width=80,height=80', 'width=300,height=442')"
-                    >
-                    
-                      <img
-                        :src="review.orderDetail.productDetail.imageLinks?.split(', ')[0].toString().replace('width=80,height=80', 'width=300,height=442')"
-                        alt="0"
-                      />
+                  <div class="reviews-listing-gallery" rel-script="product-gallery-popup">
+                    <a v-for="image in review.imageUrls?.split(',')" class="reviews-listing-image"
+                      rel-script="product-lightbox-gallery" data-index="0" :data-image=image>
+                      <img :src=image alt="0" />
                     </a>
-         
+
                   </div>
                   <!-- <p class="reviews-listing-feedback" *v-if="false">
                     Phản hồi
@@ -106,8 +104,8 @@ setTimeout(async () => {
 }
 
 .account-page-title {
-    margin-bottom: 25px;
-    font-size: 2.5rem;
+  margin-bottom: 25px;
+  font-size: 2.5rem;
 }
 
 .account-page-label {
@@ -124,7 +122,7 @@ setTimeout(async () => {
   margin-right: 0 !important;
   padding: 9px;
   width: 100%;
-  
+
 }
 
 .reviews-listing-item {
@@ -134,7 +132,7 @@ setTimeout(async () => {
 }
 
 .reviews-listing-item:is(:first-child) {
-  border-top: 1px solid #d9d9d9;    
+  border-top: 1px solid #d9d9d9;
 }
 
 .reviews-listing-content {
