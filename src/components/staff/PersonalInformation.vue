@@ -19,7 +19,7 @@
 
         </div>
 
-        <div class="w-2/3 mx-3 overflow-auto " style="max-height: 500px;">
+        <div class="w-2/3 mx-3 overflow-auto " style="max-height: 600px;">
             <div class="w-2/3 m-2 px-3 py-4 bg-orange-200 rounded-lg font-light overflow-auto"><b class="font-bold"> Mã
                     nhân viên:</b>
                 {{ accountInfo &&
@@ -44,6 +44,9 @@
                     chỉ:</b> {{
                             accountInfo &&
                                 accountInfo.address ? accountInfo.address : 'Chưa cập nhật!' }}
+            </div>
+            <div class="w-2/3 m-2 px-3 py-4 bg-orange-200 rounded-lg font-light overflow-auto"><b class="font-bold">Vị
+                    trí:</b> Nhân viên xử lý đơn hàng
             </div>
         </div>
     </div>

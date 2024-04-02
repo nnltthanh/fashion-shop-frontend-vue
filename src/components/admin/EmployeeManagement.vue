@@ -234,7 +234,7 @@ const searchEmployee = () => {
             element.classList.add('found');
             setTimeout(() => {
                 element.classList.remove('found');
-            }, 5000);
+            }, 4000);
         } else {
             isNotFoundEmployee.value = true;
             setTimeout(() => {

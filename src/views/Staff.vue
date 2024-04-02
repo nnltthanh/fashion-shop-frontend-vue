@@ -32,7 +32,7 @@
                 <span class="text-[15px] ml-4 text-gray-200 font-bold">Quản lý đơn hàng</span>
             </div>
             <transition name="fade">
-                <div v-if="showOrderDropdown">
+                <div v-if="showOrderDropdown" @click="clickOrderProcessing()">
                     <div
                         class="p-2.5 mt-3 flex items-center  ml-5 rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white">
                         <span class="text-[15px] ml-4 text-gray-200 font-bold">Xử lý đơn hàng</span>
@@ -72,13 +72,18 @@
                 </div>
             </div>
             <!-- Content -->
-            <div class="p-4 font-extrabold overflow-hidden">
+            <div class="px-4 pb-2 font-extrabold overflow-hidden">
                 <div v-if="showOrderTable">
                     <OrderTable />
                 </div>
-
+                <div v-if="showOrderProcessing">
+                    <OrderProcessing />
+                </div>
                 <div v-if="showPersonalInfo">
                     <PersonalInformation />
+                </div>
+                <div v-if="showChatWithCustomer">
+                    <ChatWithCustomer />
                 </div>
             </div>
             <div></div>
@@ -92,34 +97,53 @@ import OrderTable from '@/components/staff/OrderTable.vue';
 import axios from 'axios';
 import router from '@/router';
 import PersonalInformation from '@/components/staff/PersonalInformation.vue';
+import OrderProcessing from '@/components/staff/OrderProcessing.vue';
+import ChatWithCustomer from '@/components/staff/ChatWithCustomer.vue';
 
 const showSidebar = ref(false);
 const showOrderDropdown = ref(false);
 const showOrderTable = ref(false);
+const showOrderProcessing = ref(false);
 const showPersonalInfo = ref(true);
+const showChatWithCustomer = ref(false);
 
 const clickOrderManagement = (section) => {
     if (section === 'order') {
         showOrderDropdown.value = !showOrderDropdown.value;
-        showOrderTable.value = !showOrderTable.value;
+        showOrderTable.value = true;
         showPersonalInfo.value = false;
+        showOrderProcessing.value = false;
+        showChatWithCustomer.value = false;
     }
+};
+
+const clickOrderProcessing = () => {
+    showOrderTable.value = false;
+    showPersonalInfo.value = false;
+    showOrderProcessing.value = true;
+    showChatWithCustomer.value = false;
 };
 
 const clickChatWithCustomer = () => {
     showOrderTable.value = false;
     showPersonalInfo.value = false;
+    showOrderProcessing.value = false;
+    showChatWithCustomer.value = true;
 }
 
 const clickPersonalInfo = () => {
     showPersonalInfo.value = true;
     showOrderTable.value = false;
+    showOrderProcessing.value = false;
+    showChatWithCustomer.value = false;
 }
 
 const reviewFeedback = () => {
     showOrderTable.value = false
     showPersonalInfo.value = false;
-    console.log(showOrderTable.value)
+    showOrderProcessing.value = false;
+    showChatWithCustomer.value = false;
+    // console.log(showOrderTable.value)
 }
 
 interface AccountInfo {
