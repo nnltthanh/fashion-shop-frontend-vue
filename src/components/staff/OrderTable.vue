@@ -6,9 +6,9 @@
                 <div class="whitespace-nowrap mt-2 px-6 row-data text-1xl">Tổng số đơn hàng: {{ orders ? orders.length :
                     0 }}
                 </div>
-                <div class="border-b-2 mt-2 border-neutral-200 dark:border-white/10"></div>
-                <div class=" mt-2 relative overflow-x-auto mb-2 shadow-md" style="max-height: 510px;">
-                    <table class="w-full text-sm text-left rtl:text-right mb-2">
+                <div class="border-b-2 border-neutral-200 dark:border-white/10"></div>
+                <div class="custom-scrollbar mt-2 relative overflow-x-auto mb-2 shadow-md" style="max-height: 549px;">
+                    <table class="w-full text-sm text-left rtl:text-right">
                         <thead
                             class="fixed-header text-center text-gray-700 dark:bg-gray-700 dark:text-gray-400 mt-2 border-neutral-200 dark:border-white/10">
                             <tr class="bg-gray-300">
@@ -35,7 +35,7 @@
                                     Trạng thái
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Nhà kho
+                                    Số điện thoại
                                 </th>
                             </tr>
                         </thead>
@@ -72,7 +72,7 @@
                     "Chưa cập nhật" }}</td>
                                 <td class="px-6 py-4">{{ order.status !== undefined ? order.status :
                     "Chưa cập nhật" }}</td>
-                                <td class="px-6 py-4">{{ order.warehouseId !== undefined ? order.warehouseId :
+                                <td class="px-6 py-4">{{ order.customer.phone ? order.customer.phone :
                                     "Chưa cập nhật" }}</td>
                             </tr>
                         </tbody>
@@ -104,6 +104,7 @@ interface Order {
 
 interface Customer {
     id: string;
+    phone: string;
 }
 
 export interface OrderDetail {
@@ -175,5 +176,20 @@ onMounted(() => {
     top: 0;
     z-index: 1;
     background-color: #ffffff;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
 }
 </style>
