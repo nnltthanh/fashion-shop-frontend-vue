@@ -1,11 +1,11 @@
 <template>
     <div class="drop-area m-3" @dragover.prevent="onDragOver" @drop.prevent="onDrop">
         <figure class="figure avatar-frame">
-            <div class="fs-5 text-secondary" 
-            v-if="!accountInfo?.avatar">Drop avatar here</div>
+            <div class="fs-5 text-secondary" v-if="!accountInfo?.avatar">Drop avatar here</div>
             <img v-if="accountInfo?.avatar" :src="avatar!" class="figure-img avatar-image" alt="Avatar">
         </figure>
-        <figcaption class="figure-caption fs-5 mt-1">{{ userInfo && userInfo.name! ? userInfo.name! : 'Chưa cập nhật!' }}
+        <figcaption class="figure-caption fs-5 mt-1">{{ userInfo && userInfo.name! ? userInfo.name! : 'Chưa cập nhật!'
+            }}
         </figcaption>
     </div>
 </template>
@@ -23,7 +23,7 @@ interface AccountInfo {
     phone: string;
     email: string;
     name: string;
-    avatar: Uint8Array | ArrayBufferLike
+    avatar: string
     // Các thuộc tính khác nếu cần thiết
 }
 
@@ -46,40 +46,29 @@ const onDrop = (event: DragEvent) => {
     }
 };
 
-function base64ToByteArray(base64) {
-    var binaryString = atob(base64);
-    var bytes = new Uint8Array(binaryString.length);
-    for (var i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes;
-}
-
-function byteArrayToBase64(byteArray) {
-    var binary = '';
-    var bytes = new Uint8Array(byteArray);
-    var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary);
-}
-
 const handleImageUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = async () => {
+
         avatar.value = reader.result as string;
         console.log(avatar.value);
-        let bytes = base64ToByteArray(avatar.value.replace(/^data:image\/(png|jpeg|jpg);base64,/, ''));
+        
+        let data = new FormData();
+        data.append('image', file);
 
-        const response = await axios.put(`http://localhost:8080/users/${userInfo.value?.id!}`, bytes,
+        const response = await axios.put(`http://localhost:8080/users/${userInfo.value?.id!}`, data,
             {
                 headers: {
-                    'Content-Type': 'text/plain'
+                    'Content-Type': 'multipart/form-data;charset=utf-8'
                 }
             });
-        accountInfo.value!.avatar = bytes;
-        userInfo.value!.avatar = bytes;
+
+        accountInfo.value!.avatar = response.data.avatar;
+        userInfo.value!.avatar = response.data.avatar;
+        avatar.value = response.data.avatar;
+
+        console.log(response.data)
+
         localStorage.setItem('account', JSON.stringify(accountInfo.value));
     };
     reader.readAsDataURL(file);
@@ -90,7 +79,7 @@ onMounted(() => {
     const storedAccount = localStorage.getItem('account');
     if (storedAccount) {
         accountInfo.value = JSON.parse(storedAccount);
-        avatar.value = ('data:image/png;base64,' + accountInfo.value!.avatar) || null;
+        avatar.value =accountInfo.value!.avatar || null;
         console.log(accountInfo.value, "onmount", avatar.value)
         // Gọi API để lấy thông tin người dùng dựa trên tên đăng nhập
         if (accountInfo.value) {
@@ -109,7 +98,7 @@ async function fetchUserInfo(username: string) {
             const parts = userInfo.value.dob.split('-');
             const reversedDob = `${parts[2]}/${parts[1]}/${parts[0]}`;
             userInfo.value.dob = reversedDob;
-            avatar.value = 'data:image/png;base64,' + byteArrayToBase64(accountInfo.value?.avatar!);
+            avatar.value = userInfo.value.avatar || null;
             console.log('Thông tin người dùng:' + userInfo.value.dob);
         }
 

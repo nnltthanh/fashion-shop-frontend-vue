@@ -18,10 +18,21 @@ export class ReviewService {
         }
     }
 
-    public async postReview(productId, orderDetailId, postData) {
+    public async postReview(productId, orderDetailId, postData, formData) {
         const baseUri = this.getBaseUri();
-        return await axios.post(`${baseUri}/products/${productId}/reviews/order-details/${orderDetailId}`, 
-                    postData);
+        const review = await axios.post(`${baseUri}/products/${productId}/reviews/order-details/${orderDetailId}`, postData);
+        
+        return await this.updateImages(productId, review.data.id, formData);
+    }
+
+    public async updateImages(productId, reviewId, imageFiles) {
+        const baseUri = this.getBaseUri();
+        return await axios.put(`${baseUri}/products/${productId}/reviews/${reviewId}/upload`, imageFiles, 
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
     }
 
     public async getReviewByOrderDetailId(orderDetailId) {

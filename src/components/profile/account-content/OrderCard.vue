@@ -20,6 +20,7 @@ const customerRate = ref<string[]>([]);
 const customerReview = ref<string[]>([]);
 const isReviewedInIndex = ref<boolean[]>([]);
 const uploadedImages = ref<{ id: number, url: string }[]>([]);
+let changingReviewImages: { id: number, file: File }[] = [];
 
 setTimeout(async () => {
     orderDetails.value = (await cartService.getOrderDetailsByOrderId(props.order.id)).data;
@@ -37,8 +38,10 @@ const getReviewByOrderId = async (orderId) => {
                 customerReview.value[index] = review.content;
                 highlightStars(review.rate, index);
                 isReviewedInIndex.value[index] = true;
+
                 uploadedImages.value = [];
-                let images = review.imageUrls.split(',').forEach((value, idx) => {
+
+                review.imageUrls.split(',').forEach((value, idx) => {
                     uploadedImages.value.push({ id: idx, url: value })
                 })
             }
@@ -96,52 +99,25 @@ export type Review = {
     imageUrls: string
 }
 
-function fileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-            if (typeof reader.result === 'string') {
-                resolve(reader.result);
-            } else {
-                reject(new Error('Failed to read the file as Base64.'));
-            }
-        };
-
-        reader.onerror = (error) => {
-            reject(error);
-        };
-
-        reader.readAsDataURL(file);
-    });
-}
-
-function base64ToBlob(base64: string, contentType: string = ''): Blob {
-    const byteCharacters = atob(base64);
-    const byteNumbers = new Array(byteCharacters.length);
-
-    for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: contentType });
-}
-
 const handleFileInputChange = async (event) => {
     const files = event.target.files;
     const newImages: { id: number, url: string }[] = [];
+
     for (let i = 0; i < files.length; i++) {
         if (uploadedImages.value.length + newImages.length > 4) break;
         const file = files[i];
         const imageUrl = URL.createObjectURL(file);
         newImages.push({ id: i, url: imageUrl });
+
+        changingReviewImages.push({ id: i, file: file });
     }
+    console.log(changingReviewImages)
     uploadedImages.value = uploadedImages.value.concat(newImages);
 };
 
 const removeImage = (imageId) => {
     uploadedImages.value = uploadedImages.value.filter(image => image.id !== imageId);
+    changingReviewImages = changingReviewImages.filter(file => file.id !== imageId);
 };
 
 
@@ -149,16 +125,19 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
     let orderDetailId = orderDetail.id;
     let productId = orderDetail.productDetail.product.id;
 
-    let images = uploadedImages.value.map(image => image.url);
-
     let data = {
         content: customerReview.value[idx],
         rate: customerRate.value[idx],
-        imageUrls: images.toString()
     }
 
-    let response = await reviewService.postReview(productId, orderDetailId, data);
-    console.log(response);
+    const formData = new FormData();
+    for (let i = 0; i < changingReviewImages.length; i++) {
+        const file = changingReviewImages[i].file;
+        formData.append('images', file);
+    }
+
+
+    await reviewService.postReview(productId, orderDetailId, data, formData);
 
     const button = document.querySelector<HTMLElement>(`.btn-review-save.item-${idx}`);
     if (button) {
