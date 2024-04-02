@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import axios from 'axios';
+import type { Review } from '@/components/profile/account-content/OrderCard.vue';
 
 export class ReviewService {
     public productId;
@@ -50,6 +51,10 @@ export class ReviewService {
         return await axios.get(`${baseUri}/products/0/reviews/orders/${orderId}`);
     }
 
+    public async getAllReviews() {
+        const baseUri = this.getBaseUri();
+        return await axios.get<Review[]>(`${baseUri}/products/0/reviews?all=true`);
+    }
 
     getBaseUri() {
         return import.meta.env.VITE_BACKEND_BASE_URL;

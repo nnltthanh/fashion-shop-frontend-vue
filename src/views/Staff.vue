@@ -73,6 +73,9 @@
             </div>
             <!-- Content -->
             <div class="px-4 pb-2 font-extrabold overflow-hidden">
+                <div v-if="showProductReviewAndFeedback">
+                    <ProductReviewAndFeedback />
+                </div>
                 <div v-if="showOrderTable">
                     <OrderTable />
                 </div>
@@ -99,6 +102,7 @@ import router from '@/router';
 import PersonalInformation from '@/components/staff/PersonalInformation.vue';
 import OrderProcessing from '@/components/staff/OrderProcessing.vue';
 import ChatWithCustomer from '@/components/staff/ChatWithCustomer.vue';
+import ProductReviewAndFeedback from '@/components/staff/ProductReviewAndFeedback.vue';
 
 const showSidebar = ref(false);
 const showOrderDropdown = ref(false);
@@ -106,6 +110,7 @@ const showOrderTable = ref(false);
 const showOrderProcessing = ref(false);
 const showPersonalInfo = ref(true);
 const showChatWithCustomer = ref(false);
+const showProductReviewAndFeedback = ref(false);
 
 const clickOrderManagement = (section) => {
     if (section === 'order') {
@@ -114,6 +119,7 @@ const clickOrderManagement = (section) => {
         showPersonalInfo.value = false;
         showOrderProcessing.value = false;
         showChatWithCustomer.value = false;
+        showProductReviewAndFeedback.value = false;
     }
 };
 
@@ -122,6 +128,7 @@ const clickOrderProcessing = () => {
     showPersonalInfo.value = false;
     showOrderProcessing.value = true;
     showChatWithCustomer.value = false;
+    showProductReviewAndFeedback.value = false;
 };
 
 const clickChatWithCustomer = () => {
@@ -129,6 +136,7 @@ const clickChatWithCustomer = () => {
     showPersonalInfo.value = false;
     showOrderProcessing.value = false;
     showChatWithCustomer.value = true;
+    showProductReviewAndFeedback.value = false;
 }
 
 const clickPersonalInfo = () => {
@@ -136,6 +144,7 @@ const clickPersonalInfo = () => {
     showOrderTable.value = false;
     showOrderProcessing.value = false;
     showChatWithCustomer.value = false;
+    showProductReviewAndFeedback.value = false;
 }
 
 const reviewFeedback = () => {
@@ -143,6 +152,7 @@ const reviewFeedback = () => {
     showPersonalInfo.value = false;
     showOrderProcessing.value = false;
     showChatWithCustomer.value = false;
+    showProductReviewAndFeedback.value = true;
     // console.log(showOrderTable.value)
 }
 

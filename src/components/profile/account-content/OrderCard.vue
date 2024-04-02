@@ -250,7 +250,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                 <div class="grid">
                                     <div class="upload__box">
                                         <div class="upload__btn-box">
-                                            <label class="upload__btn">
+                                            <label v-if="!isReviewedInIndex[index]" class="upload__btn">
                                                 Upload images
                                                 <input type="file" multiple data-max_length="5"
                                                     class="upload__inputfile" @change="handleFileInputChange">
@@ -261,7 +261,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                                 class="upload__img-box">
                                                 <div class="img-bg"
                                                     :style="{ backgroundImage: 'url(' + image.url + ')' }">
-                                                    <div class="upload__img-close" @click="removeImage(image.id)"></div>
+                                                    <div v-if="!isReviewedInIndex[index]" class="upload__img-close" @click="removeImage(image.id)"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -276,11 +276,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                             height: auto;" v-model="customerReview[index]"
                                             :readonly="isReviewedInIndex[index]">
                                         </textarea>
-                                        <div v-if="!isReviewedInIndex[index]" :class="[
-                    'btn-review-save', `item-${index}`,
-                    isReviewedInIndex[index] ? 'btn-review-save-disable' : ''
-                ]" @click="saveReview(orderDetailReview, index)">Lưu đánh giá
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
