@@ -261,7 +261,8 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                                 class="upload__img-box">
                                                 <div class="img-bg"
                                                     :style="{ backgroundImage: 'url(' + image.url + ')' }">
-                                                    <div v-if="!isReviewedInIndex[index]" class="upload__img-close" @click="removeImage(image.id)"></div>
+                                                    <div v-if="!isReviewedInIndex[index]" class="upload__img-close"
+                                                        @click="removeImage(image.id)"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -276,7 +277,11 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                             height: auto;" v-model="customerReview[index]"
                                             :readonly="isReviewedInIndex[index]">
                                         </textarea>
-                                        
+                                        <div v-if="!isReviewedInIndex[index]" :class="[
+                    'btn-review-save', `item-${index}`,
+                    isReviewedInIndex[index] ? 'btn-review-save-disable' : ''
+                ]" @click="saveReview(orderDetailReview, index)">Lưu đánh giá
+                                        </div>
                                     </div>
                                 </div>
                             </div>
