@@ -52,6 +52,13 @@
                     <a class="nav-link" href="#">LIÊN HỆ</a>
                 </div>
                 <div class="nav-item">
+                    <router-link :to="{
+                        name: 'news',
+                    }" class="nav-link">
+                        TIN TỨC
+                    </router-link>
+                </div>
+                <div class="nav-item">
                     <a class="nav-link" href="/branch">CHI NHÁNH</a>
                 </div>
             </div>

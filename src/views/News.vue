@@ -1,6 +1,7 @@
 <script setup>
 import Header from '@/components/common/Header.vue'
 import Footer from '@/components/common/Footer.vue'
+import PostList from '@/components/posts/PostList.vue'
 </script>
 
 <template>
@@ -26,11 +27,7 @@ import Footer from '@/components/common/Footer.vue'
                 </div>
             </div>
         </section>
-        <section class="news-menu">
-            <div class="large--visible">
-                <div class="news-menu__container container--medium"></div>
-            </div>
-        </section>
+        <PostList />
     </main>
     <Footer />
 </template>
