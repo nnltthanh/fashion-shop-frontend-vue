@@ -1,6 +1,7 @@
 <script setup>
 import Header from '@/components/common/Header.vue'
 import Footer from '@/components/common/Footer.vue'
+import PostMenu from '@/components/posts/PostMenu.vue'
 import PostList from '@/components/posts/PostList.vue'
 </script>
 
@@ -21,8 +22,20 @@ import PostList from '@/components/posts/PostList.vue'
                 <div class="grid-view">
                     <div class="grid--column one-whole flex justify--center">
                         <div class="filter-search mt--10">
-                            <input type="text" name="keyword" placeholder="Tìm kiếm bài viết..." autocomplete="off" class="filter-search__control">
+                            <input type="text" name="keyword" placeholder="Tìm kiếm bài viết..." autocomplete="off"
+                                class="filter-search__control">
                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="news-menu">
+            <div class="large--visible">
+                <div class="news-menu__container container--medium">
+                    <div class="menu-select">
+                        <PostMenu />
+                        <PostMenu />
+                        <PostMenu />
                     </div>
                 </div>
             </div>
@@ -129,6 +142,12 @@ import PostList from '@/components/posts/PostList.vue'
     width: 50vw;
 }
 
+.menu-select {
+    display: flex;
+    width: 651px;
+    justify-content: space-between;
+}
+
 @media (min-width: 1440px) {
     .container--medium {
         padding-left: 0;
@@ -136,7 +155,8 @@ import PostList from '@/components/posts/PostList.vue'
     }
 
     .large--visible {
-        display: block!important;;
+        display: block !important;
+        ;
     }
 }
 </style>

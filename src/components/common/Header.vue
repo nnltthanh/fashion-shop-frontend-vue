@@ -53,7 +53,7 @@
                 </div>
                 <div class="nav-item">
                     <router-link :to="{
-                        name: 'news',
+                        name: 'posts',
                     }" class="nav-link">
                         TIN TỨC
                     </router-link>

@@ -82,9 +82,14 @@ const router = createRouter({
       component: () => import("@/views/ProductSearch.vue"),
     },
     {
-      path: "/news",
-      name: "news",
-      component: () => import("@/views/News.vue"),
+      path: "/posts",
+      name: "posts",
+      component: () => import("@/views/Posts.vue"),
+    },
+    {
+      path: "/posts/:id",
+      name: "post",
+      component: () => import("@/views/SinglePost.vue"),
     },
     {
       path: '/staff',
