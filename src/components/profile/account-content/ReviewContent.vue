@@ -20,7 +20,6 @@ const VND = new Intl.NumberFormat('vi-VN', {
 const reviews = ref<Review[]>([]);
 const customerRate = ref<string[]>([]);
 const customerReview = ref<string[]>([]);
-
 let reviewService = new ReviewService();
 
 setTimeout(async () => {
@@ -70,6 +69,8 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
 
 </script>
 <template>
+  <div class="loader-container"  v-if="isLoading"><span class="loader"></span></div>
+
   <div class="account-content my-50">
     <div id="info-tab" class="account-info">
       <h2 class="account-page-title">Đánh giá và phản hồi</h2>
@@ -171,10 +172,9 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
                                   </div>
                                 </div>
                                 <div class="grid-column d-flex align-items-end flex-column">
-                                  <div style="width: 100%;" v-for="(reviewInOrderDetail, index) in reviewsByOrderDetailId">
-                                    <textarea 
-                                    v-if="reviewInOrderDetail.content"
-                                    :class="[
+                                  <div style="width: 100%;"
+                                    v-for="(reviewInOrderDetail, index) in reviewsByOrderDetailId">
+                                    <textarea v-if="reviewInOrderDetail.content" :class="[
                                       'form-control', `item-${index}`,
                                     ]" style="
                                             overflow-y: hidden;
@@ -197,8 +197,7 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
                                             resize: vertical;
                                             min-height: 40px; 
                                             height: auto;
-                                            " 
-                                            v-model="replyContent">
+                                            " v-model="replyContent">
                                         </textarea>
                                   </div>
 
@@ -231,6 +230,72 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
 </template>
 
 <style scoped>
+
+.loader {
+  display: block;
+  border-radius: 50%;
+  position: relative;
+  animation: rotate 1s linear infinite;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.5);
+  position: fixed;
+  top: 40%;
+  left: 40%;
+  z-index: 100;
+}
+
+.loader::before,
+.loader::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0px;
+  border-radius: 50%;
+  border: 20px solid #e5e3e3;
+  animation: prixClipFix 2s linear infinite;
+  z-index: 1000;
+}
+
+.loader::after {
+  border-color: #2424be;
+  animation: prixClipFix 2s linear infinite, rotate 0.5s linear infinite reverse;
+  inset: 6px;
+  z-index: 1000;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg)
+  }
+
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
+@keyframes prixClipFix {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+  }
+
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+  }
+
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+  }
+
+  75% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
+  }
+
+  100% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
+  }
+}
+
 .account-content {
   position: relative;
   /* display: flex; */
@@ -449,7 +514,7 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
   padding: 0.5rem 30px 0.5rem;
   border-radius: 0 0 0.5rem 0.5rem;
   position: relative;
-  z-index: 1;
+  /* z-index: 1; */
   box-sizing: border-box;
 }
 

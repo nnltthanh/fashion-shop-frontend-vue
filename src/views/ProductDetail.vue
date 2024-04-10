@@ -225,6 +225,14 @@ const retrieveProductDetail = async (productId, id) => {
 };
 
 const addToCart = async () => {
+
+    var toastContainer = document.getElementById('addCartMessage')!;
+    toastContainer.style.display = 'none';
+    toastContainer.style.display = '';
+
+    setTimeout(function () {
+        toastContainer.style.display = 'none';
+    }, 1000);
     await cartService.addProductDetailToCart(productDetailActive.value, count.value);
 };
 
@@ -232,13 +240,20 @@ onBeforeMount(() => {
     retrieveProduct(productId.value);
     retrieveAllProductDetails(productId.value);
     retrieveProductDetail(productId.value, 1);
-})
+
+});
 
 
 </script>
 
 <template>
     <Header />
+    <div class="fixed top-35 bg-green-100 text-green-700 p-6 text-center text-lg z-50 rounded-md"
+        role="alert"
+        id="addCartMessage"
+        style="right: 10px; margin-top: 15px; display: none;">
+        <span class="font-medium">Thêm sản phẩm vào giỏ hàng thành công!</span>
+    </div>
     <main class="product-single">
         <section class="product-single__information">
             <div class="product-single__container">
@@ -474,7 +489,7 @@ onBeforeMount(() => {
                                                 <div class="quantity__augure" @click="increase()">+</div>
                                             </div>
                                         </div>
-                                        <div class="product-single__button" @click.prevent="addToCart()">
+                                        <div class="product-single__button" id="showToast" @click.prevent="addToCart()">
                                             <a href="#" class="cart-button">Thêm vào giỏ hàng</a>
                                         </div>
                                     </div>
@@ -586,7 +601,7 @@ onBeforeMount(() => {
 
             </div>
         </section>
-        <ProductReview :productId="productId"/>
+        <ProductReview :productId="productId" />
     </main>
     <Footer />
 </template>

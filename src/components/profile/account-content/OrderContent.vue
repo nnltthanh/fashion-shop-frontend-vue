@@ -12,6 +12,7 @@ const getQueryParamByName = (name: string) => {
   return urlParams.get(name);
 }
 
+const isLoading = ref(true)
 const orderItems = ref([]);
 
 // Call the function to get the value of the 'paramName' query parameter
@@ -26,9 +27,15 @@ onMounted(async () => {
   }
 });
 
+
+setTimeout(async () => {
+  isLoading.value = false;
+}, 1000);
+
 </script>
 
 <template>
+  <span class="loader" v-show="isLoading"></span>
   <div class="account-content my-50">
     <div id="info-tab" class="account-info">
       <h2 class="account-page-title">Lịch sử đơn hàng</h2>
@@ -47,15 +54,78 @@ onMounted(async () => {
             <OrderCard v-for="(orderItem, idx) in orderItems" :key="idx" :order="orderItem"/>
           </div>
         </div>
-        <div id="loadingIndicator" class="loading-indicator">
-          <div class="loader"></div>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+
+.loader {
+  display: block;
+  border-radius: 50%;
+  position: relative;
+  animation: rotate 1s linear infinite;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.5);
+  position: fixed;
+  top: 40%;
+  left: 40%;
+  z-index: 100;
+}
+
+.loader::before,
+.loader::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0px;
+  border-radius: 50%;
+  border: 20px solid #e5e3e3;
+  animation: prixClipFix 2s linear infinite;
+  z-index: 1000;
+}
+
+.loader::after {
+  border-color: #2424be;
+  animation: prixClipFix 2s linear infinite, rotate 0.5s linear infinite reverse;
+  inset: 6px;
+  z-index: 1000;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg)
+  }
+
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
+@keyframes prixClipFix {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+  }
+
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+  }
+
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+  }
+
+  75% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
+  }
+
+  100% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
+  }
+}
+
 .account-content {
   position: relative;
   /* display: flex; */
@@ -251,28 +321,6 @@ a {
 .order-footer-right {
   text-align: right;
 } */
-
-.loading-indicator {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-}
-
-.loader {
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #000;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin-d810b37c 2s linear infinite;
-}
 
 *,
 :after,
