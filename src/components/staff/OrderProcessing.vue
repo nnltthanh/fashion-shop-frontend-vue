@@ -34,13 +34,13 @@
                             <select v-model="selectedStatus" @change="filterStatus" id="status"
                                 class="w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
                                 <option value="all">Tất cả</option>
-                                <option value="CREATING">Creating</option>
-                                <option value="PROCESSING">Processing</option>
-                                <option value="SHIPPED">Shipped</option>
-                                <option value="DELIVERED">Delivered</option>
-                                <option value="CANCELLED">Cancelled</option>
-                                <option value="REFUNDED">Refunded</option>
-                                <option value="ON_HOLD">On hold</option>
+                                <option value="CREATING">Đang tạo</option>
+                                <option value="PROCESSING">Đang xử lý</option>
+                                <option value="SHIPPED">Đã chuyển hàng</option>
+                                <option value="DELIVERED">Đã giao hàng</option>
+                                <option value="CANCELLED">Đã huỷ đơn</option>
+                                <option value="REFUNDED">Đã hoàn tiền</option>
+                                <option value="ON_HOLD">Tạm ngưng</option>
                             </select>
                         </div>
                         <div v-if="selectedStatus === 'PROCESSING'" class="flex items-end"><button @click="PrintOrder()"
@@ -49,7 +49,7 @@
                             </button></div>
                     </div>
                     <!-- Tìm đơn hàng bằng ID -->
-                    <div v-if="selectedStatus === 'all' || selectedStatus === 'CREATING' || selectedStatus === 'DELIVERED'"
+                    <div v-if="selectedStatus === 'all' || selectedStatus === 'CREATING'"
                         class="w-1/2 flex items-end justify-end ">
                         <div class="w-1/4 mr-2">
                             <label class="text-gray-700" for="id">
@@ -75,18 +75,21 @@
                             <select v-model="selectedOrder.staff.id"
                                 class="w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
                                 <!-- <option value="non-data"></option>  -->
-                                <option v-for="staff in staffs" :key="staff.id" :value="staff.id">{{ staff.id }}
+                                <option v-for="staff in staffs" :key="staff.id" :value="staff.id">{{
+                                    staff.id }}. {{
+                                        staff.name }}
                                 </option>
                             </select>
                         </div>
                         <div class="w-1/4 mr-2"><label for="status">Trạng thái</label>
                             <select v-model="selectedOrder.status"
                                 class="w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
-                                <option value="PROCESSING">Processing</option>
-                                <option value="SHIPPED">Shipped</option>
-                                <option value="CANCELLED">Cancelled</option>
-                                <option value="REFUNDED">Refunded</option>
-                                <option value="ON_HOLD">On hold</option>
+                                <option value="PROCESSING">Đang xử lý</option>
+                                <option value="SHIPPED">Đã chuyển hàng</option>
+                                <option value="DELIVERED">Đã giao</option>
+                                <option value="CANCELLED">Đã huỷ đơn</option>
+                                <option value="REFUNDED">Đã hoàn tiền</option>
+                                <option value="ON_HOLD">Tạm ngưng</option>
                             </select>
                         </div>
                         <div class="w-1/4 mr-2"><button @click="updateOrder(selectedOrder)"
@@ -95,7 +98,7 @@
                     </div>
                 </div>
                 <div class="border-b-2 mt-1 border-neutral-200 dark:border-white/10"></div>
-                <div class="custom-scrollbar mt-1 relative overflow-x-auto mb-2 shadow-md" style="max-height: 520px;">
+                <div class="custom-scrollbar mt-1 relative overflow-x-auto mb-2 shadow-md" style="max-height: 550px;">
                     <table id="table-data" class="w-full text-sm text-left rtl:text-right">
                         <thead
                             class="fixed-header text-center text-gray-700 dark:bg-gray-700 dark:text-gray-400 border-neutral-200 dark:border-white/10">
@@ -131,11 +134,11 @@
                             <tr v-for="(order, index) in orders" :key="index" @click="selectOder(order)"
                                 class="row-data hover:bg-gray-200 border-b mt-2 border-neutral-200 dark:border-white/10">
                                 <td class="px-6 py-4">{{ order.id !== undefined ? order.id :
-                        "Chưa cập nhật" }}</td>
+                                    "Chưa cập nhật" }}</td>
                                 <td class="px-6 py-4">{{ order.createDate !== undefined ? order.createDate :
-                        "Chưa cập nhật" }}</td>
+                                    "Chưa cập nhật" }}</td>
                                 <td class="px-6 py-4">{{ order.customer.id !== undefined ? order.customer.id :
-                        "Chưa cập nhật" }}</td>
+                                    "Chưa cập nhật" }}</td>
                                 <!--  -->
                                 <td class="px-6 py-4">
                                     <template v-if="order.orderDetails && order.orderDetails.length > 0">
@@ -154,12 +157,12 @@
                                     </template>
                                 </td>
                                 <td class="px-6 py-4">{{ order.total !== undefined ? order.total :
-                        "Chưa cập nhật" }}</td>
+                                    "Chưa cập nhật" }}</td>
                                 <td class="px-6 py-4">{{ order.staff ? order.staff?.id : "Chưa cập nhật"
-                                    }}</td>
-                                <td class="px-6 py-4">{{ order.status !== undefined ? order.status :
-                        "Chưa cập nhật" }}</td>
-                                <td class="px-6 py-4">{{ order.phone ? order.phone :
+                                    }}. {{ order.staff?.name }}</td>
+
+                                <td id="statusCell" class="px-6 py-4">{{ getStatusTranslation(order.status) }}</td>
+                                <td class="px-6 py-4">{{ order.customer.phone ? order.customer.phone :
                                     "Chưa cập nhật" }}</td>
                             </tr>
                         </tbody>
@@ -192,6 +195,7 @@ interface Order {
 
 interface Customer {
     id: string;
+    phone: string;
 }
 
 export interface OrderDetail {
@@ -211,7 +215,23 @@ interface ProductDetail {
 
 interface Staff {
     id: string;
+    name: string;
 }
+
+
+const statusTranslations = {
+    'CREATING': 'Đang tạo',
+    'PROCESSING': 'Đang xử lý',
+    'SHIPPED': 'Đã chuyển hàng',
+    'DELIVERED': 'Đã giao hàng',
+    'CANCELLED': 'Đã huỷ đơn',
+    'REFUNDED': 'Đã hoàn tiền',
+    'ON_HOLD': 'Tạm ngưng'
+};
+
+const getStatusTranslation = (status) => {
+    return statusTranslations[status] || 'Chưa cập nhật';
+};
 
 const orders = ref<Order[]>();
 const staffs = ref<Staff[]>();
@@ -269,7 +289,7 @@ const filterStatus = () => {
             const td = tr[i].getElementsByTagName("td")[6];
             if (td) {
                 tdContent = td.textContent?.trim();
-                if (tdContent !== selectedStatus.value && selectedStatus.value !== 'all' && tr != undefined) {
+                if (tdContent !== getStatusTranslation(selectedStatus.value) && getStatusTranslation(selectedStatus.value) !== 'all' && tr != undefined) {
                     tr[i].style.display = "none";
                     temp++;
                 } else {
@@ -297,11 +317,13 @@ const selectedOrder = ref<Order>({
     couponId: '',
     customer: {
         id: '',
+        phone: '',
     },
     paymentId: '',
     shipmentId: '',
     staff: {
         id: '',
+        name: '',
     },
     warehouseId: '',
     orderDetails: [],
@@ -312,7 +334,7 @@ const isNotFoundOrder = ref(false);
 const isFoundOrder = ref(false);
 const searchOrder = () => {
     let idToSearch = parseInt(selectedOrder.value.id);
-    console.log(idToSearch);
+    // console.log(idToSearch);
     if (isNaN(idToSearch)) {
         isNotEnteredID.value = true;
         setTimeout(() => {
@@ -344,7 +366,7 @@ const selectOder = (order: Order) => {
     selectedOrder.value = { ...order };
     selectedOrder.value = { ...order };
     if (selectedOrder.value.staff === null) {
-        selectedOrder.value.staff = { id: 'non-data' };
+        selectedOrder.value.staff = { id: 'non-data', name: '' };
     }
     console.log(selectedOrder.value.staff);
 };
