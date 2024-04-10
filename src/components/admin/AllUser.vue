@@ -5,7 +5,7 @@
                 Tổng số tài khoản: {{ users?.length }}
             </div>
         </div>
-        <div class="mt-2 relative overflow-x-auto custom-scrollbar" style="max-height: 500px;">
+        <div class="mt-2 relative overflow-x-auto custom-scrollbar" style="max-height: 550px;">
             <table class="w-full text-xs text-left font-sans rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead
                     class="fixed-header text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
@@ -37,9 +37,6 @@
                         <th scope="col" class="px-4 py-3">
                             Địa chỉ
                         </th>
-                        <th scope="col" class="px-4 py-3">
-                            Mật khẩu
-                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,43 +44,43 @@
                         class="row-data border-b dark:bg-gray-800 cursor-pointer">
                         <th scope="row" class="px-4 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             {{ user.id ? user.id :
-                    "Chưa cập nhật" }}
+                                "Chưa cập nhật" }}
                         </th>
                         <td class="px-4 py-4">
                             {{ user.account ? user.account :
-                    "Chưa cập nhật" }}
+                                "Chưa cập nhật" }}
                         </td>
                         <td class="px-4 py-4">
                             {{ user.name ? user.name :
-                    "Chưa cập nhật" }}
+                                "Chưa cập nhật" }}
                         </td>
                         <td class="px-4 py-4">
                             {{ user.userType ? user.userType :
-                    "Chưa cập nhật" }}
+                                "Chưa cập nhật" }}
                         </td>
                         <td class="px-4 py-4">
                             {{ user.locked ? "Đã khoá" :
-                    "Hoạt động" }}
+                                "Hoạt động" }}
                         </td>
                         <td class="px-4 py-4">
                             {{ user.phone ? user.phone :
-                    "Chưa cập nhật" }}
+                                "Chưa cập nhật" }}
                         </td>
                         <td class="px-4 py-4">
                             {{ user.email ? user.email :
-                    "Chưa cập nhật" }}
+                                "Chưa cập nhật" }}
                         </td>
                         <td class="px-4 py-4">
                             {{ user.dob ? user.dob :
-                    "Chưa cập nhật" }}
+                                "Chưa cập nhật" }}
                         </td>
-                        <td class="px-4 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px">
+                        <!-- <td class="px-4 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px">
                             {{ user.address ? user.address :
-                    "Chưa cập nhật" }}
-                        </td>
+                            "Chưa cập nhật" }}
+                        </td> -->
                         <td class="px-4 py-4">
-                            {{ user.password ? user.password :
-                            "Đăng nhập bằng Google hoặc FaceBook" }}
+                            {{ user.address ? user.address :
+                                "Chưa cập nhật" }}
                         </td>
                     </tr>
                 </tbody>
@@ -110,10 +107,25 @@ interface User {
 }
 const users = ref<User[] | null>(null);
 
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Tháng trong JavaScript bắt đầu từ 0, nên cần cộng thêm 1
+    const year = date.getFullYear();
+    const formattedDate = `${day}-${month}-${year}`;
+    return formattedDate;
+}
+
+const apiUrl = 'http://localhost:8080';
 onBeforeMount(async () => {
     try {
-        const response = await axios.get(`http://localhost:8080/users`);
+        const response = await axios.get(`${apiUrl}/users`);
         users.value = response.data;
+        if (users.value) {
+            users.value.forEach(async (user) => {
+                user.dob = formatDate(user.dob);
+            });
+        }
         console.log(users.value)
     } catch (error) {
         console.error('Lỗi khi lấy thông tin người dùng:', error);

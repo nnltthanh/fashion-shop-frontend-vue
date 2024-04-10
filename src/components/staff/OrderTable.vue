@@ -7,7 +7,7 @@
                     0 }}
                 </div>
                 <div class="border-b-2 border-neutral-200 dark:border-white/10"></div>
-                <div class="custom-scrollbar mt-2 relative overflow-x-auto mb-2 shadow-md" style="max-height: 549px;">
+                <div class="custom-scrollbar mt-2 relative overflow-x-auto mb-2 shadow-md" style="max-height: 580px;">
                     <table class="w-full text-sm text-left rtl:text-right">
                         <thead
                             class="fixed-header text-center text-gray-700 dark:bg-gray-700 dark:text-gray-400 mt-2 border-neutral-200 dark:border-white/10">
@@ -43,11 +43,11 @@
                             <tr v-for="(order, index) in orders" :key="index"
                                 class="border-b mt-2 border-neutral-200 dark:border-white/10">
                                 <td class="px-6 py-4">{{ order.id !== undefined ? order.id :
-                    "Chưa cập nhật" }}</td>
+                                    "Chưa cập nhật" }}</td>
                                 <td class="px-6 py-4">{{ order.createDate !== undefined ? order.createDate :
-                    "Chưa cập nhật" }}</td>
+                                    "Chưa cập nhật" }}</td>
                                 <td class="px-6 py-4">{{ order.customer.id !== undefined ? order.customer.id :
-                    "Chưa cập nhật" }}</td>
+                                    "Chưa cập nhật" }}</td>
                                 <!--  -->
                                 <td class="px-6 py-4">
                                     <template v-if="order.orderDetails && order.orderDetails.length > 0">
@@ -67,11 +67,11 @@
                                 </td>
 
                                 <td class="px-6 py-4">{{ order.total !== undefined ? order.total :
-                    "Chưa cập nhật" }}</td>
-                                <td class="px-6 py-4">{{ order.staffId !== undefined ? order.staffId :
-                    "Chưa cập nhật" }}</td>
-                                <td class="px-6 py-4">{{ order.status !== undefined ? order.status :
-                    "Chưa cập nhật" }}</td>
+                                    "Chưa cập nhật" }}</td>
+                                <td class="px-6 py-4">{{ order.staff ? order.staff?.id : "Chưa cập nhật"
+                                    }}. {{ order.staff?.name }}</td>
+                                <td id="statusCell" class="px-6 py-4">{{ getStatusTranslation(order.status) }}</td>
+
                                 <td class="px-6 py-4">{{ order.customer.phone ? order.customer.phone :
                                     "Chưa cập nhật" }}</td>
                             </tr>
@@ -97,10 +97,30 @@ interface Order {
     customer: Customer,
     paymentId: string;
     shipmentId: string;
-    staffId: string;
+    staff: Staff;
     warehouseId: string;
     orderDetails: OrderDetail[];
+    phone: string;
 }
+
+interface Staff {
+    id: string;
+    name: string
+}
+
+const statusTranslations = {
+    'CREATING': 'Đang tạo',
+    'PROCESSING': 'Đang xử lý',
+    'SHIPPED': 'Đã chuyển hàng',
+    'DELIVERED': 'Đã giao hàng',
+    'CANCELLED': 'Đã huỷ',
+    'REFUNDED': 'Đã hoàn tiền',
+    'ON_HOLD': 'Tạm ngưng'
+};
+
+const getStatusTranslation = (status) => {
+    return statusTranslations[status] || 'Chưa cập nhật';
+};
 
 interface Customer {
     id: string;

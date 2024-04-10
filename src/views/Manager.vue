@@ -13,9 +13,9 @@
                     </svg>
                     {{ accountInfo && accountInfo.account ? accountInfo.account : 'Chưa cập nhật!' }}
                 </div>
-                <div class="my-2 bg-gray-600 h-[1px]"></div>
+                <div class="my-2 bg-gray-400 h-[1px]"></div>
             </div>
-            <div
+            <div @click="clickStaff()"
                 class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
                 <i class="bi bi-bookmark-fill"></i>
                 <span class="text-[15px] ml-4 text-gray-200 font-bold">Quản lý nhân viên</span>
@@ -23,9 +23,19 @@
             <div
                 class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
                 <i class="bi bi-house-door-fill"></i>
-                <span class="text-[15px] ml-4 text-gray-200 font-bold">Quản lý kho hàng</span>
+                <span class="text-[15px] ml-4 text-gray-200 font-bold">Thống kê</span>
             </div>
-            <div class="mt-10 bg-gray-600 h-[1px]"></div>
+            <div
+                class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
+                <i class="bi bi-house-door-fill"></i>
+                <span class="text-[15px] ml-4 text-gray-200 font-bold">Sản phẩm</span>
+            </div>
+            <!-- <div
+                class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
+                <i class="bi bi-house-door-fill"></i>
+                <span class="text-[15px] ml-4 text-gray-200 font-bold">Khuyến mãi</span>
+            </div> -->
+            <div class="mt-10 bg-gray-400 h-[1px]"></div>
             <div @click="logOut()"
                 class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
                 <span class="text-[15px] ml-4 text-gray-200 font-bold">Đăng xuất</span>
@@ -62,6 +72,10 @@
                 <div v-if="showPersonalInfo">
                     <PersonalInformation />
                 </div>
+                <div v-if="showStaff">
+                    <StaffManagement />
+                </div>
+                <!-- <Statistic /> -->
             </div>
         </div>
     </div>
@@ -72,6 +86,8 @@ import { ref, onMounted, onBeforeMount } from 'vue';
 import axios from 'axios';
 import router from '@/router';
 import PersonalInformation from '@/components/manager/PersonalInformation.vue';
+import StaffManagement from '@/components/manager/StaffManagement.vue';
+// import Statistic from '@/components/manager/Statistic.vue';
 
 
 const showSidebar = ref(false);
@@ -96,6 +112,13 @@ const userInfo = ref<AccountInfo | null>(null);
 
 const isLoggedIn = ref(false);
 const isDataLoaded = ref(false);
+
+const showStaff = ref(false);
+
+const clickStaff = () => {
+    showPersonalInfo.value = false;
+    showStaff.value = true;
+}
 
 onBeforeMount(() => {
     // Lấy thông tin tài khoản từ localStorage

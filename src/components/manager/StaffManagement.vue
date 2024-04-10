@@ -54,7 +54,7 @@
                             class="mr-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Tìm
                             kiếm</button>
                     </div>
-                    <div class="filter-employee w-1/6 mr-2">
+                    <!-- <div class="filter-employee w-1/6 mr-2">
                         <label for="userType" class="text-gray-700">Chức vụ:</label>
                         <select v-model="selectedUserType" @change="filterEmployeesByUserType" id="userType"
                             class="w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
@@ -63,9 +63,8 @@
                             <option value="manager">Manager</option>
                             <option value="senior_manager">Senior Manager</option>
                             <option value="staff">Staff</option>
-                            <!-- Thêm các option cho các chức vụ khác nếu cần -->
                         </select>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="flex items-end mt-2">Tổng số: {{ currentTotalAccount }}</div>
             </div>
@@ -85,9 +84,6 @@
                             Tên nhân viên
                         </th>
                         <th scope="col" class="px-4 py-3">
-                            Chức vụ
-                        </th>
-                        <th scope="col" class="px-4 py-3">
                             Trạng thái
                         </th>
                         <th scope="col" class="px-4 py-3">
@@ -101,6 +97,9 @@
                         </th>
                         <th scope="col" class="px-4 py-3">
                             Địa chỉ
+                        </th>
+                        <th scope="col" class="px-4 py-3">
+                            Chức vụ
                         </th>
                     </tr>
                 </thead>
@@ -118,10 +117,6 @@
                         <!-- <td class="px-6 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px"> -->
                         <td class="px-4 py-4">
                             {{ employee.name ? employee.name :
-                                "Chưa cập nhật" }}
-                        </td>
-                        <td class="px-4 py-4">
-                            {{ employee.userType ? employee.userType :
                                 "Chưa cập nhật" }}
                         </td>
                         <td class="px-4 py-4">
@@ -143,6 +138,10 @@
                         </td>
                         <td class="px-4 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px">
                             {{ employee.address ? employee.address :
+                                "Chưa cập nhật" }}
+                        </td>
+                        <td class="px-4 py-4">
+                            {{ employee.userType ? employee.userType :
                                 "Chưa cập nhật" }}
                         </td>
                     </tr>
@@ -171,28 +170,13 @@ interface Employee {
 const employees = ref<Employee[] | null>(null);
 const selectedEmployee = ref<Employee>({ id: '', account: '', password: '', name: '', phone: '', email: '', address: '', dob: '', locked: false, userType: '' });
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.getMonth() + 1; // Tháng trong JavaScript bắt đầu từ 0, nên cần cộng thêm 1
-    const year = date.getFullYear();
-    const formattedDate = `${day}-${month}-${year}`;
-    return formattedDate;
-}
-
-const apiUrl = 'http://localhost:8080';
 const currentTotalAccount = ref<number>(0);
 onBeforeMount(async () => {
     try {
-        const response = await axios.get(`${apiUrl}/users`);
-        const filteredData = response.data.filter((employee: Employee) => employee.userType !== 'customer');
+        const response = await axios.get(`http://localhost:8080/users`);
+        const filteredData = response.data.filter((employee: Employee) => employee.userType === 'staff');
         employees.value = filteredData;
         currentTotalAccount.value = employees.value?.length!;
-        if (employees.value) {
-            employees.value.forEach(async (employee) => {
-                employee.dob = formatDate(employee.dob);
-            });
-        }
         console.log(employees.value);
     } catch (error) {
         console.error('Lỗi khi lấy thông tin người dùng:', error);
@@ -211,7 +195,7 @@ const blockAndUnblock = async (employee: Employee) => {
             }, 1500);
             return;
         }
-        const response = await axios.put(`${apiUrl}/users/${employee.id}/updateLockedStatus`);
+        const response = await axios.put(`http://localhost:8080/users/${employee.id}/updateLockedStatus`);
         if (response.status === 200) {
             let index = employees.value?.findIndex((a) => a.id === employee.id)
             employee.locked = !employee.locked;
