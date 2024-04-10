@@ -586,7 +586,7 @@ onBeforeMount(() => {
 
             </div>
         </section>
-        <ProductReview />
+        <ProductReview :productId="productId"/>
     </main>
     <Footer />
 </template>
@@ -874,17 +874,6 @@ body {
     align-items: center;
     margin-left: -3px;
     margin-right: -3px;
-}
-
-.reviews-rating__star {
-    display: block;
-    width: 20px;
-    height: 20px;
-    margin: 0 3px 1px;
-    background-image: url(/images/star-new.svg?08a379c…);
-    background-repeat: no-repeat;
-    background-position: 50%;
-    background-size: contain;
 }
 
 .reviews-rating__star.is-active,

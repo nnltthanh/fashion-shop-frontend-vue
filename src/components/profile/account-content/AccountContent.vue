@@ -151,15 +151,26 @@ import axios from 'axios';
 const showUpdateModal = ref(false);
 const isUpdatedOK = ref(false);
 const isUpdatedFailed = ref(false);
+
 const clickUpdate = () => {
     showUpdateModal.value = true;
 }
 
 const submitUpdateInfo = async () => {
     try {
+        if (userInfo.value?.dob) {
+            const date = new Date(userInfo.value?.dob);
+            console.log(userInfo.value?.dob)
+            const day = date.getDate() + 1;
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            userInfo.value.dob = `${year}-${month}-${day}`;
+        }
+        
         const response = await axios.put(`${baseUrl}/customers/${userInfo.value?.id}/updateInfo`, userInfo.value);
         if (response.status === 200) {
             isUpdatedOK.value = true;
+            userInfo.value = response.data;
             setTimeout(() => {
                 isUpdatedOK.value = false;
             }, 2000);

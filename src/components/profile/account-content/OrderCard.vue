@@ -19,34 +19,48 @@ const orderDetails = ref<OrderDetail[]>([]);
 const customerRate = ref<string[]>([]);
 const customerReview = ref<string[]>([]);
 const isReviewedInIndex = ref<boolean[]>([]);
-const uploadedImages = ref<{ id: number, url: string }[]>([]);
+const uploadedImages = ref<{ reviewIndex: number, id: number, url: string }[]>([]);
 let changingReviewImages: { id: number, file: File }[] = [];
 
 setTimeout(async () => {
     orderDetails.value = (await cartService.getOrderDetailsByOrderId(props.order.id)).data;
 }, 1000);
 
+const replyContent = ref<string>('');
+const reviewsByOrderDetailId = ref<Review[]>([]);
+
+// const getAllReviewByOrderDetailId = async(orderDetailId) => {
+//     replyContent.value = '';
+//     const response = (await reviewService.getAllReviewByOrderDetailId(orderDetailId));
+//     reviewsByOrderDetailId.value = response.data;
+
+//     console.log(reviewsByOrderDetailId.value)
+// }
+
 const getReviewByOrderId = async (orderId) => {
     let res = (await reviewService.getAllReviewByOrderId(orderId));
-
     customerReview.value = [];
+    uploadedImages.value = [];
+
     res.data.forEach((review) => {
         orderDetails.value.forEach((orderDetail, index) => {
-            console.log(review, orderDetail, index)
-            if (review.orderDetail.id == orderDetail.id) {
+            console.log(review, index)
+            if (review.orderDetail.id == orderDetail.id && customerReview.value[index] == null) {
                 customerRate.value[index] = review.rate;
                 customerReview.value[index] = review.content;
                 highlightStars(review.rate, index);
                 isReviewedInIndex.value[index] = true;
 
-                uploadedImages.value = [];
-
-                review.imageUrls.split(',').forEach((value, idx) => {
-                    uploadedImages.value.push({ id: idx, url: value })
+                review.imageUrls!.split(',').forEach((value, idx) => {
+                    console.log(index, idx, value)
+                    uploadedImages.value.push({ reviewIndex: index, id: idx, url: value })
                 })
+            
             }
         })
     })
+
+    console.log(uploadedImages.value)
 }
 
 const getRatingTitle = (rating) => {
@@ -75,7 +89,7 @@ const highlightStars = (rating, idx) => {
 
 const removeHighlight = (idx) => {
     const stars = document.querySelectorAll(`.reviews-rating-star.item-${idx}.order-${props.order.id}`);
-    stars.forEach(star => star.classList.remove('is-full'));
+    stars.forEach(star => star?.classList.remove('is-full'));
 }
 
 const rated = (rating, index) => {
@@ -94,20 +108,21 @@ export type Review = {
     content: string;
     createDate: Date;
     rate: number;
-    customerId: number;
     orderDetail: OrderDetail;
-    imageUrls: string
+    imageUrls: string;
+    customer: any;
+    staff: any
 }
 
-const handleFileInputChange = async (event) => {
+const handleFileInputChange = async (event, index) => {
     const files = event.target.files;
-    const newImages: { id: number, url: string }[] = [];
+    const newImages: { reviewIndex: number, id: number, url: string }[] = [];
 
     for (let i = 0; i < files.length; i++) {
         if (uploadedImages.value.length + newImages.length > 4) break;
         const file = files[i];
         const imageUrl = URL.createObjectURL(file);
-        newImages.push({ id: i, url: imageUrl });
+        newImages.push({ reviewIndex: index, id: i, url: imageUrl });
 
         changingReviewImages.push({ id: i, file: file });
     }
@@ -253,21 +268,43 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                             <label v-if="!isReviewedInIndex[index]" class="upload__btn">
                                                 Upload images
                                                 <input type="file" multiple data-max_length="5"
-                                                    class="upload__inputfile" @change="handleFileInputChange">
+                                                    class="upload__inputfile" @change="handleFileInputChange($event, index)">
                                             </label>
                                         </div>
                                         <div class="upload__img-wrap">
                                             <div v-for="image in uploadedImages" :key="image.id"
-                                                class="upload__img-box">
-                                                <div class="img-bg"
+                                                >
+                                                <div class="upload__img-box"  v-show="image.reviewIndex == index">
+                                                    <div class="img-bg"
                                                     :style="{ backgroundImage: 'url(' + image.url + ')' }">
                                                     <div v-if="!isReviewedInIndex[index]" class="upload__img-close"
                                                         @click="removeImage(image.id)"></div>
                                                 </div>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
                                     <div class="grid-column d-flex align-items-end flex-column">
+                                        
+                                        <div style="width: 100%;">
+                                                                    <textarea v-for="(reviewInOrderDetail, index) in reviewsByOrderDetailId" :class="[
+                                'form-control', `item-${index}`,
+                            ]" style="
+                                            overflow-y: hidden;
+                                            resize: vertical;
+                                            min-height: 40px;
+                                            margin-bottom: 10px; 
+                                            height: auto;
+                                            /* background-color: #D9D9D9; */
+                                            white-space: normal" 
+                                            :readonly="true"
+                                            :disabled="true"
+                                            :style="{ 'background-color': reviewInOrderDetail.staff ? '#C6FF91' : '#D9D9D9' }"> {{ reviewInOrderDetail.content }}
+                                        </textarea>
+
+                                        </div>
+
                                         <textarea placeholder="Viết đánh giá..." :class="[
                     'form-control', `item-${index}`,
                 ]" style="
@@ -644,7 +681,6 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
 .upload__img-box {
     width: 100px;
     padding: 0 10px;
-    margin-bottom: 12px;
 }
 
 .upload__img-close {

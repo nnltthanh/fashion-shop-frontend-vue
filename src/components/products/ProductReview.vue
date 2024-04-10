@@ -1,5 +1,36 @@
-<script setup>
-import { reactive } from "vue";
+<script setup lang="ts">
+import type { CartService } from '@/services/cart.service';
+import { ReviewService } from '@/services/review.service';
+import { inject, reactive, ref } from "vue";
+import type { Review } from '../profile/account-content/OrderCard.vue';
+
+const props = defineProps({
+    productId: Number
+});
+
+const { cartService }: { cartService: CartService } = inject('cartService')!;
+
+const isLoading = ref(true);
+
+const reviews = ref<Review[]>([]);
+
+let overallRating = ref<number>(0);
+let averageStar = ref<number>(0);
+let reviewService = new ReviewService();
+
+setTimeout(async () => {
+  reviews.value = (await reviewService.getAllReviewsByProductId(props.productId)).data;
+  console.log(reviews.value);
+  overallRating.value = reviews.value.length;
+  reviews.value.forEach(r => {
+    averageStar.value += r.rate;
+  })
+  averageStar.value = Number((averageStar.value / overallRating.value || 0).toFixed(1));
+  isLoading.value = false;
+}, 1000);
+
+
+
 const reviewFilters = reactive([
     {
         filterType: 'rating',
@@ -78,7 +109,7 @@ const reviewFilters = reactive([
                             <h5>Đánh giá sản phẩm</h5>
                         </div>
                         <div class="reviews-rating-mb__rating">
-                            4.5
+                            {{ averageStar }}
                         </div>
                         <div class="reviews-rating yellow">
                             <div class="reviews-rating__star is-active"></div>
@@ -88,13 +119,13 @@ const reviewFilters = reactive([
                             <div class="reviews-rating__star is-half"></div>
                         </div>
                         <div class="reviews-rating-mb__count">
-                            12 đánh giá
+                            {{ overallRating }} đánh giá
                         </div>
                     </div>
                 </div>
                 <div class="reviews-rightside">
                     <div class="reviews__filter">
-                        <div v-for="(item, index) in reviewFilters" :key="item.id" class="reviews__select">
+                        <div v-for="(item, index) in reviewFilters" :key="index" class="reviews__select">
                             <select>
                                 <option v-for="option in item.options" :value="option.value">{{ option.content }}
                                 </option>
@@ -103,8 +134,56 @@ const reviewFilters = reactive([
                     </div>
                     <div class="reviews-listing">
                         <div class="grid">
-                            <div class="grid__column six-twelfths">
-                                <div class="reviews-listing__item">
+                            
+                            <div class="grid__column">
+                                <div class="reviews-listing__item border-bottom" v-for="(review, index) in reviews">
+                                    <div class="reviews-listing__content">
+                                        <div class="reviews-author__name">
+                                            {{ review.customer?.name }}
+                                        </div>
+                                        <div class="reviews-rating">
+                                            <div :class="['reviews-rating__star', review.rate >= 1 ? 'is-active' : '']">
+                                            </div>
+                                            <div :class="['reviews-rating__star', review.rate >= 2 ? 'is-active' : '']">
+                                            </div>
+                                            <div :class="['reviews-rating__star', review.rate >= 3 ? 'is-active' : '']">
+                                            </div>
+                                            <div :class="['reviews-rating__star', review.rate >= 4 ? 'is-active' : '']">
+                                            </div>
+                                            <div :class="['reviews-rating__star', review.rate == 5 ? 'is-active' : '']">
+                                            </div>
+
+                                        </div>
+                                        <div class="reviews-order">
+                                            <router-link
+                                                :to="{ name: 'product', params: { id: review.orderDetail.productDetail.product.id.toString() } }">
+                                                <div class="order-item-title"> {{
+                                                    review.orderDetail.productDetail.product.name }}</div>
+                                            </router-link>
+                                            <!-- <div class="order-item-title"> {{ review.orderDetail.productDetail.product.name }}</div> -->
+                                            <div class="order-item-variant-label">
+                                                {{ review.orderDetail.productDetail.color }} / {{
+                                                review.orderDetail.productDetail.size }}
+                                            </div>
+                                        </div>
+                                        <div class="reviews-listing__description">
+                                            <p>
+                                                {{ review.content }}
+                                            </p>
+                                            <div class="reviews-listing-gallery" rel-script="product-gallery-popup">
+                                                <a v-for="image in review.imageUrls?.split(',')"
+                                                    class="reviews-listing-image" rel-script="product-lightbox-gallery"
+                                                    data-index="0" :data-image=image>
+                                                    <img :src=image alt="0" />
+                                                </a>
+
+                                            </div>
+
+                                            <span class="reviews-listing__date"> {{ review.createDate }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="reviews-listing__item">
                                     <div class="reviews-listing__content">
                                         <div class="reviews-rating">
                                             <div class="reviews-rating__star is-active"></div>
@@ -130,108 +209,7 @@ const reviewFilters = reactive([
                                             </span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="grid__column six-twelfths">
-                                <div class="reviews-listing__item">
-                                    <div class="reviews-listing__content">
-                                        <div class="reviews-rating">
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-half"></div>
-                                        </div>
-                                        <div class="reviews-author">
-                                            <div class="reviews-author__name">
-                                                Đinh Dụng
-                                            </div>
-                                            <div class="reviews-author__description">
-                                            </div>
-                                        </div>
-                                        <div class="reviews-listing__description">
-                                            <p>
-                                                Mình đã sưu tầm gần đủ bộ quần, áo trong, ngoài của CM rồi, nhìn chung
-                                                rất hài lòng về phom dáng và giá cả. Đặc biệt CM giao hàng quá thần tốc,
-                                                mình ở Thái Bình đặt hàng sau đúng 1 ngày đã tới nơi, nhanh ngoài sự
-                                                mong đợi. Tuy nhiên, quần jean chưa phong phú về màu sắc, thi thoảng hết
-                                                size nhỏ, màu sắc trên ảnh và thực tế có hơi lệch nhau 1 chút ! Xin được
-                                                chân thành góp ý cùng shop, mong shop sau này ra nhiều sản phẩm hơn nữa
-                                                để mình có thể đồng bộ từ đầu đến chân luôn! Mình xin đánh giá: Dịch vụ,
-                                                chăm sóc khách hàng 5 sao, sản phẩm 4 sao---> tổng 4,5 sao cho shop !
-                                            </p>
-                                            <p class="reviews-listing__feedback">
-                                                Coolmate cảm ơn anh đã đánh giá khách quan trải nghiệm. Mong mình có
-                                                trải nghiệm thật tuyệt vời với sản phẩm. Nếu trong quá trình trải nghiệm
-                                                có phát sinh vấn đề không mong muốn. Anh có thể liên hệ hotline
-                                                1900272737 để được hỗ trợ đổi trả trong vòng 60 ngày nhé. Có rất nhiều
-                                                sự lựa chọn, cảm ơn anh đã tin tưởng và lựa chọn Coolmate. Chúc anh một
-                                                ngày tốt lành.
-                                            </p>
-                                            <span class="reviews-listing__date">
-                                                01.02.2024
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="grid__column six-twelfths">
-                                <div class="reviews-listing__item">
-                                    <div class="reviews-listing__content">
-                                        <div class="reviews-rating">
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                        </div>
-                                        <div class="reviews-author">
-                                            <div class="reviews-author__name">
-                                                B21DCCN522 - Đồng Hoàng Minh
-                                            </div>
-                                            <div class="reviews-author__description">
-                                                Xanh sáng / 32
-                                            </div>
-                                        </div>
-                                        <div class="reviews-listing__description">
-                                            <p>
-                                                quần đẹp, mặc thoải mái, đáng mua. Sẽ ủng hộ tiếp
-                                            </p>
-                                            <span class="reviews-listing__date">
-                                                17.02.2024
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="grid__column six-twelfths">
-                                <div class="reviews-listing__item">
-                                    <div class="reviews-listing__content">
-                                        <div class="reviews-rating">
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                            <div class="reviews-rating__star is-active"></div>
-                                        </div>
-                                        <div class="reviews-author">
-                                            <div class="reviews-author__name">
-                                                Nguyễn Hoàng
-                                            </div>
-                                            <div class="reviews-author__description">
-                                                Xanh sáng / 29
-                                            </div>
-                                        </div>
-                                        <div class="reviews-listing__description">
-                                            <p>
-                                                Quần đẹp mặc thích nha
-                                            </p>
-                                            <span class="reviews-listing__date">
-                                                29.01.2024
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         <div class="reviews-pagination">
@@ -451,7 +429,7 @@ select {
 .reviews-listing__feedback {
     padding: 14px 18px;
     border-radius: 16px;
-    margin-top: 15px!important;
+    margin-top: 15px !important;
     line-height: 1.5em;
     border: 1px solid #d9d9d9;
     background-color: #d9d9d9;
@@ -476,7 +454,8 @@ select {
     color: #000;
 }
 
-.reviews-pagination__next, .reviews-pagination__prev {
+.reviews-pagination__next,
+.reviews-pagination__prev {
     display: block;
     width: 20px;
     height: 20px;
@@ -501,4 +480,45 @@ select {
 .reviews-pagination__prev:before {
     transform: rotate(90deg);
 }
+
+.reviews-listing-gallery {
+  display: flex;
+  margin-left: -4px;
+  margin-right: -4px;
+  margin-top: 10px;
+}
+
+.reviews-listing-image {
+  overflow: hidden;
+  border-radius: 8px;
+  width: 60px;
+  margin: 0 4px;
+  position: relative;
+}
+
+.reviews-listing-image:before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+  height: 0;
+  width: 100%;
+}
+
+.reviews-listing-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+.order-item-variant-label {
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.4);
+  font-style: italic;
+  font-size: 12px;
+}
+
 </style>

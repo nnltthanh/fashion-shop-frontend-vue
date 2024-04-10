@@ -2,97 +2,6 @@
     <div class="flex flex-col mb-3">
         <div class="overflow-auto sm:-mx-6 lg:-mx-8">
             <div class="inline-block min-w-full py-2 sm:px-6 lg:px-8 mb-2">
-                <!-- Các thông báo -->
-                <!-- <div class="alerts">
-                    <div v-if="isUpdatedOK"
-                        class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-100 text-green-700 p-6 text-center text-lg z-50 rounded-md"
-                        role="alert">
-                        <span class="font-medium">Cập nhật thành công!!!</span>
-                    </div>
-                    <div v-if="isNotEnteredID"
-                        class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-100 text-red-700 p-6 text-center text-lg z-50 rounded-md"
-                        role="alert">
-                        <span class="font-medium">Chưa nhập ID!!!</span>
-                    </div>
-                    <div v-if="isNotFoundOrder"
-                        class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-100 text-red-700 p-6 text-center text-lg z-50 rounded-md"
-                        role="alert">
-                        <span class="font-medium">Không tìm thấy đơn hàng!!!</span>
-                    </div>
-                    <div v-if="isFoundOrder"
-                        class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-100 text-green-700 p-6 text-center text-lg z-50 rounded-md"
-                        role="alert">
-                        <span class="font-medium">Đã tìm thấy đơn hàng!!!</span>
-                    </div>
-                </div>
-                <div class="w-full flex">
-                    <div class="w-1/6 mr-2 flex items-end">Tổng số đơn hàng: {{ currentTotalOrder }}
-                    </div>
-                    <div class="flex w-1/3">
-                        <div class="filter-employee mr-2">
-                            <label for="userType" class="text-gray-700">Trạng thái</label>
-                            <select v-model="selectedStatus" @change="filterStatus" id="status"
-                                class="w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
-                                <option value="all">Tất cả</option>
-                                <option value="CREATING">Creating</option>
-                                <option value="PROCESSING">Processing</option>
-                                <option value="SHIPPED">Shipped</option>
-                                <option value="DELIVERED">Delivered</option>
-                                <option value="CANCELLED">Cancelled</option>
-                                <option value="REFUNDED">Refunded</option>
-                                <option value="ON_HOLD">On hold</option>
-                            </select>
-                        </div>
-                        <div v-if="selectedStatus === 'PROCESSING'" class="flex items-end"><button @click="PrintOrder()"
-                                class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 text-white font-bold py-2 px-4 rounded">
-                                In đơn hàng
-                            </button></div>
-                    </div> -->
-                <!-- Tìm đơn hàng bằng ID -->
-                <!-- <div v-if="selectedStatus === 'all' || selectedStatus === 'CREATING' || selectedStatus === 'DELIVERED'"
-                        class="w-1/2 flex items-end justify-end ">
-                        <div class="w-1/4 mr-2">
-                            <label class="text-gray-700" for="id">
-                                Mã đơn hàng:
-                            </label>
-                            <input v-model="selectedOrder.id"
-                                class="input-id w-full  bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
-                        </div>
-                        <div class="search-order w-1/3 mr-2">
-                            <button @click="searchOrder"
-                                class="button-print-order mr-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Tìm
-                                đơn hàng</button>
-                        </div>
-                    </div> -->
-                <!-- Cập nhật đơn hàng -->
-                <!-- <div v-else class="w-1/2 flex items-end justify-end">
-                        <div class="w-1/4 mr-2">
-                            <label>Mã đơn hàng</label>
-                            <input v-model="selectedOrder.id"
-                                class="input-id w-full pl-2 bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
-                        </div>
-                        <div class="w-1/4 mr-2"><label>Mã n/viên xử lý</label>
-                            <select v-model="selectedOrder.staff.id"
-                                class="w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
-                                <option v-for="staff in staffs" :key="staff.id" :value="staff.id">{{ staff.id }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="w-1/4 mr-2"><label for="status">Trạng thái</label>
-                            <select v-model="selectedOrder.status"
-                                class="w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
-                                <option value="PROCESSING">Processing</option>
-                                <option value="SHIPPED">Shipped</option>
-                                <option value="CANCELLED">Cancelled</option>
-                                <option value="REFUNDED">Refunded</option>
-                                <option value="ON_HOLD">On hold</option>
-                            </select>
-                        </div>
-                        <div class="w-1/4 mr-2"><button @click="updateOrder(selectedOrder)"
-                                class="mr-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Cập nhật</button></div>
-                    </div>
-                </div> -->
                 <div class="border-b-2 mt-1 border-neutral-200 dark:border-white/10"></div>
                 <div class="custom-scrollbar mt-1 relative overflow-x-auto mb-2 shadow-md" style="max-height: 580px;">
                     <table id="table-data" class="w-full text-sm text-left rtl:text-right">
@@ -105,9 +14,9 @@
                                 <th scope="col" class="px-3 py-3">
                                     Ngày đánh giá
                                 </th>
-                                <!-- <th scope="col" class="px-6 py-3">
+                                <th scope="col" class="px-6 py-3">
                                     Mã đơn hàng
-                                </th> -->
+                                </th>
                                 <th scope="col" class="px-6 py-3">
                                     Chi tiết (Mã chi tiết sp/ Số lượng)
                                 </th>
@@ -130,32 +39,31 @@
                                 class="row-data hover:bg-gray-200 border-b mt-2 border-neutral-200 dark:border-white/10"> -->
                             <tr v-for="(review, index) in reviews" :key="index"
                                 class="row-data hover:bg-gray-200 border-b mt-2 border-neutral-200 dark:border-white/10">
-                                <td class="px-6 py-4">{{ review.id !== undefined ? review.id :
-                                "Chưa cập nhật" }}</td>
-                                <td class="px-6 py-4">{{ review.createDate !== undefined ? review.createDate :
-                                "Chưa cập nhật" }}</td>
-
-                                <td class="px-6 py-4">
+                                <td v-if="!review.staff" class="px-6 py-4">{{ review.id }}</td>
+                                <td v-if="!review.staff" class="px-6 py-4">{{ review.createDate }}</td>
+                                <td v-if="!review.staff" class="px-6 py-4">{{ review.orderDetail.order?.id }}</td>
+                                <td v-if="!review.staff" class="px-6 py-4">
                                     Mã chi tiết sp: {{ review.orderDetail.productDetail.id }}
                                     Số lượng: {{ review.orderDetail.quantity }}
                                 </td>
-                                <td class="px-6 py-4">{{ review.content || '' }}</td>
-                                <td class="px-6 py-4">{{ review.rate || '' }}</td>
-                                <td class="px-6 py-4">{{ "Chưa cập nhật" }}</td>
-                                <td type="button" data-bs-toggle="modal" class="px-6 py-4"
-                                :data-bs-target="`#review-${review.id}`" @click="highlightStars(review)">{{ "Chưa cập nhật" }}</td>
+                                <td v-if="!review.staff" class="px-6 py-4">{{ review.content || '' }}</td>
+                                <td v-if="!review.staff" class="px-6 py-4">{{ review.rate || '' }}</td>
+                                <td v-if="!review.staff" class="px-6 py-4">{{ "Chưa cập nhật" }}</td>
+                                <td v-if="!review.staff" type="button" data-bs-toggle="modal" class="px-6 py-4 text-instruction"
+                                    :data-bs-target="`#review-${review.id}`"
+                                    @click="getAllReviewByOrderDetailId(review.orderDetail.id)">Phản hồi
+                                </td>
                                 <!-- <button type="button" class="btn btn--outline" data-bs-toggle="modal"
                                     :data-bs-target="`#review-${review.id}`" @click="getReviewById(review.id)">
                                 </button> -->
                                 <!-- Modal -->
-                                <div class="modal fade" style="text-align: left !important" :id="`review-${review.id}`" tabindex="-1"
-                                    aria-labelledby="exampleModalLabel" data-bs-backdrop="false" data-bs-focus="true"
-                                    aria-hidden="false">
+                                <div class="modal fade" style="text-align: left !important" :id="`review-${review.id}`"
+                                    tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="false"
+                                    data-bs-focus="true" aria-hidden="false">
                                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <div class="modal-title h4" id="exampleModalLabel">Đánh giá đơn hàng
-
                                                 </div>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
@@ -166,7 +74,7 @@
                                                         <router-link
                                                             :to="{ name: 'product', params: { id: review.orderDetail.productDetail.product.id.toString() } }">
                                                             <img :src="review.orderDetail.productDetail.imageLinks?.split(', ')[0]
-                                .toString().replace('width=80,height=80', 'width=300,height=442')"
+                                                                .toString().replace('width=80,height=80', 'width=300,height=442')"
                                                                 :alt="review.orderDetail.productDetail.product.name.toString()"
                                                                 style="height: 150px; width: 100px;" />
                                                         </router-link>
@@ -180,17 +88,27 @@
                                                         </router-link>
 
                                                         <div class="order-item-variant-label">{{
-                                review.orderDetail.productDetail.color }} /
+                                                            review.orderDetail.productDetail.color }} /
                                                             {{ review.orderDetail.productDetail.size }}</div>
                                                         <!-- <div class="order-item-price"> {{ VND.format(review.orderDetail.total) }}</div> -->
                                                         <div class="reviews-rating">
-                  <div :class="['reviews-rating-star', review.rate >= 1 ? 'is-active' : '']"></div>
-                  <div :class="['reviews-rating-star', review.rate >= 2 ? 'is-active' : '']"></div>
-                  <div :class="['reviews-rating-star', review.rate >= 3 ? 'is-active' : '']"></div>
-                  <div :class="['reviews-rating-star', review.rate >= 4 ? 'is-active' : '']"></div>
-                  <div :class="['reviews-rating-star', review.rate == 5 ? 'is-active' : '']"></div>
+                                                            <div
+                                                                :class="['reviews-rating-star', review.rate >= 1 ? 'is-active' : '']">
+                                                            </div>
+                                                            <div
+                                                                :class="['reviews-rating-star', review.rate >= 2 ? 'is-active' : '']">
+                                                            </div>
+                                                            <div
+                                                                :class="['reviews-rating-star', review.rate >= 3 ? 'is-active' : '']">
+                                                            </div>
+                                                            <div
+                                                                :class="['reviews-rating-star', review.rate >= 4 ? 'is-active' : '']">
+                                                            </div>
+                                                            <div
+                                                                :class="['reviews-rating-star', review.rate == 5 ? 'is-active' : '']">
+                                                            </div>
 
-                </div>
+                                                        </div>
                                                         <div class="grid">
                                                             <div class="upload__box">
 
@@ -198,22 +116,46 @@
                                                                     <div v-for="image in review.imageUrls?.split(',')"
                                                                         class="upload__img-box">
                                                                         <div class="img-bg"
-                                                                            :style="{ backgroundImage: 'url('+image+')' }">
-
+                                                                            :style="{ backgroundImage: 'url(' + image + ')' }">
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div class="grid-column d-flex align-items-end flex-column">
-                                                                <textarea :class="[
-                                'form-control', `item-${index}`,
-                            ]" style="
+                                                                <div style="width: 100%;" v-for="(reviewInOrderDetail, index) in reviewsByOrderDetailId">
+                                                                    <textarea v-if="reviewInOrderDetail.content"
+                                                                        :class="[
+                                                                            'form-control', `item-${index}`,
+                                                                        ]" style="
+                                            overflow-y: hidden;
+                                            resize: vertical;
+                                            min-height: 40px;
+                                            margin-bottom: 10px; 
+                                            height: auto;
+                                            /* background-color: #D9D9D9; */
+                                            white-space: normal" :readonly="true" :disabled="true"
+                                                                        :style="{ 'background-color': reviewInOrderDetail.staff ? '#C6FF91' : '#D9D9D9' }"> {{ reviewInOrderDetail.content }}
+                                        </textarea>
+
+                                                                </div>
+
+                                                                <div style="width: 100%; margin-bottom: 10px;">
+                                                                    <textarea :class="[
+                                                                        'form-control', `item-${index}`,
+                                                                    ]" style="
                                             overflow-y: hidden;
                                             resize: vertical;
                                             min-height: 40px; 
-                                            height: auto;" :readonly="true"> {{ review.content }}
+                                            height: auto;
+                                            " v-model="replyContent">
                                         </textarea>
-                                                                
+                                                                </div>
+
+                                                                <div :class="[
+                                                                    'btn-review-save', `item-${index}`
+                                                                ]" @click="sendReply(review.orderDetail)">Gửi phản hồi
+                                                                </div>
+
                                                             </div>
                                                         </div>
                                                     </div>
@@ -285,73 +227,44 @@ interface Staff {
 }
 
 const orders = ref<Order[]>();
-const staffs = ref<Staff[]>();
-const apiUrl = 'http://localhost:8080';
+const replyContent = ref<string>('');
 
-const reply = () => {
+const reviewsByOrderDetailId = ref<Review[]>([]);
+const getAllReviewByOrderDetailId = async (orderDetailId) => {
+    replyContent.value = '';
+    const response = (await reviewService.getAllReviewByOrderDetailId(orderDetailId));
+    reviewsByOrderDetailId.value = response.data;
 
+    console.log(reviewsByOrderDetailId.value)
 }
 
-const customerReview = ref<string>('');
-const customerRate = ref<number>(0);
-
-const highlightStars = (review) => {
-    for (let i = 1; i <= review.rate; i++) {
-        const star = document.querySelector(`.reviews-rating-star.review-${review.id}`);
-        star!.classList.add('is-full');
+const sendReply = async (orderDetail) => {
+    let data = {
+        staff: JSON.parse(localStorage.getItem('accountStaff')!),
+        orderDetail: orderDetail,
+        content: replyContent.value
     }
+
+    const response = (await reviewService.postReview(0, orderDetail.id, data, null));
+    reviewsByOrderDetailId.value = response.data;
+
+    getAllReviewByOrderDetailId(orderDetail.id);
 }
-
-const getReviewById = async (id) => {
-
-    customerReview.value = '';
-    let review = reviews.value.find(r => r.id == id);
-
-    customerRate.value = review!.rate;
-    customerReview.value = review!.content;
-    highlightStars(review!);
-
-
-}
-
-// const fetchOrderData = async () => {
-//     try {
-//         const response = await axios.get(`${apiUrl}/OrderForEmployee`);
-//         const responseStaff = await axios.get(`${apiUrl}/staffs`);
-//         staffs.value = responseStaff.data;
-//         orders.value = response.data;
-//         currentTotalOrder.value = orders.value?.length!;
-//         if (orders.value) {
-//             orders.value.forEach(async (order) => {
-//                 order.createDate = formatDate(order.createDate);
-//                 try {
-//                     const orderDetailsResponse = await axios.get(`${apiUrl}/OrderForEmployee/${order.id}/details`);
-//                     order.orderDetails = orderDetailsResponse.data;
-//                 } catch (error) {
-//                     console.error(`Error fetching order details for order ${order.id}:`, error);
-//                 }
-//             });
-//         }
-//     } catch (error) {
-//         console.error('Error fetching store data:', error);
-//     }
-// };
-
-// function formatDate(dateString) {
-//     const date = new Date(dateString);
-//     const day = date.getDate();
-//     const month = date.getMonth() + 1; // Tháng trong JavaScript bắt đầu từ 0, nên cần cộng thêm 1
-//     const year = date.getFullYear();
-//     const hours = date.getHours();
-//     const minutes = date.getMinutes();
-//     const seconds = date.getSeconds();
-//     const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-//     return formattedDate;
-// }
 
 onMounted(async () => {
-    // fetchOrderData();
     reviews.value = (await reviewService.getAllReviews()).data;
+
+    reviews.value = reviews.value.reverse().reduce((accumulator: Review[], current: Review) => {
+    let exists = accumulator.find(item => {
+      return item.orderDetail.id === current.orderDetail.id;
+    });
+    if (!exists) {
+      accumulator = accumulator.concat(current);
+    }
+    return accumulator;
+  }, []);
+
+  reviews.value.reverse();
 });
 
 const currentTotalOrder = ref<number>(0);
@@ -385,88 +298,6 @@ const filterStatus = () => {
     }
 };
 
-const PrintOrder = () => {
-}
-
-const selectedOrder = ref<Order>({
-    id: '',
-    createDate: '',
-    status: '',
-    total: '',
-    couponId: '',
-    customer: {
-        id: '',
-    },
-    paymentId: '',
-    shipmentId: '',
-    staff: {
-        id: '',
-    },
-    warehouseId: '',
-    orderDetails: [],
-    phone: '',
-});
-const isNotEnteredID = ref(false);
-const isNotFoundOrder = ref(false);
-const isFoundOrder = ref(false);
-// const searchOrder = () => {
-//     let idToSearch = parseInt(selectedOrder.value.id);
-//     console.log(idToSearch);
-//     if (isNaN(idToSearch)) {
-//         isNotEnteredID.value = true;
-//         setTimeout(() => {
-//             isNotEnteredID.value = false;
-//         }, 1500);
-//     } else {
-//         const index = orders.value?.findIndex(order => parseInt(order.id) === idToSearch);
-//         if (index !== undefined && index !== -1) {
-//             const element = document.querySelectorAll('.row-data')[index];
-//             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-//             element.classList.add('found');
-//             setTimeout(() => {
-//                 element.classList.remove('found');
-//             }, 4000);
-//             isFoundOrder.value = true;
-//             setTimeout(() => {
-//                 isFoundOrder.value = false;
-//             }, 1500);
-//         } else {
-//             isNotFoundOrder.value = true;
-//             setTimeout(() => {
-//                 isNotFoundOrder.value = false;
-//             }, 1500);
-//         }
-//     }
-// }
-
-// const selectOder = (order: Order) => {
-//     selectedOrder.value = { ...order };
-//     selectedOrder.value = { ...order };
-//     if (selectedOrder.value.staff === null) {
-//         selectedOrder.value.staff = { id: 'non-data' };
-//     }
-//     console.log(selectedOrder.value.staff);
-// };
-// const isUpdatedOK = ref(false);
-// const updateOrder = async (orderToUpdate) => {
-//     try {
-//         const customerId = orderToUpdate.customer.id;
-//         const orderId = orderToUpdate.id;
-//         const response = await axios.put(`http://localhost:8080/customers/${customerId}/orders/${orderId}`, orderToUpdate);
-//         if (response.status === 200) {
-//             isUpdatedOK.value = true;
-//             setTimeout(() => {
-//                 filterStatus();
-//                 isUpdatedOK.value = false;
-//             }, 1500);
-//             fetchOrderData();
-//         } else {
-//             console.error('Cập nhật đơn hàng không thành công.');
-//         }
-//     } catch (error) {
-//         console.error('Lỗi khi cập nhật đơn hàng:', error);
-//     }
-// };
 </script>
 
 <style scoped>
@@ -495,6 +326,7 @@ const isFoundOrder = ref(false);
 .found {
     background-color: rgb(196, 199, 199);
 }
+
 .order {
     position: relative;
     display: block;
@@ -694,10 +526,9 @@ const isFoundOrder = ref(false);
     width: 100%;
 }
 
-
-.form-control:focus,
-.form-control:active .vs-dropdown-toggle:focus,
-.vs-dropdown-toggle:active {
+.form-control:not(:disabled):focus,
+.form-control:not(:disabled):active .vs-dropdown-toggle:not(:disabled):focus,
+.vs-dropdown-toggle:not(:disabled):active {
     border-color: inherit !important;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
@@ -742,7 +573,8 @@ const isFoundOrder = ref(false);
     color: whitesmoke;
     width: fit-content;
     padding: 5px 10px;
-    margin-top: 10px
+    margin-top: 10px;
+    cursor: pointer;
 }
 
 .btn-review-save-disable {
@@ -870,5 +702,15 @@ const isFoundOrder = ref(false);
     background-size: cover;
     position: relative;
     padding-bottom: 100%;
+}
+
+
+.text-instruction {
+  color: #4045ba;
+}
+
+.text-instruction:hover {
+  color: #151aa1;
+  text-decoration: underline;
 }
 </style>

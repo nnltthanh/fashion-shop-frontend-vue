@@ -130,6 +130,7 @@ interface Customer {
 export interface OrderDetail {
     id: string;
     productDetail: ProductDetail;
+    order: Order;
     quantity: string,
     total: number
 }
