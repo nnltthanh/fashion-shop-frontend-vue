@@ -22,6 +22,8 @@ const isReviewedInIndex = ref<boolean[]>([]);
 const uploadedImages = ref<{ reviewIndex: number, id: number, url: string }[]>([]);
 let changingReviewImages: { id: number, file: File }[] = [];
 
+const isLoading = ref(false);
+
 setTimeout(async () => {
     orderDetails.value = (await cartService.getOrderDetailsByOrderId(props.order.id)).data;
 }, 1000);
@@ -38,9 +40,12 @@ const reviewsByOrderDetailId = ref<Review[]>([]);
 // }
 
 const getReviewByOrderId = async (orderId) => {
+    isLoading.value = true;
     let res = (await reviewService.getAllReviewByOrderId(orderId));
     customerReview.value = [];
     uploadedImages.value = [];
+
+    isLoading.value = false;
 
     res.data.forEach((review) => {
         orderDetails.value.forEach((orderDetail, index) => {
@@ -55,11 +60,10 @@ const getReviewByOrderId = async (orderId) => {
                     console.log(index, idx, value)
                     uploadedImages.value.push({ reviewIndex: index, id: idx, url: value })
                 })
-            
+
             }
         })
     })
-
     console.log(uploadedImages.value)
 }
 
@@ -137,6 +141,8 @@ const removeImage = (imageId) => {
 
 
 const saveReview = async (orderDetail: OrderDetail, idx: number) => {
+    isLoading.value = true;
+    console.log(isLoading.value)
     let orderDetailId = orderDetail.id;
     let productId = orderDetail.productDetail.product.id;
 
@@ -151,8 +157,9 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
         formData.append('images', file);
     }
 
-
     await reviewService.postReview(productId, orderDetailId, data, formData);
+
+    isLoading.value = false;
 
     const button = document.querySelector<HTMLElement>(`.btn-review-save.item-${idx}`);
     if (button) {
@@ -164,6 +171,14 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
         star.style.pointerEvents = 'none';
     });
     (document.querySelector(`.form-control.item-${idx}`) as HTMLTextAreaElement).readOnly = true;
+
+    var toastContainer = document.getElementById('addNewReviewMessage')!;
+    toastContainer.style.display = 'none';
+    toastContainer.style.display = '';
+
+    setTimeout(function () {
+        toastContainer.style.display = 'none';
+    }, 1000);
 }
 
 </script>
@@ -176,8 +191,8 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                 <p class="order-date">{{ order.createDate }}</p>
             </div>
             <div class="order-status-done" :style="{
-                    'background-color': ORDER_STATUS_COLOR.get(order.status)
-                }">
+                'background-color': ORDER_STATUS_COLOR.get(order.status)
+            }">
                 <span>{{ ORDER_STATUS.get(order.status) }}</span>
             </div>
         </div>
@@ -188,7 +203,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                         <router-link
                             :to="{ name: 'product', params: { id: orderDetail.productDetail.product.id.toString() } }">
                             <img :src="orderDetail.productDetail.imageLinks?.split(', ')[0]
-                    .toString().replace('width=80,height=80', 'width=300,height=442')"
+                                .toString().replace('width=80,height=80', 'width=300,height=442')"
                                 :alt="orderDetail.productDetail.product.name.toString()" />
                         </router-link>
 
@@ -201,7 +216,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                         </router-link>
 
                         <div class="order-item-variant-label">{{ orderDetail.productDetail.color }} / {{
-                    orderDetail.productDetail.size }}</div>
+                            orderDetail.productDetail.size }}</div>
                         <div class="order-item-quantity">x {{ orderDetail.quantity }}</div>
                         <div class="order-item-price"> {{ VND.format(orderDetail.total) }}</div>
                     </div>
@@ -237,7 +252,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                 <router-link
                                     :to="{ name: 'product', params: { id: orderDetailReview.productDetail.product.id.toString() } }">
                                     <img :src="orderDetailReview.productDetail.imageLinks?.split(', ')[0]
-                    .toString().replace('width=80,height=80', 'width=300,height=442')"
+                                        .toString().replace('width=80,height=80', 'width=300,height=442')"
                                         :alt="orderDetailReview.productDetail.product.name.toString()"
                                         style="height: 150px; width: 100px;" />
                                 </router-link>
@@ -255,8 +270,8 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                 <div class="order-item-price"> {{ VND.format(orderDetailReview.total) }}</div>
                                 <div class="reviews-rating">
                                     <div :class="[
-                    'reviews-rating-star', `item-${index}`, `order-${props.order.id}`
-                ]" v-for="rating in 5" :key="rating" :value="rating" type="button" data-bs-toggle="tooltip"
+                                        'reviews-rating-star', `item-${index}`, `order-${props.order.id}`
+                                    ]" v-for="rating in 5" :key="rating" :value="rating" type="button" data-bs-toggle="tooltip"
                                         data-bs-placement="top" :title="getRatingTitle(rating)"
                                         @click="rated(rating, index)">
                                     </div>
@@ -268,46 +283,45 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                             <label v-if="!isReviewedInIndex[index]" class="upload__btn">
                                                 Upload images
                                                 <input type="file" multiple data-max_length="5"
-                                                    class="upload__inputfile" @change="handleFileInputChange($event, index)">
+                                                    class="upload__inputfile"
+                                                    @change="handleFileInputChange($event, index)">
                                             </label>
                                         </div>
                                         <div class="upload__img-wrap">
-                                            <div v-for="image in uploadedImages" :key="image.id"
-                                                >
-                                                <div class="upload__img-box"  v-show="image.reviewIndex == index">
+                                            <div v-for="image in uploadedImages" :key="image.id">
+                                                <div class="upload__img-box" v-show="image.reviewIndex == index">
                                                     <div class="img-bg"
-                                                    :style="{ backgroundImage: 'url(' + image.url + ')' }">
-                                                    <div v-if="!isReviewedInIndex[index]" class="upload__img-close"
-                                                        @click="removeImage(image.id)"></div>
-                                                </div>
+                                                        :style="{ backgroundImage: 'url(' + image.url + ')' }">
+                                                        <div v-if="!isReviewedInIndex[index]" class="upload__img-close"
+                                                            @click="removeImage(image.id)"></div>
+                                                    </div>
                                                 </div>
 
                                             </div>
                                         </div>
                                     </div>
                                     <div class="grid-column d-flex align-items-end flex-column">
-                                        
+
                                         <div style="width: 100%;">
-                                                                    <textarea v-for="(reviewInOrderDetail, index) in reviewsByOrderDetailId" :class="[
-                                'form-control', `item-${index}`,
-                            ]" style="
+                                            <textarea v-for="(reviewInOrderDetail, index) in reviewsByOrderDetailId"
+                                                :class="[
+                                                    'form-control', `item-${index}`,
+                                                ]" style="
                                             overflow-y: hidden;
                                             resize: vertical;
                                             min-height: 40px;
                                             margin-bottom: 10px; 
                                             height: auto;
                                             /* background-color: #D9D9D9; */
-                                            white-space: normal" 
-                                            :readonly="true"
-                                            :disabled="true"
-                                            :style="{ 'background-color': reviewInOrderDetail.staff ? '#C6FF91' : '#D9D9D9' }"> {{ reviewInOrderDetail.content }}
+                                            white-space: normal" :readonly="true" :disabled="true"
+                                                :style="{ 'background-color': reviewInOrderDetail.staff ? '#C6FF91' : '#D9D9D9' }"> {{ reviewInOrderDetail.content }}
                                         </textarea>
 
                                         </div>
 
                                         <textarea placeholder="Viết đánh giá..." :class="[
-                    'form-control', `item-${index}`,
-                ]" style="
+                                            'form-control', `item-${index}`,
+                                        ]" style="
                                             overflow-y: hidden;
                                             resize: vertical;
                                             min-height: 40px; 
@@ -315,9 +329,9 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                             :readonly="isReviewedInIndex[index]">
                                         </textarea>
                                         <div v-if="!isReviewedInIndex[index]" :class="[
-                    'btn-review-save', `item-${index}`,
-                    isReviewedInIndex[index] ? 'btn-review-save-disable' : ''
-                ]" @click="saveReview(orderDetailReview, index)">Lưu đánh giá
+                                            'btn-review-save', `item-${index}`,
+                                            isReviewedInIndex[index] ? 'btn-review-save-disable' : ''
+                                        ]" @click="saveReview(orderDetailReview, index)">Lưu đánh giá
                                         </div>
                                     </div>
                                 </div>
@@ -331,10 +345,81 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                 </div>
             </div>
         </div>
+        <span class="loader" v-if="isLoading"></span>
+        <div class="fixed bg-green-100 text-green-700 p-6 text-center text-lg z-50 rounded-md" role="alert"
+            style="right: 10px; top: 100px; margin-top: 15px; display: none;"
+            id="addNewReviewMessage">
+            <span class="font-medium">Đánh giá thành công!</span>
+        </div>
     </div>
 </template>
 
 <style>
+.loader {
+    display: block;
+    border-radius: 50%;
+    position: relative;
+    animation: rotate 1s linear infinite;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.5);
+    position: fixed;
+    top: 40%;
+    left: 40%;
+    z-index: 100;
+}
+
+.loader::before,
+.loader::after {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    inset: 0px;
+    border-radius: 50%;
+    border: 20px solid #e5e3e3;
+    animation: prixClipFix 2s linear infinite;
+    z-index: 1000;
+}
+
+.loader::after {
+    border-color: #2424be;
+    animation: prixClipFix 2s linear infinite, rotate 0.5s linear infinite reverse;
+    inset: 6px;
+    z-index: 1000;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    100% {
+        transform: rotate(360deg)
+    }
+}
+
+@keyframes prixClipFix {
+    0% {
+        clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+    }
+
+    25% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+    }
+
+    50% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+    }
+
+    75% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
+    }
+
+    100% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
+    }
+}
+
 .order {
     position: relative;
     display: block;
