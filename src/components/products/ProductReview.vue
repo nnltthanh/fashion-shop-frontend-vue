@@ -19,14 +19,27 @@ let averageStar = ref<number>(0);
 let reviewService = new ReviewService();
 
 setTimeout(async () => {
-  reviews.value = (await reviewService.getAllReviewsByProductId(props.productId)).data;
-  console.log(reviews.value);
-  overallRating.value = reviews.value.length;
-  reviews.value.forEach(r => {
-    averageStar.value += r.rate;
-  })
-  averageStar.value = Number((averageStar.value / overallRating.value || 0).toFixed(1));
-  isLoading.value = false;
+    reviews.value = (await reviewService.getAllReviewsByProductId(props.productId)).data;
+
+    reviews.value = reviews.value.reverse().reduce((accumulator: Review[], current: Review) => {
+        let exists = accumulator.find(item => {
+            return item.orderDetail.id === current.orderDetail.id;
+        });
+        if (!exists) {
+            accumulator = accumulator.concat(current);
+        }
+        return accumulator;
+    }, []);
+
+    reviews.value.reverse();
+
+    console.log(reviews.value);
+    overallRating.value = reviews.value.length;
+    reviews.value.forEach(r => {
+        averageStar.value += r.rate;
+    })
+    averageStar.value = Number((averageStar.value / overallRating.value || 0).toFixed(1));
+    isLoading.value = false;
 }, 1000);
 
 
@@ -103,7 +116,14 @@ const reviewFilters = reactive([
     <section id="reviews" class="product-single__reviews">
         <div class="reviews__container">
             <div class="reviews">
-                <div class="reviews-leftside">
+                <div class="reviews-leftside" v-if="overallRating == 0">
+                    <div class="reviews-leftside__rating">
+                        <div class="reviews-rating-mb__title">
+                            <h5>Chưa có đánh giá</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="reviews-leftside" v-if="overallRating > 0">
                     <div class="reviews-leftside__rating">
                         <div class="reviews-rating-mb__title">
                             <h5>Đánh giá sản phẩm</h5>
@@ -112,11 +132,21 @@ const reviewFilters = reactive([
                             {{ averageStar }}
                         </div>
                         <div class="reviews-rating yellow">
-                            <div class="reviews-rating__star is-active"></div>
-                            <div class="reviews-rating__star is-active"></div>
-                            <div class="reviews-rating__star is-active"></div>
-                            <div class="reviews-rating__star is-active"></div>
-                            <div class="reviews-rating__star is-half"></div>
+                            <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 1 ? 'is-active' : '']">
+                            </div>
+                            <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 2 ? 'is-active' : Math.round(averageStar * 10) / 10 <= 2.5 ? 'is-half' : 'is-blank']">
+                            </div>
+                            <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 3 ? 'is-active' : Math.round(averageStar * 10) / 10 >= 3.5 ? 'is-half' : 'is-blank']">
+                            </div>
+                            <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 4 ? 'is-active' : Math.round(averageStar * 10) / 10 >= 4.5 ? 'is-half' : 'is-blank']">
+                            </div>
+                            <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 4 && Math.round(averageStar * 10) / 10 < 5 ? 'is-half' : Math.round(averageStar * 10) / 10 == 5 ? 'is-active' : 'is-blank']">
+                            </div>
                         </div>
                         <div class="reviews-rating-mb__count">
                             {{ overallRating }} đánh giá
@@ -134,7 +164,7 @@ const reviewFilters = reactive([
                     </div>
                     <div class="reviews-listing">
                         <div class="grid">
-                            
+
                             <div class="grid__column">
                                 <div class="reviews-listing__item border-bottom" v-for="(review, index) in reviews">
                                     <div class="reviews-listing__content">
@@ -155,15 +185,9 @@ const reviewFilters = reactive([
 
                                         </div>
                                         <div class="reviews-order">
-                                            <router-link
-                                                :to="{ name: 'product', params: { id: review.orderDetail.productDetail.product.id.toString() } }">
-                                                <div class="order-item-title"> {{
-                                                    review.orderDetail.productDetail.product.name }}</div>
-                                            </router-link>
-                                            <!-- <div class="order-item-title"> {{ review.orderDetail.productDetail.product.name }}</div> -->
                                             <div class="order-item-variant-label">
                                                 {{ review.orderDetail.productDetail.color }} / {{
-                                                review.orderDetail.productDetail.size }}
+                                                    review.orderDetail.productDetail.size }}
                                             </div>
                                         </div>
                                         <div class="reviews-listing__description">
@@ -324,6 +348,10 @@ select {
     background-image: url(https://www.coolmate.me/images/star-yellow-half.svg?6214ae25bffef645dd350fa72b739397);
 }
 
+.reviews-rating.yellow .reviews-rating__star.is-blank {
+    background-image: url("/src/assets/icon/star-line-yellow-icon.png");
+}
+
 .reviews-rating-mb__count {
     text-align: center;
     font-size: .875rem;
@@ -482,43 +510,42 @@ select {
 }
 
 .reviews-listing-gallery {
-  display: flex;
-  margin-left: -4px;
-  margin-right: -4px;
-  margin-top: 10px;
+    display: flex;
+    margin-left: -4px;
+    margin-right: -4px;
+    margin-top: 10px;
 }
 
 .reviews-listing-image {
-  overflow: hidden;
-  border-radius: 8px;
-  width: 60px;
-  margin: 0 4px;
-  position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    width: 60px;
+    margin: 0 4px;
+    position: relative;
 }
 
 .reviews-listing-image:before {
-  content: "";
-  display: block;
-  padding-top: 100%;
-  height: 0;
-  width: 100%;
+    content: "";
+    display: block;
+    padding-top: 100%;
+    height: 0;
+    width: 100%;
 }
 
 .reviews-listing-image img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  -o-object-fit: cover;
-  object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -o-object-fit: cover;
+    object-fit: cover;
 }
 
 .order-item-variant-label {
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.4);
-  font-style: italic;
-  font-size: 12px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.4);
+    font-style: italic;
+    font-size: 12px;
 }
-
 </style>

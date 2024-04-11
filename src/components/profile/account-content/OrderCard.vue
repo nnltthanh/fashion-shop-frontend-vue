@@ -314,7 +314,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                             height: auto;
                                             /* background-color: #D9D9D9; */
                                             white-space: normal" :readonly="true" :disabled="true"
-                                                :style="{ 'background-color': reviewInOrderDetail.staff ? '#C6FF91' : '#D9D9D9' }"> {{ reviewInOrderDetail.content }}
+                                                :style="{ 'background-color': reviewInOrderDetail.staff ? '#83B5FF' : '#D9D9D9' }"> {{ reviewInOrderDetail.content }}
                                         </textarea>
 
                                         </div>

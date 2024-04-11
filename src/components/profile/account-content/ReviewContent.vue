@@ -69,7 +69,7 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
 
 </script>
 <template>
-  <div class="loader-container"  v-if="isLoading"><span class="loader"></span></div>
+  <div class="loader-container" v-if="isLoading"><span class="loader"></span></div>
 
   <div class="account-content my-50">
     <div id="info-tab" class="account-info">
@@ -163,7 +163,6 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
                               </div>
                               <div class="grid">
                                 <div class="upload__box">
-
                                   <div class="upload__img-wrap">
                                     <div v-for="image in review.imageUrls?.split(',')" class="upload__img-box">
                                       <div class="img-bg" :style="{ backgroundImage: 'url(' + image + ')' }">
@@ -171,22 +170,26 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
                                     </div>
                                   </div>
                                 </div>
-                                <div class="grid-column d-flex align-items-end flex-column">
-                                  <div style="width: 100%;"
-                                    v-for="(reviewInOrderDetail, index) in reviewsByOrderDetailId">
-                                    <textarea v-if="reviewInOrderDetail.content" :class="[
-                                      'form-control', `item-${index}`,
+                                <div class="grid-column d-flex flex-column border-top" style="width: 100%;">
+                                  <div v-for="(reviewInOrderDetail, index) in reviewsByOrderDetailId">
+                                    <div v-if="reviewInOrderDetail.content" :class="[
+                                      'flex-column',
+                                      `item-${index}`,
+                                      !reviewInOrderDetail.staff ? 'd-flex align-items-end' : 'd-flex align-items-start'
                                     ]" style="
                                             overflow-y: hidden;
-                                            resize: vertical;
-                                            min-height: 40px;
-                                            margin-bottom: 10px; 
                                             height: auto;
                                             /* background-color: #D9D9D9; */
-                                            white-space: normal" :readonly="true" :disabled="true"
-                                      :style="{ 'background-color': reviewInOrderDetail.staff ? '#D9D9D9' : '#C6FF91' }"> {{ reviewInOrderDetail.content }}
-                                      </textarea>
-
+                                            white-space: normal" :readonly="true" :disabled="true">
+                                      <div class="form-control col-12" :style="{
+                                        'background-color': reviewInOrderDetail.staff ? '#D9D9D9' : '#83B5FF',
+                                        'max-width': '350px',
+                                        'width': 'fit-content',
+                                        'min-height': '40px',
+                                      }"> {{ reviewInOrderDetail.content }}</div>
+                                      </br>
+                                      <div class="text-secondary  px-1"> {{ reviewInOrderDetail.createDate }}</div>
+                                    </div>
                                   </div>
 
                                   <div style="width: 100%; margin-bottom: 10px;">
@@ -230,7 +233,6 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
 </template>
 
 <style scoped>
-
 .loader {
   display: block;
   border-radius: 50%;
@@ -559,7 +561,7 @@ const getAllReviewByOrderDetailId = async (orderDetailId) => {
 }
 
 .modal-dialog-scrollable .modal-content {
-  max-height: 500px;
+  max-height: 600px;
   overflow: hidden;
 }
 
