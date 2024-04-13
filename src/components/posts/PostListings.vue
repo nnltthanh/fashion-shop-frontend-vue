@@ -21,16 +21,25 @@ const props = defineProps({
                 <div v-for="(post, index) in postsList" class="grid__column col-4">
                     <div class="post-grid post-grid--listing">
                         <div class="post-grid__thumbnail">
-                            <a href="https://www.coolmate.me/post/vai-soi-vo-cam-3951">
-                                <img :src="post.imagesURL"
-                                    alt="Vải sợi vỏ cam - Chất liệu mới cho ngành thời trang bền vững">
-                            </a>
+                            <router-link :to="{
+                                name: 'post',
+                                params: {
+                                    id: post.id,
+                                },
+                            }">
+                                <img :src="post.imagesURL" :alt="post.title">
+                            </router-link>>
                         </div>
                         <div class="post-grid__content">
                             <h3 class="post-grid__title">
-                                <a href="https://www.coolmate.me/post/vai-soi-vo-cam-3951">
+                                <router-link :to="{
+                                    name: 'post',
+                                    params: {
+                                        id: post.id,
+                                    },
+                                }">
                                     {{ post.title }}
-                                </a>
+                                </router-link>
                             </h3>
                             <span class="post-grid__infomations">
                                 <a href="https://www.coolmate.me/blog/chat-lieu-may-mac">{{ post.type }}</a>
@@ -45,7 +54,7 @@ const props = defineProps({
                 <div class="post-load-more-container">
                     <a href="javascript:void(0)" class="post-load-more btn">
                         Xem thêm
-                    </a> 
+                    </a>
                     <span class="content-loading" style="display: none;"></span>
                 </div>
             </div>
@@ -198,6 +207,4 @@ a {
     padding: 12px 40px;
     border: none;
 }
-
-
 </style>
