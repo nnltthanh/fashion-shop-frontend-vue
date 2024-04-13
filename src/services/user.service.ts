@@ -2,13 +2,16 @@ import type { Review } from '@/components/profile/account-content/OrderCard.vue'
 import axios from 'axios';
 
 export type Address = {
+    id?: string,
     belongsTo: string,
+    phone: string,
     address: string,
     cityId: string,
     districtId: string,
     wardId: string,
     customer: User,
     isDefault: boolean,
+    displayingAddress?: string
 }
 
 export type User = {
@@ -39,6 +42,22 @@ export class UserService {
         return (await axios.get(`${baseUri}/customer/${customerId}`));
     }
 
+    
+    public async getDefaultAddressOfCustomer(customerId) {
+        const baseUri = this.getBaseUri();
+        return (await axios.get(`${baseUri}/customer/${customerId}/default`));
+    }
+
+    public async updateAddress(id, address: Address) {
+        const baseUri = this.getBaseUri();
+        return await axios.put(`${baseUri}/customer/${id}`, address);
+    }
+
+    public async deleteAddress(id) {
+        const baseUri = this.getBaseUri();
+        return await axios.delete(`${baseUri}/${id}`);
+    }
+
     async getCity() {
 
         const baseUri = this.getGHNUri();
@@ -52,7 +71,7 @@ export class UserService {
 
     }
 
-    async getCityById(cityId) {
+    async getCityById(cityId: string) {
 
         const baseUri = this.getGHNUri();
         const cities = (await axios.get(`${baseUri}/master-data/province`, {
@@ -63,11 +82,11 @@ export class UserService {
             }
         }));
 
-        return cities.data.data.find(x => x.ProvinceID === cityId);
+        return cities.data.data.find(x => x.ProvinceID.toString() === cityId);
 
     }
 
-    async getDistrict(cityId) {
+    async getDistrict(cityId: string) {
 
         const baseUri = this.getGHNUri();
         return (await axios.get(`${baseUri}/master-data/district`, {
@@ -83,7 +102,7 @@ export class UserService {
 
     }
 
-    async getDistrictById(cityId, districtId) {
+    async getDistrictById(cityId: string, districtId: string) {
 
         const baseUri = this.getGHNUri();
         const districts = (await axios.get(`${baseUri}/master-data/district`, {
@@ -97,10 +116,10 @@ export class UserService {
             }
         }));
 
-        return districts.data.data.find(x => x.DistrictID === districtId);
+        return districts.data.data.find(x => x.DistrictID.toString() === districtId.toString());
     }
 
-    async getWard(districtId) {
+    async getWard(districtId: string) {
         const baseUri = this.getGHNUri();
         return (await axios.get(`${baseUri}/master-data/ward`, {
             headers: {
@@ -115,7 +134,7 @@ export class UserService {
 
     }
 
-    async getWardById(districtId, wardId) {
+    async getWardById(districtId: string, wardId: string) {
         const baseUri = this.getGHNUri();
         const wards = (await axios.get(`${baseUri}/master-data/ward`, {
             headers: {
@@ -128,17 +147,7 @@ export class UserService {
             }
         }));
 
-        return wards.data.data.find(x => x.WardCode === wardId);
-    }
-
-    public async updateImages(productId, reviewId, imageFiles) {
-        const baseUri = this.getBaseUri();
-        return await axios.put(`${baseUri}/products/${productId}/reviews/${reviewId}/upload`, imageFiles, 
-        {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        return wards.data.data.find(x => x.WardCode.toString() === wardId.toString());
     }
 
     getBaseUri() {

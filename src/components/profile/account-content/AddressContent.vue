@@ -8,9 +8,7 @@ import { ref } from 'vue';
 
 const isLoading = ref(true)
 
-
 const addresses = ref<Address[]>([]);
-const displayingAddresses = ref<string[]>([]);
 let userService = new UserService();
 let user: User;
 
@@ -33,59 +31,29 @@ setTimeout(async () => {
 
 
     user = JSON.parse(localStorage.getItem("account")!);
-    addresses.value = (await userService.getAddressesByCustomerId(user.id)).data;
 
-    console.log(addresses.value);
-
-    // const city = await userService.getCityById(201)
-    // console.log(city)
-
-    // const district = await userService.getDistrictById(202, 1442)
-    // console.log(district)
-
-    // const ward = await userService.getWardById(1566, 510104)
-    // console.log(ward)
-
-
-
-    isLoading.value = false;
+    getAddressesByCustomerId();
 
 }, 1000);
+
 
 const showCityDropdown = ref(false);
 const showDistrictDropdown = ref(false);
 const showVillageDropdown = ref(false);
-const showShippingServiceDropdown = ref(false);
 
 const activeCityIndex = ref<number | null>(null);
 const activeDistrictIndex = ref<number | null>(null);
 const activeVillageIndex = ref<number | null>(null);
-const activeShippingServiceIndex = ref<number | null>(null);
 
-const activeCity = ref<{ name: string, id: number }>({ name: "Chọn Tỉnh / Thành", id: -1 });
-const activeDistrict = ref<{ name: string, id: number }>({ name: "Chọn Quận / Huyện", id: -1 });
-const activeVillage = ref<{ name: string, id: number, code: number }>({ name: "Chọn Phường / Xã", id: -1, code: -1 });
-const activeShippingService = ref<any>({ short_name: "Chọn dịch vụ vận chuyển" });
+const activeCity = ref<{ name: string, id: string }>({ name: "Chọn Tỉnh / Thành", id: '-1' });
+const activeDistrict = ref<{ name: string, id: string }>({ name: "Chọn Quận / Huyện", id: '-1' });
+const activeVillage = ref<{ name: string, id: string, code: string }>({ name: "Chọn Phường / Xã", id: '-1', code: '-1' });
 
 const customerInfo = JSON.parse(localStorage.getItem('account')!);
 
-// if (customerInfo.province) {
-//   activeCity.value.name = customerInfo.province
-// }
-
-// if (customerInfo.district) {
-//   activeDistrict.value.name = customerInfo.district
-// }
-
-// if (customerInfo.ward) {
-//   activeVillage.value.name = customerInfo.ward
-// }
-
-var cities: { name: string, id: number }[] = [];
-const districts = ref<{ name: string, id: number }[]>([]);
-var districtsFullInfo: any[] = [];
-const villages = ref<{ name: string, id: number, code: number }[]>([]);
-const shippingServices = ref<any[]>([]);
+var cities: { name: string, id: string }[] = [];
+const districts = ref<{ name: string, id: string }[]>([]);
+const villages = ref<{ name: string, id: string, code: string }[]>([]);
 
 const setActiveCity = (index: number) => {
     activeCityIndex.value = index;
@@ -97,10 +65,6 @@ const setActiveDistrict = (index: number) => {
 
 const setActiveVillage = (index: number) => {
     activeVillageIndex.value = index;
-};
-
-const setActiveShippingService = (index: number) => {
-    activeShippingServiceIndex.value = index;
 };
 
 const sortByName = (a, b) => {
@@ -122,6 +86,8 @@ const toggleCityDropdown = async () => {
 
     if (!showCityDropdown.value) {
         activeCity.value = cities[activeCityIndex.value!];
+
+        console.log(activeCity.value)
 
         let response = (await userService.getDistrict(activeCity.value.id)).data.data.map(
             res => { return { name: res.DistrictName, id: res.DistrictID } }
@@ -160,14 +126,154 @@ const toggleVillageDropdown = async () => {
 
     if (!showVillageDropdown.value) {
         activeVillage.value = villages.value[activeVillageIndex.value!];
-
     }
 };
 
+const customerName = ref<string>(customerInfo.name)
+const customerAddress = ref<string>("")
+const customerPhone = ref<string>(customerInfo.phone)
+
+const addNewAddress = async () => {
+
+    isLoading.value = true;
+
+    let data: Address = {
+        belongsTo: customerName.value,
+        phone: customerPhone.value,
+        address: customerAddress.value,
+        cityId: activeCity.value.id,
+        districtId: activeDistrict.value.id,
+        wardId: activeVillage.value.code,
+        customer: customerInfo,
+        isDefault: false,
+    }
+
+    await userService.postAddress(data);
+
+    getAddressesByCustomerId();
+}
+
+const updateToDefaultAddress = async (address) => {
+
+    isLoading.value = true;
+
+    let data = address;
+
+    data.isDefault = true;
+
+    const response = (await userService.updateAddress(customerInfo.id, data));
+
+    getAddressesByCustomerId();
+
+}
+
+const updateAddress = async () => {
+
+    isLoading.value = true;
+
+    updatingAddress.value.cityId = activeCity.value.id;
+    updatingAddress.value.districtId = activeDistrict.value.id;
+    updatingAddress.value.wardId = activeVillage.value.code;
+
+    let data = updatingAddress.value;
+
+    (await userService.updateAddress(customerInfo.id, data));
+
+    getAddressesByCustomerId();
+
+}
+
+const updatingAddress = ref<Address>({
+    id: '',
+    belongsTo: '',
+    phone: '',
+    address: '',
+    cityId: '',
+    districtId: '',
+    wardId: '',
+    customer: customerInfo,
+    isDefault: false,
+    displayingAddress: '',
+});
+
+const getUpdatingAddress = async (address: Address) => {
+    updatingAddress.value = address;
+
+    let city = await userService.getCityById(address.cityId);
+    let maxLength = 0;
+    city.NameExtension.forEach(province => {
+        if (province.length > maxLength) {
+            maxLength = province.length;
+            city.ProvinceName = province;
+        }
+    });
+
+    let district = await userService.getDistrictById(address.cityId, address.districtId);
+
+    let ward = await userService.getWardById(address.districtId, address.wardId);
+
+    activeCity.value = { name: city.ProvinceName, id: address.cityId };
+    activeDistrict.value = { name: district.DistrictName, id: address.districtId };
+    activeVillage.value = { name: ward.WardName, id: ward.id, code: address.wardId };
+
+    activeCityIndex.value = cities.findIndex(x => x.id == address.cityId);
+
+    districts.value = (await userService.getDistrict(activeCity.value.id)).data.data.map(
+        res => { return { name: res.DistrictName, id: res.DistrictID } }
+    );
+
+    districts.value.sort(sortByName);
+
+    activeDistrictIndex.value = districts.value.findIndex(x => x.id == address.districtId);
+
+    villages.value = (await userService.getWard(activeDistrict.value.id)).data.data.map(
+        res => { return { name: res.WardName, id: res.WardID, code: res.WardCode } }
+    );
+
+    villages.value.sort(sortByName);
+
+    activeVillageIndex.value = villages.value.findIndex(x => x.code == address.wardId);
+
+}
+
+const deleteAddress = async (address: Address) => {
+
+    isLoading.value = true;
+
+    await userService.deleteAddress(address.id);
+
+    getAddressesByCustomerId();
+
+}
+
+const getAddressesByCustomerId = async () => {
+
+    addresses.value = (await userService.getAddressesByCustomerId(user.id)).data;
+
+    addresses.value.reverse().forEach(async (address, index) => {
+        let city = await userService.getCityById(address.cityId)
+
+        let district = await userService.getDistrictById(address.cityId, address.districtId)
+
+        let ward = await userService.getWardById(address.districtId, address.wardId)
+
+        address.displayingAddress = address.address + ', ' + ward.WardName + ', ' + district.DistrictName + ', ' + city.ProvinceName;
+
+        if (address.isDefault) {
+            addresses.value.splice(index, 1);
+            addresses.value.unshift(address);
+        }
+    })
+
+    setTimeout(() => {
+        isLoading.value = false;
+    }, 500);
+}
 
 </script>
 
 <template>
+    <div class="loader-container" v-if="isLoading"><span class="loader"></span></div>
     <div class="account-content my-50">
         <div class="account-address">
             <h2 class="account-page-title">
@@ -178,24 +284,34 @@ const toggleVillageDropdown = async () => {
             </button>
         </div>
         <div class="account-address-title">Sổ địa chỉ</div>
-        <div class="account-address-content">
-            <div class="account-address-item">
+        <div class="account-address-content fst-italic text-secondary" v-if="addresses.length == 0 && !isLoading">
+            Vui lòng cập nhật địa chỉ...
+        </div>
+
+        <div class="account-address-content" v-if="!isLoading">
+            <div class="account-address-item" v-for="(address, index) in addresses">
                 <div class="account-address-content">
                     <div class="account-address-head">
-                        Thanh Nguyễn
-                        <span>Mặc định</span>
+                        <div>{{ address.belongsTo }}</div>
+                        <span v-if="address.isDefault">Mặc định</span>
                     </div>
                     <div class="account-address-text">
-                        0776537697<br>
-                        233/46/1A1 Nguyễn Văn Cừ, An Hòa, Ninh Kiều, Cần Thơ, Quận Ninh Kiều, Cần Thơ
+                        {{ address.phone }}<br>
+                        {{ address.displayingAddress }}
                     </div>
                 </div>
                 <div class="account-address-action">
-                    <div class="account-address-buttons"><button>Cập nhật</button> <button>Xóa</button></div>
+                    <div class="account-address-buttons">
+                        <button data-bs-toggle="modal" :data-bs-target="`#update-address-modal`"
+                            @click="getUpdatingAddress(address)">Cập nhật</button>
+                        <button @click="deleteAddress(address)">Xóa</button>
+                    </div>
+                    <button class="account-address-button" v-if="!address.isDefault"
+                        @click="updateToDefaultAddress(address)">Đặt làm mặc định</button>
                 </div>
             </div>
 
-            <!-- Modal -->
+            <!-- Add Modal -->
             <div class="modal fade" id="address-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 data-bs-backdrop="false" data-bs-focus="true" aria-hidden="false">
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -207,14 +323,21 @@ const toggleVillageDropdown = async () => {
                         <div class="modal-body" style="z-index:2">
                             <div class="grid">
                                 <div class="grid-column">
-                                    <span class="mx-2">Email</span>
-                                    <input type="email" name="email" placeholder="Tên người nhận"
-                                        v-model="customerInfo.email" class="form-control custom-cursor-default-hover" />
+                                    <span class="mx-2  text-secondary text-secondary">Tên người nhận</span>
+                                    <input type="text" name="name" placeholder="Tên người nhận" v-model="customerName"
+                                        class="form-control custom-cursor-default-hover" />
+                                </div>
+                                <div class="grid-column">
+                                    <div class="phone-block">
+                                        <span class="mx-2  text-secondary">Số điện thoại</span>
+                                        <input type="text" name="phone" v-model="customerPhone" placeholder="01234xxxxx"
+                                            autocomplete="off" class="form-control" />
+                                    </div>
                                 </div>
                                 <div class="grid-column">
                                     <div class="address-block">
-                                        <span class="mx-2">Địa chỉ</span>
-                                        <input type="text" name="address" v-model="customerInfo.address"
+                                        <span class="mx-2  text-secondary">Địa chỉ</span>
+                                        <input type="text" name="address" v-model="customerAddress"
                                             placeholder="Địa chỉ (ví dụ: 103 Vạn Phúc, phường Vạn Phúc)"
                                             autocomplete="off" class="form-control" />
                                     </div>
@@ -224,7 +347,7 @@ const toggleVillageDropdown = async () => {
                                 <div class="grid-column mobile--one-whole">
                                     <div dir="auto" class="v-select vue-select vs--single vs--searchable"
                                         name="nhanh_city">
-                                        <span class="mx-2">Thành phố</span>
+                                        <span class="mx-2  text-secondary">Thành phố</span>
                                         <div @click="toggleCityDropdown" id="vs1-combobox" role="combobox"
                                             :aria-expanded="showCityDropdown" aria-owns="vs1-listbox"
                                             aria-label="Search for option" class="vs-dropdown-toggle">
@@ -232,7 +355,7 @@ const toggleVillageDropdown = async () => {
                                                 <span class="vs-selected"> {{ activeCity.name }}</span>
                                                 <input aria-autocomplete="list" aria-labelledby="vs1-combobox"
                                                     aria-controls="vs1-listbox" type="search" autocomplete="off"
-                                                    class="vs-search" />
+                                                    class="vs-search" readonly />
                                                 <ul class="city-list" v-show="showCityDropdown" id="vs1-listbox"
                                                     role="listbox" aria-label="cities" style="z-index: 2;">
                                                     <li v-for="(city, index) in cities" class="city-option"
@@ -264,7 +387,7 @@ const toggleVillageDropdown = async () => {
                                     </div>
                                 </div>
                                 <div class="grid-column mobile--one-whole">
-                                    <span class="mx-2">Quận / Huyện</span>
+                                    <span class="mx-2  text-secondary">Quận / Huyện</span>
                                     <div dir="auto" class="v-select vue-select vs--single vs--searchable"
                                         name="nhanh_district">
                                         <div @click="toggleDistrictDropdown" id="vs2-combobox" role="combobox"
@@ -274,7 +397,7 @@ const toggleVillageDropdown = async () => {
                                                 <span class="vs-selected"> {{ activeDistrict.name }}</span>
                                                 <input aria-autocomplete="list" aria-labelledby="vs2-combobox"
                                                     aria-controls="vs2-listbox" type="search" autocomplete="off"
-                                                    class="vs-search" />
+                                                    class="vs-search" readonly />
                                                 <ul class="district-list" v-show="showDistrictDropdown" id="vs2-listbox"
                                                     role="listbox" aria-label="districts">
                                                     <li v-for="(district, index2) in districts" class="district-option"
@@ -305,7 +428,7 @@ const toggleVillageDropdown = async () => {
                                     </div>
                                 </div>
                                 <div class="grid-column mobile--one-whole">
-                                    <span class="mx-2">Phường / Xã</span>
+                                    <span class="mx-2  text-secondary">Phường / Xã</span>
                                     <div dir="auto" class="v-select vue-select vs--single vs--searchable"
                                         name="nhanh_ward" id="nhanh_ward">
                                         <div @click="toggleVillageDropdown" id="vs3-combobox" role="combobox"
@@ -315,7 +438,7 @@ const toggleVillageDropdown = async () => {
                                                 <span class="vs-selected"> {{ activeVillage.name }}</span>
                                                 <input aria-autocomplete="list" aria-labelledby="vs3-combobox"
                                                     aria-controls="vs3-listbox" type="search" autocomplete="off"
-                                                    class="vs-search" />
+                                                    class="vs-search" readonly />
                                                 <ul class="village-list" v-show="showVillageDropdown" id="vs3-listbox"
                                                     role="listbox" aria-label="villages">
                                                     <li v-for="(village, index) in villages" class="village-option"
@@ -349,43 +472,185 @@ const toggleVillageDropdown = async () => {
                             </div>
                         </div>
                         <div class="modal-footer" style="z-index:1">
-                            <button type="button" class="btn-save btn" data-bs-dismiss="modal">Thêm</button>
+                            <button type="button" class="btn-save btn" data-bs-dismiss="modal"
+                                @click="addNewAddress">Thêm</button>
                             <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Trở lại</button>
                             <!-- <button type="button" class="btn btn-primary btn-save">Lưu</button> -->
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- <div class="account-address-item">
-                <div class="account-address-content">
-                    <div class="account-address-head">
-                        Thanh Nguyễn
-                        <span>Mặc định</span>
+
+            <!-- Update Modal -->
+            <div class="modal fade" id="update-address-modal" tabindex="-1" aria-labelledby="updateModal"
+                data-bs-backdrop="false" data-bs-focus="true" aria-hidden="false">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header" style="z-index:1">
+                            <div class="modal-title h3" id="updateModal">Cập nhật địa chỉ</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="z-index:2">
+                            <div class="grid">
+                                <div class="grid-column">
+                                    <span class="mx-2  text-secondary text-secondary">Tên người nhận</span>
+                                    <input type="text" name="name" placeholder="Tên người nhận"
+                                        v-model="updatingAddress.belongsTo"
+                                        class="form-control custom-cursor-default-hover" />
+                                </div>
+                                <div class="grid-column">
+                                    <div class="phone-block">
+                                        <span class="mx-2  text-secondary">Số điện thoại</span>
+                                        <input type="text" name="phone" v-model="updatingAddress.phone"
+                                            placeholder="01234xxxxx" autocomplete="off" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="grid-column">
+                                    <div class="address-block">
+                                        <span class="mx-2  text-secondary">Địa chỉ</span>
+                                        <input type="text" name="address" v-model="updatingAddress.address"
+                                            placeholder="Địa chỉ (ví dụ: 103 Vạn Phúc, phường Vạn Phúc)"
+                                            autocomplete="off" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid">
+                                <div class="grid-column mobile--one-whole">
+                                    <div dir="auto" class="v-select vue-select vs--single vs--searchable"
+                                        name="nhanh_city">
+                                        <span class="mx-2  text-secondary">Thành phố</span>
+                                        <div @click="toggleCityDropdown" id="vs1-combobox" role="combobox"
+                                            :aria-expanded="showCityDropdown" aria-owns="vs1-listbox"
+                                            aria-label="Search for option" class="vs-dropdown-toggle">
+                                            <div class="vs-selected-options">
+                                                <span class="vs-selected"> {{ activeCity.name }}</span>
+                                                <input aria-autocomplete="list" aria-labelledby="vs1-combobox"
+                                                    aria-controls="vs1-listbox" type="search" autocomplete="off"
+                                                    class="vs-search" readonly />
+                                                <ul class="city-list" v-show="showCityDropdown" id="vs1-listbox"
+                                                    role="listbox" aria-label="cities" style="z-index: 2;">
+                                                    <li v-for="(city, index) in cities" class="city-option"
+                                                        role="option" :id="'city-' + index"
+                                                        @mouseover="setActiveCity(index)">
+                                                        {{ city.name }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                            <div class="vs-actions">
+                                                <button type="button" title="Clear Selected" aria-label="Clear Selected"
+                                                    class="vs-clear" style="display: none">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+                                                        <path
+                                                            d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="10"
+                                                    role="presentation" class="vs-open-indicator">
+                                                    <path
+                                                        d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z">
+                                                    </path>
+                                                </svg>
+                                                <div class="vs-spinner" style="display: none">Loading...</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid-column mobile--one-whole">
+                                    <span class="mx-2  text-secondary">Quận / Huyện</span>
+                                    <div dir="auto" class="v-select vue-select vs--single vs--searchable"
+                                        name="nhanh_district">
+                                        <div @click="toggleDistrictDropdown" id="vs2-combobox" role="combobox"
+                                            :aria-expanded="showDistrictDropdown" aria-owns="vs2-listbox"
+                                            aria-label="Search for option" class="vs-dropdown-toggle">
+                                            <div class="vs-selected-options">
+                                                <span class="vs-selected"> {{ activeDistrict.name }}</span>
+                                                <input aria-autocomplete="list" aria-labelledby="vs2-combobox"
+                                                    aria-controls="vs2-listbox" type="search" autocomplete="off"
+                                                    class="vs-search" readonly />
+                                                <ul class="district-list" v-show="showDistrictDropdown" id="vs2-listbox"
+                                                    role="listbox" aria-label="districts">
+                                                    <li v-for="(district, index2) in districts" class="district-option"
+                                                        role="option" :id="'district-' + index2"
+                                                        @mouseover="setActiveDistrict(index2)" :key="index2">
+                                                        {{ district.name }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="vs-actions">
+                                                <button type="button" title="Clear Selected" aria-label="Clear Selected"
+                                                    class="vs-clear" style="display: none">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+                                                        <path
+                                                            d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="10"
+                                                    role="presentation" class="vs-open-indicator">
+                                                    <path
+                                                        d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z">
+                                                    </path>
+                                                </svg>
+                                                <div class="vs-spinner" style="display: none">Loading...</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid-column mobile--one-whole">
+                                    <span class="mx-2  text-secondary">Phường / Xã</span>
+                                    <div dir="auto" class="v-select vue-select vs--single vs--searchable"
+                                        name="nhanh_ward" id="nhanh_ward">
+                                        <div @click="toggleVillageDropdown" id="vs3-combobox" role="combobox"
+                                            :aria-expanded="showVillageDropdown" aria-owns="vs3-listbox"
+                                            aria-label="Search for option" class="vs-dropdown-toggle">
+                                            <div class="vs-selected-options">
+                                                <span class="vs-selected"> {{ activeVillage.name }}</span>
+                                                <input aria-autocomplete="list" aria-labelledby="vs3-combobox"
+                                                    aria-controls="vs3-listbox" type="search" autocomplete="off"
+                                                    class="vs-search" readonly />
+                                                <ul class="village-list" v-show="showVillageDropdown" id="vs3-listbox"
+                                                    role="listbox" aria-label="villages">
+                                                    <li v-for="(village, index) in villages" class="village-option"
+                                                        role="option" :id="'village-' + index"
+                                                        @mouseover="setActiveVillage(index)">
+                                                        {{ village.name }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                            <div class="vs-actions">
+                                                <button type="button" title="Clear Selected" aria-label="Clear Selected"
+                                                    class="vs-clear" style="display: none">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+                                                        <path
+                                                            d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="10"
+                                                    role="presentation" class="vs-open-indicator">
+                                                    <path
+                                                        d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z">
+                                                    </path>
+                                                </svg>
+                                                <div class="vs-spinner" style="display: none">Loading...</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="z-index:1">
+                            <button type="button" class="btn-save btn" data-bs-dismiss="modal"
+                                @click="updateAddress">Lưu chỉnh sửa</button>
+                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Trở lại</button>
+                            <!-- <button type="button" class="btn btn-primary btn-save">Lưu</button> -->
+                        </div>
                     </div>
-                    <div class="account-address-text">
-                        0776537697<br>
-                        233/46/1A1 Nguyễn Văn Cừ, An Hòa, Ninh Kiều, Cần Thơ, Quận Ninh Kiều, Cần Thơ
-                    </div>
-                </div>
-                <div class="account-address-action">
-                    <div class="account-address-buttons"><button>Cập nhật</button> <button>Xóa</button></div>
                 </div>
             </div>
-            <div class="account-address-item">
-                <div class="account-address-content">
-                    <div class="account-address-head">
-                        Thanh Nguyễn
-                    </div>
-                    <div class="account-address-text">
-                        0776537697<br>
-                        233/46/1A1 Nguyễn Văn Cừ, An Hòa, Ninh Kiều, Cần Thơ, Quận Ninh Kiều, Cần Thơ
-                    </div>
-                </div>
-                <div class="account-address-action">
-                    <div class="account-address-buttons"><button>Cập nhật</button> <button>Xóa</button></div>
-                    <button class="account-address-button">Đặt làm mặc định</button>
-                </div>
-            </div> -->
         </div>
     </div>
 </template>
@@ -572,6 +837,7 @@ const toggleVillageDropdown = async () => {
     margin-left: 0 !important;
     margin-right: 0 !important;
     padding: 9px;
+    padding-top: 0px;
     width: 100%;
 }
 
@@ -764,6 +1030,10 @@ const toggleVillageDropdown = async () => {
     cursor: pointer;
 }
 
+.village-list {
+    max-height: 100px;
+}
+
 .city-option,
 .district-option,
 .village-option,
@@ -783,7 +1053,8 @@ const toggleVillageDropdown = async () => {
     color: #fff;
 }
 
-.vs-dropdown-toggle:hover, input:hover {
+.vs-dropdown-toggle:hover,
+input:hover {
     cursor: pointer;
 }
 
@@ -791,7 +1062,13 @@ const toggleVillageDropdown = async () => {
     overflow: visible;
 }
 
+.modal-header {
+    padding: 9px;
+    padding-left: 20px;
+}
+
 .modal-body {
+    padding: 9px 15px;
     overflow-y: visible;
 }
 
@@ -799,17 +1076,16 @@ const toggleVillageDropdown = async () => {
     overflow: visible;
 }
 
-
 .btn {
-  height: auto;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  line-height: 1;
-  box-sizing: border-box;
-  font-family: "CriteriaCF", "Pangea", sans-serif;
-  margin-right: 10px;
-  border: 1px solid #252525;
-  cursor: pointer;
+    height: auto;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    line-height: 1;
+    box-sizing: border-box;
+    font-family: "CriteriaCF", "Pangea", sans-serif;
+    margin-right: 10px;
+    border: 1px solid #252525;
+    cursor: pointer;
 }
 
 
@@ -829,4 +1105,68 @@ const toggleVillageDropdown = async () => {
     color: #e4dddd;
 }
 
+.loader {
+    display: block;
+    border-radius: 50%;
+    position: relative;
+    animation: rotate 1s linear infinite;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.5);
+    position: fixed;
+    top: 40%;
+    left: 40%;
+    z-index: 100;
+}
+
+.loader::before,
+.loader::after {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    inset: 0px;
+    border-radius: 50%;
+    border: 20px solid #e5e3e3;
+    animation: prixClipFix 2s linear infinite;
+    z-index: 1000;
+}
+
+.loader::after {
+    border-color: #2424be;
+    animation: prixClipFix 2s linear infinite, rotate 0.5s linear infinite reverse;
+    inset: 6px;
+    z-index: 1000;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    100% {
+        transform: rotate(360deg)
+    }
+}
+
+@keyframes prixClipFix {
+    0% {
+        clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+    }
+
+    25% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+    }
+
+    50% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+    }
+
+    75% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
+    }
+
+    100% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
+    }
+}
 </style>
