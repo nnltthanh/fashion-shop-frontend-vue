@@ -4,7 +4,7 @@
             <div class="fs-5 text-secondary" v-if="!accountInfo?.avatar">Drop avatar here</div>
             <img v-if="accountInfo?.avatar" :src="avatar!" class="figure-img avatar-image" alt="Avatar">
         </figure>
-        <figcaption class="figure-caption fs-5 mt-1">{{ userInfo && userInfo.account! ? userInfo.account!
+        <figcaption class="figure-caption fs-5 mt-1">{{ userInfo && userInfo.name! ? userInfo.name!
             : 'Chưa cập nhật!' }}
         </figcaption>
     </div>

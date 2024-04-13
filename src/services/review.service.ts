@@ -1,22 +1,9 @@
-import { ref } from 'vue';
-import axios from 'axios';
 import type { Review } from '@/components/profile/account-content/OrderCard.vue';
+import axios from 'axios';
 
 export class ReviewService {
-    public productId;
-    public orderDetailId;
-    public content;
-    public rate;
-    public customerId
-
+   
     constructor() {
-        this.productId = ref<number>(0);
-        this.orderDetailId = ref<number>(0);
-        this.content = ref<string>('');
-        this.rate = ref<number>(1);
-        if (localStorage.getItem('account')) {
-            this.customerId = JSON.parse(localStorage.getItem('account')!).id || 0;
-        }
     }
 
     public async postReview(productId, orderDetailId, postData, formData : any) {

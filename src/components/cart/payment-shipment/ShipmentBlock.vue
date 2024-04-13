@@ -1,7 +1,7 @@
 <script lang="ts">
-import { onMounted, ref, type Ref, inject } from "vue";
 import { CartService } from '@/services/cart.service';
-
+import { UserService, type Address, type User } from "@/services/user.service";
+import { inject, onMounted, ref, type Ref } from "vue";
 
 export type Shipment = {
   shipCost: number,
@@ -9,9 +9,9 @@ export type Shipment = {
   status: string,
 }
 
-
 export default {
   setup() {
+
     const { cartService }: { cartService: CartService } = inject('cartService')!;
 
     const showCityDropdown = ref(false);
@@ -26,7 +26,7 @@ export default {
 
     const activeCity = ref<{ name: string, id: number }>({ name: "Chọn Tỉnh / Thành", id: -1 });
     const activeDistrict = ref<{ name: string, id: number }>({ name: "Chọn Quận / Huyện", id: -1 });
-    const activeVillage = ref<{ name: string, id: number, code: number }>({ name: "Chọn Phường / Xã", id: -1, code: -1 });
+    const activeVillage = ref<{ name: string, id: number, code: string }>({ name: "Chọn Phường / Xã", id: -1, code: '-1' });
     const activeShippingService = ref<any>({ short_name: "Chọn dịch vụ vận chuyển" });
 
     let orderShipment: Shipment = {
@@ -44,22 +44,9 @@ export default {
 
     const customerInfo = JSON.parse(localStorage.getItem('account')!);
 
-    // if (customerInfo.province) {
-    //   activeCity.value.name = customerInfo.province
-    // }
-
-    // if (customerInfo.district) {
-    //   activeDistrict.value.name = customerInfo.district
-    // }
-
-    // if (customerInfo.ward) {
-    //   activeVillage.value.name = customerInfo.ward
-    // }
-
     var cities: { name: string, id: number }[] = [];
     const districts: Ref<{ name: string, id: number }[]> = ref<{ name: string, id: number }[]>([]);
-    var districtsFullInfo: any[] = [];
-    const villages: Ref<{ name: string, id: number, code: number }[]> = ref<{ name: string, id: number, code: number }[]>([]);
+    const villages: Ref<{ name: string, id: number, code: string }[]> = ref<{ name: string, id: number, code: string }[]>([]);
     const shippingServices: Ref<any[]> = ref([]);
 
     const setActiveCity = (index: number) => {
@@ -77,6 +64,11 @@ export default {
     const setActiveShippingService = (index: number) => {
       activeShippingServiceIndex.value = index;
     };
+
+    const isLoading = ref(true)
+
+    const addresses = ref<Address[]>([]);
+    let userService = new UserService();
 
     const toggleCityDropdown = async () => {
       showCityDropdown.value = !showCityDropdown.value;
@@ -160,7 +152,154 @@ export default {
 
     };
 
+    const addressFromAddressBook = ref<Address>({
+      id: '',
+      belongsTo: '',
+      phone: '',
+      address: '',
+      cityId: '',
+      districtId: '',
+      wardId: '',
+      customer: customerInfo,
+      isDefault: false,
+      displayingAddress: '',
+    });;
+
+    const getAddressFromAddressBook = async () => {
+
+      addressFromAddressBook.value = (await userService.getDefaultAddressOfCustomer(customerInfo.id)).data[0];
+
+      let city = await userService.getCityById(addressFromAddressBook.value.cityId);
+      let maxLength = 0;
+      city.NameExtension.forEach(province => {
+        if (province.length > maxLength) {
+          maxLength = province.length;
+          city.ProvinceName = province;
+        }
+      });
+
+      let district = await userService.getDistrictById(addressFromAddressBook.value.cityId, addressFromAddressBook.value.districtId);
+
+      let ward = await userService.getWardById(addressFromAddressBook.value.districtId, addressFromAddressBook.value.wardId);
+
+      activeCity.value = { name: city.ProvinceName, id: Number(addressFromAddressBook.value.cityId) };
+      activeDistrict.value = { name: district.DistrictName, id: Number(addressFromAddressBook.value.districtId) };
+      activeVillage.value = { name: ward.WardName, id: ward.id, code: addressFromAddressBook.value.wardId };
+
+      activeCityIndex.value = cities.findIndex(x => x.id.toString() == addressFromAddressBook.value.cityId);
+
+      districts.value = (await userService.getDistrict(activeCity.value.id.toString())).data.data.map(
+        res => { return { name: res.DistrictName, id: res.DistrictID } }
+      );
+
+      districts.value.sort(sortByName);
+
+      activeDistrictIndex.value = districts.value.findIndex(x => x.id.toString() == addressFromAddressBook.value.districtId);
+
+      villages.value = (await userService.getWard(activeDistrict.value.id.toString())).data.data.map(
+        res => { return { name: res.WardName, id: res.WardID, code: res.WardCode } }
+      );
+
+      villages.value.sort(sortByName);
+
+      activeVillageIndex.value = villages.value.findIndex(x => x.code.toString() == addressFromAddressBook.value.wardId);
+
+      let response = await cartService.getShippingService(1572, activeDistrict.value.id); // 1572 : Quận Ninh Kiều
+
+      shippingServices.value = response.data.data;
+      console.log(shippingServices.value[0].service_id)
+
+      let feeResponse = await cartService.getShipCost(1572, "550113", shippingServices.value[0].service_id, activeDistrict.value.id, activeVillage.value.code);
+
+      console.log("fee: ", feeResponse.data.data.total);
+
+      cartService.shipCost.value = feeResponse.data.data.total;
+      cartService.subTotal.value = cartService.total.value + cartService.shipCost.value - cartService.discount.value;
+
+    }
+
+    const getAddressesByCustomerId = async () => {
+
+      isLoading.value = true;
+
+      let data = (await userService.getAddressesByCustomerId(customerInfo.id)).data;
+
+      data.reverse().forEach(async (address, index) => {
+        let city = await userService.getCityById(address.cityId)
+
+        let district = await userService.getDistrictById(address.cityId, address.districtId)
+
+        let ward = await userService.getWardById(address.districtId, address.wardId)
+
+        address.displayingAddress = address.address + ', ' + ward.WardName + ', ' + district.DistrictName + ', ' + city.ProvinceName;
+
+        if (address.isDefault) {
+          data.splice(index, 1);
+          data.unshift(address);
+        }
+      })
+
+
+      setTimeout(() => {
+        addresses.value = data;
+        console.log(addresses.value)
+      }, 500);
+    }
+
+    const choseAddressOption = async (event: MouseEvent) => {
+      addressFromAddressBook.value = addresses.value[(event.target as HTMLInputElement).value];
+
+      let city = await userService.getCityById(addressFromAddressBook.value.cityId);
+      let maxLength = 0;
+      city.NameExtension.forEach(province => {
+        if (province.length > maxLength) {
+          maxLength = province.length;
+          city.ProvinceName = province;
+        }
+      });
+
+      let district = await userService.getDistrictById(addressFromAddressBook.value.cityId, addressFromAddressBook.value.districtId);
+
+      let ward = await userService.getWardById(addressFromAddressBook.value.districtId, addressFromAddressBook.value.wardId);
+
+      activeCity.value = { name: city.ProvinceName, id: Number(addressFromAddressBook.value.cityId) };
+      activeDistrict.value = { name: district.DistrictName, id: Number(addressFromAddressBook.value.districtId) };
+      activeVillage.value = { name: ward.WardName, id: ward.id, code: addressFromAddressBook.value.wardId };
+
+      activeCityIndex.value = cities.findIndex(x => x.id.toString() == addressFromAddressBook.value.cityId);
+
+      districts.value = (await userService.getDistrict(activeCity.value.id.toString())).data.data.map(
+        res => { return { name: res.DistrictName, id: res.DistrictID } }
+      );
+
+      districts.value.sort(sortByName);
+
+      activeDistrictIndex.value = districts.value.findIndex(x => x.id.toString() == addressFromAddressBook.value.districtId);
+
+      villages.value = (await userService.getWard(activeDistrict.value.id.toString())).data.data.map(
+        res => { return { name: res.WardName, id: res.WardID, code: res.WardCode } }
+      );
+
+      villages.value.sort(sortByName);
+
+      activeVillageIndex.value = villages.value.findIndex(x => x.code.toString() == addressFromAddressBook.value.wardId);
+
+      let response = await cartService.getShippingService(1572, activeDistrict.value.id); // 1572 : Quận Ninh Kiều
+
+      shippingServices.value = response.data.data;
+      console.log(shippingServices.value[0].service_id)
+
+      let feeResponse = await cartService.getShipCost(1572, "550113", shippingServices.value[0].service_id, activeDistrict.value.id, activeVillage.value.code);
+
+      console.log("fee: ", feeResponse.data.data.total);
+
+      cartService.shipCost.value = feeResponse.data.data.total;
+      cartService.subTotal.value = cartService.total.value + cartService.shipCost.value - cartService.discount.value;
+
+    }
+
     onMounted(async () => {
+      isLoading.value = true;
       // data.forEach((city) => cities.push(city.name));
       const response = await cartService.getCity();
 
@@ -176,6 +315,13 @@ export default {
         cities.push({ name: cityWithFullTitle, id: city.ProvinceID })
       });
       cities.sort(sortByName);
+
+      getAddressFromAddressBook();
+      getAddressesByCustomerId();
+      
+      setTimeout(() => {
+        isLoading.value = false;
+      }, 1500);
     });
 
     const sortByName = (a, b) => {
@@ -211,29 +357,39 @@ export default {
       shippingServices,
       activeShippingService,
       toggleShippingServiceDropdown,
-      setActiveShippingService
+      setActiveShippingService,
+      isLoading,
+      getAddressFromAddressBook,
+      getAddressesByCustomerId,
+      addressFromAddressBook,
+      addresses,
+      choseAddressOption
     };
   },
 };
 </script>
 
 <template>
+  <div class="loader-container" v-if="isLoading"><span class="loader"></span></div>
   <div class="title-with-actions">
     <div class="title">Thông tin vận chuyển</div>
     <div class="action">
-      <a href="#" class="flex align--center"><img src="https://www.coolmate.me/images/address_book_icon.svg"
+      <a data-bs-toggle="modal" :data-bs-target="`#address-modal`" @click=""
+        class="flex align--center"><img src="https://www.coolmate.me/images/address_book_icon.svg"
           alt="address_book_icon" class="address_book_icon" />
         Chọn từ sổ địa chỉ
       </a>
     </div>
   </div>
-  <div id="customer-info-block" customerinfo="[object Object]">
+  <div id="customer-info-block">
     <div class="grid">
       <div class="grid-column six-twelfths">
-        <input type="text" name="full_name" placeholder="Họ tên" v-model="customerInfo.name" class="form-control" />
+        <input type="text" name="full_name" placeholder="Họ tên" v-model="addressFromAddressBook.belongsTo"
+          class="form-control" />
       </div>
       <div class="grid-column six-twelfths">
-        <input type="tel" name="phone" placeholder="Số điện thoại" v-model="customerInfo.phone" class="form-control" />
+        <input type="tel" name="phone" placeholder="Số điện thoại" v-model="addressFromAddressBook.phone"
+          class="form-control" />
       </div>
     </div>
     <div class="grid">
@@ -243,7 +399,7 @@ export default {
       </div>
       <div class="grid-column">
         <div class="address-block">
-          <input type="text" name="address" v-model="customerInfo.address"
+          <input type="text" name="address" v-model="addressFromAddressBook.address"
             placeholder="Địa chỉ (ví dụ: 103 Vạn Phúc, phường Vạn Phúc)" autocomplete="off" class="form-control" />
         </div>
       </div>
@@ -256,7 +412,7 @@ export default {
             <div class="vs-selected-options">
               <span class="vs-selected"> {{ activeCity.name }}</span>
               <input aria-autocomplete="list" aria-labelledby="vs1-combobox" aria-controls="vs1-listbox" type="search"
-                autocomplete="off" class="vs-search" />
+                autocomplete="off" class="vs-search" readonly />
               <ul class="city-list" v-show="showCityDropdown" id="vs1-listbox" role="listbox" aria-label="cities">
                 <li v-for="(city, index) in cities" class="city-option" role="option" :id="'city-' + index"
                   @mouseover="setActiveCity(index)">
@@ -292,7 +448,7 @@ export default {
             <div class="vs-selected-options">
               <span class="vs-selected"> {{ activeDistrict.name }}</span>
               <input aria-autocomplete="list" aria-labelledby="vs2-combobox" aria-controls="vs2-listbox" type="search"
-                autocomplete="off" class="vs-search" />
+                autocomplete="off" class="vs-search" readonly />
               <ul class="district-list" v-show="showDistrictDropdown" id="vs2-listbox" role="listbox"
                 aria-label="districts">
                 <li v-for="(district, index2) in districts" class="district-option" role="option"
@@ -328,7 +484,7 @@ export default {
             <div class="vs-selected-options">
               <span class="vs-selected"> {{ activeVillage.name }}</span>
               <input aria-autocomplete="list" aria-labelledby="vs3-combobox" aria-controls="vs3-listbox" type="search"
-                autocomplete="off" class="vs-search" />
+                autocomplete="off" class="vs-search" readonly />
               <ul class="village-list" v-show="showVillageDropdown" id="vs3-listbox" role="listbox"
                 aria-label="villages">
                 <li v-for="(village, index) in villages" class="village-option" role="option" :id="'village-' + index"
@@ -359,38 +515,6 @@ export default {
         </div>
       </div>
     </div>
-    <!-- <div class="grid">
-      <div class="grid-column">
-        <div dir="auto" class="v-select vue-select vs--single vs--searchable" name="shipping-service"
-          id="shipping-service">
-          <div @click="toggleShippingServiceDropdown" id="vs4-combobox" role="combobox"
-            :aria-expanded="showShippingServiceDropdown" aria-owns="vs4-listbox" aria-label="Search for option"
-            class="vs-dropdown-toggle">
-            <div class="vs-selected-options">
-              <span class="vs-selected"> {{ activeShippingService.short_name }}</span>
-              <input aria-autocomplete="list" aria-labelledby="vs4-combobox" aria-controls="vs4-listbox" type="search"
-                autocomplete="off" class="vs-search" />
-              <ul class="shipping-service-list" v-show="showShippingServiceDropdown" id="vs4-listbox" role="listbox"
-                aria-label="shippingServices">
-                <li v-for="(shippingService, index) in shippingServices" class="shipping-service-option" role="option"
-                  :id="'shipping-service-' + index" @mouseover="setActiveShippingService(index)">
-                  {{ shippingService.short_name }}
-                </li>
-              </ul>
-            </div>
-
-            <div class="vs-actions">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="10" role="presentation"
-                class="vs-open-indicator">
-                <path
-                  d="M9.211364 7.59931l4.48338-4.867229c.407008-.441854.407008-1.158247 0-1.60046l-.73712-.80023c-.407008-.441854-1.066904-.441854-1.474243 0L7 5.198617 2.51662.33139c-.407008-.441853-1.066904-.441853-1.474243 0l-.737121.80023c-.407008.441854-.407008 1.158248 0 1.600461l4.48338 4.867228L7 10l2.211364-2.40069z">
-                </path>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="grid">
       <div class="grid-column">
         <input type="text" name="cnote" placeholder="Ghi chú thêm (Ví dụ: Giao hàng giờ hành chính)"
@@ -398,6 +522,51 @@ export default {
       </div>
     </div>
   </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="address-modal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="false"
+    data-bs-focus="true" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header" style="z-index:1">
+          <div class="modal-title h3" id="exampleModalLabel">Chọn địa chỉ</div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="z-index:2">
+          <div class="grid">
+            <form style="width: 100%;">
+              <div v-for="(address, index) in addresses" v-if="!isLoading"
+              style=" margin-bottom: 0.75rem">
+                <label class="address-item custom-cursor-on-hover"
+                :class="{'active' : addressFromAddressBook.id == address.id}">
+                <span
+                  class="address-item-custom-checkbox custom-radio"><input type="radio"
+                    autocomplete="off" :value="index" @click="choseAddressOption" />
+                  <span class="address-checkmark"
+                    :style="{ 'display': addressFromAddressBook.id == address.id ? 'block' : 'none' }"></span>
+                </span>
+                <div class="address-item-content">
+                  <div class="d-flex">
+                    <span>{{ address.belongsTo }}</span>
+                    <span class="default-tag" v-if="address.isDefault">Mặc định</span> <br />
+                  </div>
+                  {{ address.phone }} <br />
+                  {{ address.displayingAddress }}
+                </div>
+              </label>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer" style="z-index:1">
+          <!-- <button type="button" class="btn-save btn" data-bs-dismiss="modal" @click="">Lưu thay đổi</button> -->
+          <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Trở lại</button>
+          <!-- <button type="button" class="btn btn-primary btn-save">Lưu</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <style scoped>
@@ -419,6 +588,11 @@ export default {
 }
 
 .title-with-actions .action a {
+  color: #2f5acf;
+}
+
+a:hover {
+  text-decoration: underline;
   color: #2f5acf;
 }
 
@@ -671,5 +845,263 @@ export default {
 .shipping-service-option:hover {
   background-color: #333;
   color: #fff;
+}
+
+
+.loader {
+  display: block;
+  border-radius: 50%;
+  position: relative;
+  animation: rotate 1s linear infinite;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.5);
+  position: fixed;
+  top: 40%;
+  left: 40%;
+  z-index: 100;
+}
+
+.loader::before,
+.loader::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0px;
+  border-radius: 50%;
+  border: 20px solid #e5e3e3;
+  animation: prixClipFix 2s linear infinite;
+  z-index: 1000;
+}
+
+.loader::after {
+  border-color: #2424be;
+  animation: prixClipFix 2s linear infinite, rotate 0.5s linear infinite reverse;
+  inset: 6px;
+  z-index: 1000;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg)
+  }
+
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
+@keyframes prixClipFix {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+  }
+
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+  }
+
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+  }
+
+  75% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
+  }
+
+  100% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
+  }
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+}
+
+.address-item {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d9d9d9;
+  border-radius: 16px;
+  padding: 15px 20px;
+  cursor: pointer;
+  transition: 0.2s all;
+  opacity: 0.6;
+}
+
+.address-item.active,
+.address-item:not(.disabled):hover {
+  border: 1px solid #2f5acf;
+  opacity: 1;
+}
+
+.custom-checkbox,
+.custom-radio {
+  display: block;
+  position: relative;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+
+.custom-checkbox input,
+.custom-radio input {
+  display: none;
+}
+
+.custom-checkbox .address-checkmark,
+.custom-radio .address-checkmark {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 20px;
+  background-color: #2f5acf;
+}
+
+.address-item-icon-wrapper {
+  margin: 0 1.5rem;
+}
+
+.address-item-icon-wrapper img {
+  min-width: 35px;
+  max-height: 35px;
+  max-width: 55px;
+}
+
+.address-item.active .address-item-custom-checkbox,
+.address-item:not(.disabled):hover .address-item-custom-checkbox {
+  border: 1px solid #2f5acf;
+}
+
+a {
+  background-color: transparent;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+
+button,
+input {
+  overflow: visible;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  -webkit-box-shadow: inset 0 0 0 9999px transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.checkout-btn {
+  border-radius: 16px;
+  height: 55px;
+  width: 100%;
+  padding: 15px 20px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.checkout-btn:hover {
+  background-color: #d9d9d9;
+  color: #000;
+}
+
+.address-item-content {
+  margin: 0px 15px;
+}
+
+.modal {
+  overflow: visible;
+  --bs-modal-width: 700px;
+}
+
+.modal-header {
+  padding: 9px;
+  padding-left: 20px;
+}
+
+.modal-body {
+  padding: 15px 25px;
+  overflow-y: scroll;
+}
+
+.modal-content {
+  overflow: visible;
+}
+
+.default-tag {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, .1333333333);
+  border-radius: 100vmax;
+  padding: 4px 10px 5px;
+  font-size: .75rem;
+  margin-left: 0.5rem;
+  min-width: 50px;
+}
+
+.default-tag:before {
+  content: "";
+  width: 0.625rem;
+  height: 0.625rem;
+  display: block;
+  background-image: url(https://mcdn.coolmate.me/image/September2023/mceclip0_65.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: 50%;
+  margin-right: 0.25rem;
+}
+
+
+.btn {
+  height: auto;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  line-height: 1;
+  box-sizing: border-box;
+  font-family: "CriteriaCF", "Pangea", sans-serif;
+  margin-right: 10px;
+  border: 1px solid #252525;
+  cursor: pointer;
+}
+
+
+.btn-cancel:hover {
+  background-color: #181819;
+  color: #e4dddd;
+  border: 1px solid #232325;
+}
+
+.btn-save {
+  background-color: #2f5acf;
+  color: #e4dddd;
+}
+
+.btn-save:hover {
+  background-color: #143aa2;
+  color: #e4dddd;
 }
 </style>
