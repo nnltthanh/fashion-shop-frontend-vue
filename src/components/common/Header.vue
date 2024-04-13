@@ -356,7 +356,7 @@ a {
     margin-left: 0 !important;
     margin-right: 0 !important;
     padding: 9px;
-    width: 100%;
+    /* width: 100%; */
 }
 
 .grid--four-columns>.grid__column {

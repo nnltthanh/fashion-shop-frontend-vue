@@ -45,9 +45,7 @@ retrievePost(postId);
                         </div>
                         <div class="post-detail-header__description">
                             <p>
-                                Tìm hiểu bí kíp phối đồ tập gym nam cực chất để mang lại sự thoải mái và phong cách cho
-                                các chàng trai. Xem các gợi ý và nguyên tắc phối đồ tốt nhất để tạo nên một phong cách
-                                tập luyện ấn tượng.
+                                {{ post.description }}
                             </p>
                             
                         </div>
@@ -89,10 +87,6 @@ body {
 
 .post-detail-header {
     margin-top: 8em;
-}
-
-.breadcrumb {
-    padding-left: 10px;
 }
 
 .breadcrumb .page-breadcrumb {

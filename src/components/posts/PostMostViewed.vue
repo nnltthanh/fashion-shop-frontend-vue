@@ -3,17 +3,10 @@ import { ref } from 'vue';
 import PostService from '@/services/post.service.js'
 import moment from 'moment';
 
-const posts = ref([]);
+const props = defineProps({
+    postsList: Object
+});
 
-const retrievePosts = async () => {
-    try {
-        posts.value = await PostService.getAll();
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-retrievePosts();
 </script>
 
 <template>
@@ -25,7 +18,7 @@ retrievePosts();
             </div>
         </div>
         <div class="posts-mostviewed__lists">
-            <div v-for="(item, index) in posts" :key="index" class="posts-mostviewed__lists-item">
+            <div v-for="(item, index) in postsList" :key="index" class="posts-mostviewed__lists-item">
                 <div class="item-img">
                     <router-link :to="{
                         name: 'post',
