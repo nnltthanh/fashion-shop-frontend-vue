@@ -12,6 +12,7 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import Dayjs from 'vue-dayjs';
 import cors from 'cors';
 import { provideCartService } from './services/cart.service';
 // import GAuth  from 'vue3-google-oauth2';
@@ -35,7 +36,6 @@ app.use(cors);
 // Create and use Pinia store
 const pinia = createPinia();
 app.use(pinia);
-
 
 // Provide cartService
 app.provide('cartService', provideCartService());

@@ -2,6 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    // always scroll to top
+    return { top: 0 }
+  },
   routes: [
     {
       path: "/home",
@@ -89,7 +93,7 @@ const router = createRouter({
     {
       path: "/posts/:id",
       name: "post",
-      component: () => import("@/views/SinglePost.vue"),
+      component: () => import("@/views/PostDetail.vue"),
     },
     {
       path: '/staff',

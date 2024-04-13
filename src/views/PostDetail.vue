@@ -4,12 +4,15 @@ import { useRoute } from 'vue-router';
 import Header from '@/components/common/Header.vue'
 import Footer from '@/components/common/Footer.vue'
 import PostService from '@/services/post.service.js'
+import moment from 'moment'
 
 const route = useRoute();
 
 const postId = parseInt(route.params.id);
 
 const post = ref({});
+
+const formattedDate = computed(() => moment(post.value.publicAt).format('DD.MM.YYYY'));
 
 const retrievePost = async (id) => {
     try {
@@ -46,11 +49,14 @@ retrievePost(postId);
                                 các chàng trai. Xem các gợi ý và nguyên tắc phối đồ tốt nhất để tạo nên một phong cách
                                 tập luyện ấn tượng.
                             </p>
+                            
                         </div>
                         <div class="post-detail-header__date">
-                            <p class="time" style="color: rgba(0, 0, 0, 0.533);">Ngày đăng: <span>{{ post.publicAt
-                                    }}</span></p>
+                            <p class="time" style="color: rgba(0, 0, 0, 0.533);">
+                                Ngày đăng: <span>{{ formattedDate }}</span>
+                            </p>
                         </div>
+                        <p v-if="post.source" class="post-src"><i>Nguồn: <a :href="post.source">{{ post.source }}</a></i></p>
                     </div>
                 </div>
             </div>
@@ -128,6 +134,10 @@ body {
     margin: 0;
 }
 
+.post-detail-header__description span {
+    margin-top: 16px;
+}
+
 .post-detail-header__date p {
     font-weight: 400;
     font-size: 16px;
@@ -136,6 +146,12 @@ body {
     color: #8e8e8e;
     margin-top: 1rem;
     margin-bottom: 1rem;
+}
+
+.post-src a {
+    color: #0000EE;
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 .article-single-content {
@@ -369,18 +385,19 @@ div[rel-script="blog-detail"] {
 }
 
 .blog-table-of-content a {
-    color: #000!important;
+    color: #000 !important;
     border-radius: 16px;
     transition: all .3s;
 }
+
 .article-single-content a {
     color: #2f5acf;
 }
 
 .blog-table-of-content ul {
-    margin-top: 30px!important;
+    margin-top: 30px !important;
     list-style: none;
-    padding: 0!important;
+    padding: 0 !important;
     margin: 0;
 }
 
@@ -389,7 +406,7 @@ div[rel-script="blog-detail"] {
     padding: 0 0 0 15px;
 }
 
-.blog-table-of-content li + li {
+.blog-table-of-content li+li {
     margin-top: 5px;
 }
 </style>

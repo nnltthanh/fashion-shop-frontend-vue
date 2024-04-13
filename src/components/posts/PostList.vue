@@ -1,5 +1,6 @@
 <script setup>
 import PostMostViewed from './PostMostViewed.vue'
+import PostSlider from './PostSlider.vue'
 import { ref } from 'vue';
 
 </script>
@@ -9,6 +10,7 @@ import { ref } from 'vue';
     <div class="posts-sections">
         <div class="posts-section__container container--medium">
             <div class="posts_top_sections">
+                <PostSlider />
                 <PostMostViewed />
             </div>
         </div>
@@ -28,5 +30,8 @@ import { ref } from 'vue';
 
 .posts_top_sections {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2em;
 }
 </style>

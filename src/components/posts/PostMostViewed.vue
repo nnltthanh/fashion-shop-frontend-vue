@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import PostService from '@/services/post.service.js'
+import moment from 'moment';
 
 const posts = ref([]);
 
@@ -39,7 +40,7 @@ retrievePosts();
                     <div class="item-info__cate">
                         <a href="https://www.coolmate.me/blog/phoi-do">{{ item.type }}</a>
                         |
-                        <span class="item-info__postdate">{{ item.publicAt }}</span>
+                        <span class="item-info__postdate">{{ moment(item.publicAt).format('DD.MM.YYYY') }}</span>
                     </div>
                     <div class="item-info__title">
                         <router-link :to="{
