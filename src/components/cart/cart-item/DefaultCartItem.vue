@@ -8,6 +8,7 @@ export type ProductObject = {
   id: number,
   name: String,
   price: number,
+  cost: number,
   salePercent: number,
   type: String,
   material: String,
@@ -17,7 +18,10 @@ export type ProductObject = {
     type: String
   },
   createdAt: Date,
-  updatedAt: Date
+  updatedAt: Date,
+
+  //thuộc tính này tự đặt, đại diện tổng sản phẩm đã mã của sản phẩm này
+  sold: number,
 }
 
 export type ProductDetailObject = {
@@ -177,8 +181,9 @@ const addToOrder = (event) => {
     <div class="cart-item-thumbnail">
       <div class="cart-item-thumbnail-image">
         <div class="cart-item-thumbnail-block">
-          <img :src="productDetail.imageLinks?.split(', ')[0].toString().replace('width=80,height=80', 'width=300,height=442')" :alt="productDetail.product.name.toString()"
-            style="opacity: 1">
+          <img
+            :src="productDetail.imageLinks?.split(', ')[0].toString().replace('width=80,height=80', 'width=300,height=442')"
+            :alt="productDetail.product.name.toString()" style="opacity: 1">
 
         </div>
       </div>
@@ -187,7 +192,8 @@ const addToOrder = (event) => {
       <div class="cart-item-content-wrapper">
         <div class="cart-item-content-inner" style="opacity: 1">
           <h3 class="cart-item-title">
-            <router-link :to="{name: 'product', params: { id: productDetail.product.id.toString() }}" class="header_actions_button-link">
+            <router-link :to="{ name: 'product', params: { id: productDetail.product.id.toString() } }"
+              class="header_actions_button-link">
               {{ productDetail.product.name.toString() }}</router-link>
             <!-- <a href="/product/quan-ut-jogger-da-nang-co-gian" target="_blank"></a> -->
           </h3>

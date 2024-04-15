@@ -20,7 +20,7 @@
                 <i class="bi bi-bookmark-fill"></i>
                 <span class="text-[15px] ml-4 text-gray-200 font-bold">Quản lý nhân viên</span>
             </div>
-            <div
+            <div @click="clickStatistic()"
                 class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
                 <i class="bi bi-house-door-fill"></i>
                 <span class="text-[15px] ml-4 text-gray-200 font-bold">Thống kê</span>
@@ -51,7 +51,7 @@
         <!-- Main content -->
         <div class="flex-1 overflow-hidden">
             <!-- header -->
-            <div class="grid justify-items-stretch bg-white shadow px-2 py-4">
+            <div class="grid justify-items-stretch bg-white shadow px-2 pt-4 py-2">
                 <div class="flex justify-between">
                     <div>
                         <button @click="showSidebar = !showSidebar" class="text-yellow-600 font-extrabold">
@@ -68,14 +68,16 @@
                 </div>
             </div>
             <!-- Content -->
-            <div class="p-4 font-extrabold overflow-hidden">
+            <div class="mt-1 font-extrabold overflow-hidden">
                 <div v-if="showPersonalInfo">
                     <PersonalInformation />
                 </div>
                 <div v-if="showStaff">
                     <StaffManagement />
                 </div>
-                <!-- <Statistic /> -->
+                <div v-if="showStatistic">
+                    <Statistic />
+                </div>
             </div>
         </div>
     </div>
@@ -87,14 +89,30 @@ import axios from 'axios';
 import router from '@/router';
 import PersonalInformation from '@/components/manager/PersonalInformation.vue';
 import StaffManagement from '@/components/manager/StaffManagement.vue';
-// import Statistic from '@/components/manager/Statistic.vue';
+import Statistic from '@/components/manager/Statistic.vue';
 
 
 const showSidebar = ref(false);
+const showStatistic = ref(false);
+const showStaff = ref(false);
 const showPersonalInfo = ref(true);
 
 const clickPersonalInfo = () => {
     showPersonalInfo.value = true;
+    showStatistic.value = false;
+    showStaff.value = false;
+}
+
+const clickStaff = () => {
+    showPersonalInfo.value = false;
+    showStatistic.value = false;
+    showStaff.value = true;
+}
+
+const clickStatistic = () => {
+    showPersonalInfo.value = false;
+    showStatistic.value = true;
+    showStaff.value = false;
 }
 
 interface AccountInfo {
@@ -109,16 +127,9 @@ interface AccountInfo {
 
 const accountInfo = ref<AccountInfo | null>(null);
 const userInfo = ref<AccountInfo | null>(null);
-
 const isLoggedIn = ref(false);
 const isDataLoaded = ref(false);
 
-const showStaff = ref(false);
-
-const clickStaff = () => {
-    showPersonalInfo.value = false;
-    showStaff.value = true;
-}
 
 onBeforeMount(() => {
     // Lấy thông tin tài khoản từ localStorage
