@@ -1,5 +1,5 @@
 <template>
-    <div class="customer-management">
+    <div class="customer-management m-3">
         <div class="w-full">
             <div class="w-full">
                 <!-- Các thông báo -->
