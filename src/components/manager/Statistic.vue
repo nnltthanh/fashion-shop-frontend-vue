@@ -1,6 +1,6 @@
 <template>
     <div class="all overflow-y-auto custom-scrollbar" style="max-height: 630px;">
-        <div class="flex shadow-lg rounded-lg mx-4 my-2 px-4 pb-2">
+        <div class="flex shadow-md rounded-lg mx-4 my-2 px-4 pb-2">
             <div class="w-2/5">
                 <div class="mb-2 text-4xl mt-3 ">
                     Chúc mừng bạn 🎉🎉🎉
@@ -19,9 +19,19 @@
             </div>
         </div>
         <div class="flex mx-2">
-            <div class="w-3/5 shadow-lg rounded-lg p-4">
-                <div class="text-2xl">Tổng doanh thu</div>
-                <canvas ref="chartCanvas"></canvas>
+            <div class="w-3/5 shadow-lg rounded-lg p-4 big-scale-revenue">
+                <div class="text-2xl">
+                    <select v-model="selectTimeMark">
+                        <option value="month">Tổng doanh thu (theo tháng)</option>
+                        <option value="quarter">Tổng doanh thu (theo quý)</option>
+                    </select>
+                </div>
+                <div v-show="selectTimeMark === 'month'">
+                    <canvas ref="lineChartMonthCanvas"></canvas>
+                </div>
+                <div v-show="selectTimeMark === 'quarter'">
+                    <canvas ref="lineChartQuarterCanvas"></canvas>
+                </div>
             </div>
             <div class="w-2/5 ml-3">
                 <div class="flex flex-col">
@@ -29,17 +39,16 @@
                         <div class="w-1/2 mt-5 rounded-lg shadow-xl p-4 big-scale">
                             <div class="media-body text-left">
                                 <h6 class="text-muted mb-2">Tổng doanh thu (tháng) </h6>
-                                <h3>{{ totalRevenue < 1500000 ? formatNumberWithCommas(15652000) :
-                                    formatNumberWithCommas(totalRevenue) }} (vnđ)</h3>
+                                <h3>{{ formatNumberWithCommas(totalRevenue) }} (vnđ)</h3>
                             </div>
                             <div class="align-self-center">
                                 <i class="fa fa-trophy text-lime-400 fa-2x float-right"></i>
                             </div>
                         </div>
-                        <div class="w-1/2 mt-5 rounded-lg shadow-xl p-4 ml-4  big-scale">
+                        <div class="w-1/2 mt-5 rounded-lg shadow-xl p-4 ml-4 big-scale">
                             <div class="media-body text-left">
                                 <h6 class="text-muted mb-2">Số đơn thành công </h6>
-                                <h3>{{ orderDelivered < 23 ? 23 : orderDelivered }}</h3>
+                                <h3>{{ orderDelivered }}</h3>
                             </div>
                             <div class="align-self-center">
                                 <i class="fa fa-crown text-teal-200 fa-2x float-right"></i>
@@ -70,14 +79,13 @@
                         <div class="w-1/2 mt-3 rounded-lg shadow-xl p-4 big-scale">
                             <div class="media-body text-left">
                                 <h6 class="text-muted mb-2">Lợi nhuận (tháng) </h6>
-                                <h3>{{ totalPorfit < 1000000 ? formatNumberWithCommas(5670000) :
-                                    formatNumberWithCommas(totalPorfit) }} (vnđ)</h3>
+                                <h3>{{ formatNumberWithCommas(totalPorfit) }} (vnđ)</h3>
                             </div>
                             <div class="align-self-center">
                                 <i class="fa-solid fa-circle-dollar-to-slot fa-2x text-yellow-400 float-right"></i>
                             </div>
                         </div>
-                        <div class="w-1/2 mt-3 rounded-lg shadow-xl p-4 ml-4 big-scale">
+                        <div class="w-1/2 mt-3 rounded-lg shadow-xl p-4 ml-4 cursor-pointer big-scale">
                             <div class="media-body text-left">
                                 <h6 class="text-muted mb-2">Số đơn đã huỷ</h6>
                                 <h3>{{ orderCancelled < 6 ? 6 : orderCancelled }}</h3>
@@ -92,19 +100,18 @@
         </div>
         <!-- New Row -->
         <div class="flex mb-3">
-            <div class="w-2/6 max-h-80 mt-3 mr-3 rounded-xl shadow-2xl p-4">
+            <div class="w-2/6 max-h-80 mt-3 mr-3 rounded-xl shadow-2xl p-4 big-scale-revenue">
                 <div>
                     Thống kê người dùng:
                 </div>
                 <canvas class="m-2" ref="columnChartCanvas"></canvas>
             </div>
-            <div class="w-64 h-80 mt-3 rounded-2xl shadow-2xl p-4 ">
+            <div class="w-64 h-80 mt-3 rounded-2xl shadow-2xl p-4 big-scale-revenue">
                 <div>Trạng thái các tài khoản:</div>
-                <canvas class="h-3/5" ref="doughnutChartCanvas">
-                </canvas>
+                <canvas class="h-3/5" ref="doughnutChartCanvas"></canvas>
             </div>
             <!-- Bảng top sản phẩm bán chạy -->
-            <div class="w-full mt-3 h-80 rounded-2xl shadow-2xl p-4 ml-2 ">
+            <div class="w-full mt-3 h-80 rounded-2xl shadow-2xl p-4 ml-2 big-scale-revenue">
                 <div>
                     <div class="font-bold">Top sản phẩm bán chạy</div>
                     <div
@@ -112,7 +119,7 @@
                         <table
                             class="w-full overflow-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead
-                                class="text-xs font-sans text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                                class="text-xs font-sans text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400 sticky top-0 z-10">
                                 <tr>
                                     <th scope="col" class="px-5 py-3 text-center">
                                         Mã sản phẩm
@@ -205,13 +212,16 @@ const accountAvailable = ref<number>(0);
 const accountLocked = ref<number>(0);
 const topProducts = ref<ProductObject[]>();
 const monthlyRevenues2024 = new Array(12).fill(0);
+const selectTimeMark = ref<String>('month');
+
 
 const orders = ref<Order[]>();
 function formatNumberWithCommas(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-const chartCanvas = ref<HTMLCanvasElement | null>(null);
+const lineChartMonthCanvas = ref<HTMLCanvasElement | null>(null);
+const lineChartQuarterCanvas = ref<HTMLCanvasElement | null>(null);
 const columnChartCanvas = ref<HTMLCanvasElement | null>(null);
 const doughnutChartCanvas = ref<HTMLCanvasElement | null>(null);
 
@@ -255,7 +265,7 @@ onMounted(async () => {
                 monthlyRevenues2024.splice(0, 12);
                 monthlyRevenues2024.push(...monthlyRevenuesByMonth);
                 monthlyRevenues2024.map(value => value === 0 ? null : value);
-                // console.log(monthlyRevenues2024)
+                // console.log(monthlyRevenues2024[6] + monthlyRevenues2024[6])
             }
 
             //Lấy dữ liệu lợi nhuận
@@ -292,63 +302,121 @@ onMounted(async () => {
             accountLocked.value = responseUser.data.filter(user => user.locked === true).length;
         }
 
-        //Lấy dữ liệu top5 sản phẩm bán chạy 
-        const products = ref<ProductObject[]>();
+        // Lấy ra top 5 sản phẩm bán chạy nhất
+        const responseProduct = await axios.get(`http://localhost:8080/products`);
+        const products = responseProduct.data;
+        const currentDate = new Date();
+        let currentMonth = currentDate.getMonth() + 1;
+        let oneMonthsAgo = currentMonth - 1;
+        let twoMonthsAgo = currentMonth - 2;
+        // Xử lý trường hợp tháng hiện tại là 1 hoặc 2
+        if (oneMonthsAgo === 0) {
+            oneMonthsAgo = 12; // Nếu tháng hiện tại là tháng 1, tháng trước đó là tháng 12 của năm trước
+            twoMonthsAgo = 11; // Nếu tháng hiện tại là tháng 1, tháng trước đó là tháng 11 của năm trước
+        } else if (oneMonthsAgo === -1) {
+            oneMonthsAgo = 11; // Nếu tháng hiện tại là tháng 2, tháng trước đó là tháng 11 của năm trước
+            twoMonthsAgo = 10; // Nếu tháng hiện tại là tháng 2, tháng trước đó là tháng 10 của năm trước
+        }
         if (orders.value) {
-            try {
-                const productsResponse = await axios.get(`${apiUrl}/products`);
-                products.value = productsResponse.data;
-                // Bước 2 và Bước 3: Tính tổng số lượng đã bán của mỗi sản phẩm
-                const soldProductsMap = new Map<string, number>(); // Map để lưu trữ tổng số lượng đã bán của mỗi sản phẩm
-                await Promise.all(products.value!.map(async (product) => {
-                    const detailsResponse = await axios.get(`${apiUrl}/products/${product.id}/details`);
-                    const details = detailsResponse.data;
-                    details.forEach((detail: ProductDetail) => {
-                        const productId = product.id;
-                        const quantitySold = detail.sold;
-                        // Cập nhật hoặc thêm mới tổng số lượng đã bán của sản phẩm vào Map
-                        soldProductsMap.set(String(productId), (soldProductsMap.get(String(productId)) || 0) + quantitySold);
+            const currentMonth = new Date().getMonth() + 1;
+            const productSalesMap = new Map<string, number>();
+            for (const order of orders.value) {
+                // Lấy ngày của đơn hàng để xác định tháng
+                const orderDate = new Date(order.createDate);
+                const orderMonth = orderDate.getMonth() + 1;
+
+                // Chỉ xử lý đơn hàng từ tháng hiện tại, và 2 tháng trước
+                if (orderMonth === currentMonth || orderMonth === oneMonthsAgo || orderMonth === twoMonthsAgo) {
+                    const orderDetailsResponse = await axios.get(`${apiUrl}/OrderForEmployee/${order.id}/details`);
+                    order.orderDetails = orderDetailsResponse.data;
+                    order.orderDetails.forEach(orderDetail => {
+                        const productId = orderDetail.productDetail.product.id;
+                        const quantitySold = orderDetail.quantity;
+                        if (productSalesMap.has(String(productId))) {
+                            productSalesMap.set(String(productId), productSalesMap.get(String(productId))! + quantitySold);
+                        } else {
+                            productSalesMap.set(String(productId), quantitySold);
+                        }
                     });
-                }));
-                // Bước 4: Sắp xếp danh sách sản phẩm theo tổng số lượng đã bán giảm dần
-                const soldProductsArray = Array.from(soldProductsMap.entries());
-                soldProductsArray.sort((a, b) => b[1] - a[1]);
-                // Lấy 5 phần tử ban đầu (top 5 bán chạy)
-                const topFiveProducts = soldProductsArray.slice(0, 5);
-                // Lọc danh sách products và cập nhật sold của từng sản phẩm từ topFiveProducts
-                if (products.value) {
-                    products.value = products.value
-                        .filter(product => topFiveProducts.some(([productId]) => productId === String(product.id)))
-                        .map(product => {
-                            const sold = topFiveProducts.find(([productId]) => productId === String(product.id))?.[1] || 0;
-                            return { ...product, sold };
-                        });
-                    // Sắp xếp danh sách products theo sold giảm dần
-                    products.value.sort((a, b) => b.sold - a.sold);
                 }
-                topProducts.value = products.value;
-            } catch (error) {
-                console.error('Lỗi khi lấy danh sách sản phẩm:', error);
             }
+            const sortedProductSales = Array.from(productSalesMap.entries()).sort((a, b) => b[1] - a[1]);
+            topProducts.value = sortedProductSales.slice(0, 5).map(([productId, quantitySold]) => {
+                const product = products.find(product => String(product.id) === String(productId));
+                if (product) {
+                    product.sold = quantitySold;
+                }
+                return product;
+            });
         }
     } catch (error) {
         console.error('Lỗi khi lấy thông tin người dùng:', error);
     }
 
-    // Line Chart
-    if (chartCanvas.value) {
-        const ctx = chartCanvas.value.getContext('2d');
+    // Line Chart (month)
+    if (lineChartMonthCanvas.value) {
+        const ctx = lineChartMonthCanvas.value.getContext('2d');
         if (ctx) {
             const myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
-                        "September", "October", "November", "December"
+                    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
+                        'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
                     ],
                     datasets: [
                         {
                             label: 'Năm 2023',
-                            data: [57000000, 60500000, 55500000, 70000000, 70006540, 60006540, 50006540, 70006540, 80006540, 50006540, 70006540, 65008000],
+                            data: [
+                                57000000, 60500000, 55500000,
+                                70000000, 70006540, 60006540,
+                                50006540, 70006540, 80006540,
+                                50006540, 70006540, 65008000],
+                            fill: false,
+                            borderColor: 'rgb(168, 162, 158)',
+                            tension: 0.1,
+                            borderCapStyle: 'round',
+                            cubicInterpolationMode: 'monotone',
+                            borderDash: [5, 5],
+                        },
+                        {
+                            label: 'Năm 2024',
+                            data: monthlyRevenues2024,
+                            fill: false,
+                            borderColor: 'rgb(103, 232, 249)',
+                            tension: 0.1,
+                            borderCapStyle: 'round',
+                            cubicInterpolationMode: 'monotone',
+                        }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Line Chart (quarter)
+    if (lineChartQuarterCanvas.value) {
+        const ctx = lineChartQuarterCanvas.value.getContext('2d');
+        if (ctx) {
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Quý 1', 'Quý 2', 'Quý 3', 'Quý 4'
+                    ],
+                    datasets: [
+                        {
+                            label: 'Năm 2023',
+                            data: [
+                                57000000 + 60500000 + 55500000,
+                                70000000 + 70006540 + 60006540,
+                                50006540 + 70006540 + 80006540,
+                                50006540 + 70006540 + 65008000
+                            ],
                             fill: false,
                             borderColor: 'rgb(168, 162, 158)',
                             tension: 0.1,
@@ -359,18 +427,11 @@ onMounted(async () => {
                         {
                             label: 'Năm 2024',
                             data: [
-                                61000000, // tháng 1
-                                57643000,
-                                75000000,
-                                68000000,
-                                15652000,
-                                monthlyRevenues2024[5], // tháng 6
-                                monthlyRevenues2024[6],
-                                monthlyRevenues2024[7],
-                                monthlyRevenues2024[8],
-                                monthlyRevenues2024[9],
-                                monthlyRevenues2024[10],
-                                monthlyRevenues2024[11]],
+                                (monthlyRevenues2024[0] + monthlyRevenues2024[1] + monthlyRevenues2024[2]) !== 0 ? monthlyRevenues2024[0] + monthlyRevenues2024[1] + monthlyRevenues2024[2] : null,
+                                monthlyRevenues2024[3] + monthlyRevenues2024[4] + monthlyRevenues2024[5] !== 0 ? monthlyRevenues2024[3] + monthlyRevenues2024[4] + monthlyRevenues2024[5] : null,
+                                monthlyRevenues2024[6] + monthlyRevenues2024[7] + monthlyRevenues2024[8] !== 0 ? monthlyRevenues2024[6] + monthlyRevenues2024[7] + monthlyRevenues2024[8] : null,
+                                monthlyRevenues2024[9] + monthlyRevenues2024[10] + monthlyRevenues2024[11] !== 0 ? monthlyRevenues2024[9] + monthlyRevenues2024[10] + monthlyRevenues2024[11] : null,
+                            ],
                             fill: false,
                             borderColor: 'rgb(103, 232, 249)',
                             tension: 0.1,
@@ -493,6 +554,14 @@ onMounted(async () => {
 
 .big-scale:hover {
     transform: scale(1.1);
+}
+
+.big-scale-revenue {
+    transition: transform 0.3s ease;
+}
+
+.big-scale-revenue:hover {
+    transform: scale(1.03);
 }
 
 .custom-scrollbar::-webkit-scrollbar {

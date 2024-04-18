@@ -1,12 +1,12 @@
 <template>
-    <div class="w-full h-full flex">
+    <div class="w-full h-full flex mt-3">
         <div class="w-1/3">
             <div class="my-2 text-center">
                 <div class="flex flex-col items-center"><img class="w-48 h-48 rounded-full"
                         :src="accountInfo ? accountInfo.avatar : 'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'">
                 </div>
                 <div class="my-2 text-2xl">{{ accountInfo &&
-                            accountInfo.account ? accountInfo.account : 'Chưa cập nhật!' }}</div>
+                    accountInfo.account ? accountInfo.account : 'Chưa cập nhật!' }}</div>
             </div>
             <div class="flex items-center justify-center">
                 <div class="py-4"></div>
@@ -18,32 +18,35 @@
             </div>
 
         </div>
-
-        <div class="w-2/3 mx-3 overflow-auto " style="max-height: 500px;">
+        <div class="w-2/3 mx-3 overflow-auto" style="max-height: 600px;">
             <div class="w-2/3 m-2 px-3 py-4 bg-orange-200 rounded-lg font-light overflow-auto"><b class="font-bold"> Mã
                     nhân viên:</b>
                 {{ accountInfo &&
-                            accountInfo.id ? accountInfo.id : 'Chưa cập nhật!' }}</div>
+                    accountInfo.id ? accountInfo.id : 'Chưa cập nhật!' }}</div>
             <div class="w-2/3 m-2 px-3 py-4 bg-orange-200 rounded-lg font-light overflow-auto"><b class="font-bold">Tên
                     tài khoản:</b>
                 {{ accountInfo &&
-                            accountInfo.account ? accountInfo.account : 'Chưa cập nhật!' }}</div>
+                    accountInfo.account ? accountInfo.account : 'Chưa cập nhật!' }}</div>
             <div class="w-2/3 m-2 px-3 py-4 bg-orange-200 rounded-lg font-light overflow-auto"><b class="font-bold">Họ
                     và tên:</b> {{
-                            accountInfo &&
-                                accountInfo.name ? accountInfo.name : 'Chưa cập nhật! ' }}</div>
+                        accountInfo &&
+                            accountInfo.name ? accountInfo.name : 'Chưa cập nhật! ' }}</div>
             <div class="w-2/3 m-2 px-3 py-4 bg-orange-200 rounded-lg font-light overflow-auto"><b class="font-bold">Số
                     điện thoại:</b>
                 {{ accountInfo &&
-                            accountInfo.phone ? accountInfo.phone : 'Chưa cập nhật!' }}</div>
+                    accountInfo.phone ? accountInfo.phone : 'Chưa cập nhật!' }}</div>
             <div class="w-2/3 m-2 px-3 py-4 bg-orange-200 rounded-lg font-light overflow-auto"><b
                     class="font-bold">Email:</b> {{
-                            accountInfo &&
-                                accountInfo.email ? accountInfo.email : 'Chưa cập nhật!' }}</div>
+                        accountInfo &&
+                            accountInfo.email ? accountInfo.email : 'Chưa cập nhật!' }}</div>
             <div class="w-2/3 m-2 px-3 py-4 bg-orange-200 rounded-lg font-light overflow-auto"><b class="font-bold">Địa
                     chỉ:</b> {{
-                            accountInfo &&
-                                accountInfo.address ? accountInfo.address : 'Chưa cập nhật!' }}
+                        accountInfo &&
+                            accountInfo.address ? accountInfo.address : 'Chưa cập nhật!' }}
+            </div>
+            <div class="w-2/3 m-2 px-3 py-4 bg-orange-200 rounded-lg font-light overflow-auto"><b class="font-bold">Chức
+                    vụ:
+                </b> Quản lý
             </div>
         </div>
     </div>
