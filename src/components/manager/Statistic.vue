@@ -37,9 +37,13 @@
                 <div class="flex flex-col">
                     <div class="flex">
                         <div class="w-1/2 mt-5 rounded-lg shadow-xl p-4 big-scale">
-                            <div class="media-body text-left">
+                            <div v-if="selectTimeMark === 'month'" class="media-body text-left">
                                 <h6 class="text-muted mb-2">Tổng doanh thu (tháng) </h6>
                                 <h3>{{ formatNumberWithCommas(totalRevenue) }} (vnđ)</h3>
+                            </div>
+                            <div v-if="selectTimeMark === 'quarter'" class="media-body text-left">
+                                <h6 class="text-muted mb-2">Tổng doanh thu (quý) </h6>
+                                <h3>{{ formatNumberWithCommas(totalRevenueQuarter) }} (vnđ)</h3>
                             </div>
                             <div class="align-self-center">
                                 <i class="fa fa-trophy text-lime-400 fa-2x float-right"></i>
@@ -77,9 +81,13 @@
                     </div>
                     <div class="flex">
                         <div class="w-1/2 mt-3 rounded-lg shadow-xl p-4 big-scale">
-                            <div class="media-body text-left">
+                            <div v-if="selectTimeMark === 'month'" class="media-body text-left">
                                 <h6 class="text-muted mb-2">Lợi nhuận (tháng) </h6>
                                 <h3>{{ formatNumberWithCommas(totalPorfit) }} (vnđ)</h3>
+                            </div>
+                            <div v-if="selectTimeMark === 'quarter'" class="media-body text-left">
+                                <h6 class="text-muted mb-2">Lợi nhuận (quý) </h6>
+                                <h3>{{ formatNumberWithCommas(totalProfitQuarter) }} (vnđ)</h3>
                             </div>
                             <div class="align-self-center">
                                 <i class="fa-solid fa-circle-dollar-to-slot fa-2x text-yellow-400 float-right"></i>
@@ -199,10 +207,12 @@ interface Staff {
 const apiUrl = 'http://localhost:8080'
 const orderDelivered = ref<number>(0);
 const totalRevenue = ref<number>(0);
+const totalRevenueQuarter = ref<number>(0);
 const orderProcessing = ref<number>(0);
 const orderCancelled = ref<number>(0);
 const orderShipped = ref<number>(0);
 const totalPorfit = ref<number>(0);
+const totalProfitQuarter = ref<number>(0);
 const totalCost = ref<number>(0);
 const customerNumber = ref<number>(0);
 const staffNumber = ref<number>(0);
@@ -231,24 +241,31 @@ onMounted(async () => {
         const response = await axios.get(`${apiUrl}/OrderForEmployee`);
         if (response.status === 200) {
             orders.value = response.data;
-            // nếu muốn lọc theo thời gian, lọc ngay đây (vd lấy số đơn hàng có số ngày...)
             orderDelivered.value = orders.value!.filter(order => order.status === 'DELIVERED').length;
-            // totalRevenue.value = Number(orders.value!.filter(order => order.status === 'DELIVERED')
+
             if (orders.value) {
                 const currentMonth = new Date().getMonth() + 1;
-
                 totalRevenue.value = orders.value
                     .filter(order => {
                         const orderDate = new Date(order.createDate);
                         return orderDate.getFullYear() === new Date().getFullYear() && orderDate.getMonth() + 1 === currentMonth && order.status === 'DELIVERED';
                     })
                     .reduce((total, order) => total + Number(order.total), 0);
-                // console.log(totalRevenue.value)
+
+                // Xác định quý hiện tại
+                const currentQuarter = Math.floor((currentMonth - 1) / 3) + 1; // Xác định quý từ tháng hiện tại
+                // Tính tổng doanh thu cho quý hiện tại
+                orders.value.forEach(order => {
+                    const orderDate = new Date(order.createDate);
+                    const orderQuarter = Math.floor((orderDate.getMonth() + 3) / 3); // Xác định quý từ tháng của đơn hàng
+                    if (orderQuarter === currentQuarter && order.status === 'DELIVERED') {
+                        totalRevenueQuarter.value += Number(order.total);
+                    }
+                });
             }
             orderProcessing.value = orders.value!.filter(order => order.status === 'PROCESSING').length;
             orderCancelled.value = orders.value!.filter(order => order.status === 'CANCELLED').length;
             orderShipped.value = orders.value!.filter(order => order.status === 'SHIPPED').length;
-
 
             //Lấy dữ liệu biểu đồ tổng doanh thu
             const monthlyRevenuesByMonth = new Array(12).fill(null);
@@ -265,14 +282,11 @@ onMounted(async () => {
                 monthlyRevenues2024.splice(0, 12);
                 monthlyRevenues2024.push(...monthlyRevenuesByMonth);
                 monthlyRevenues2024.map(value => value === 0 ? null : value);
-                // console.log(monthlyRevenues2024[6] + monthlyRevenues2024[6])
             }
 
-            //Lấy dữ liệu lợi nhuận
-
+            //Lấy dữ liệu lợi nhuận tháng
             if (orders.value) {
                 const currentMonth = new Date().getMonth() + 1;
-                // console.log(totalRevenue.value)
                 await Promise.all(orders.value.filter(order => {
                     const orderDate = new Date(order.createDate);
                     return orderDate.getFullYear() === new Date().getFullYear() && orderDate.getMonth() + 1 === currentMonth && order.status === 'DELIVERED';
@@ -286,9 +300,25 @@ onMounted(async () => {
                     }
                 }));
                 totalPorfit.value = totalRevenue.value - totalCost.value;
-                if (totalPorfit.value < 0) {
-                    totalPorfit.value = 0
-                }
+
+                // Xác định quý hiện tại
+                const currentQuarter = Math.floor((currentMonth - 1) / 3) + 1;
+                let totalCostQuarter = 0;
+                await Promise.all(orders.value.filter(order => {
+                    const orderDate = new Date(order.createDate);
+                    const orderQuarter = Math.floor((orderDate.getMonth() + 3) / 3);
+                    return orderDate.getFullYear() === new Date().getFullYear() && orderQuarter === currentQuarter && order.status === 'DELIVERED';
+                }).map(async (order) => {
+                    try {
+                        const orderDetailsResponse = await axios.get(`${apiUrl}/OrderForEmployee/${order.id}/details`);
+                        order.orderDetails = orderDetailsResponse.data;
+                        totalCostQuarter += order.orderDetails.reduce((total, orderDetail) => total + orderDetail.quantity * orderDetail.productDetail.product.cost, 0);
+                    } catch (error) {
+                        console.error(`Error fetching order details for order ${order.id}:`, error);
+                    }
+                }));
+                console.log(totalCostQuarter)
+                totalProfitQuarter.value = totalRevenueQuarter.value - totalCost.value;
             }
         }
 
