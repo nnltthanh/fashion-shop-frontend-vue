@@ -7,6 +7,8 @@ export const useProductStore = defineStore('product', {
         filteredType: null,
         activeIndex: -1,
         productCount: Number,
+        isShowAddFormClick: false,
+        isShowDetails: false,
     }),
     getters: {
 
@@ -35,6 +37,12 @@ export const useProductStore = defineStore('product', {
         },
         setProductCount(number) {
             this.productCount = number;
+        },
+        setIsShowAddFormClick(isShowAddFormClick) {
+            this.isShowAddFormClick = isShowAddFormClick;
+        },
+        setIsShowDetails(isShowDetails) {
+            this.isShowDetails = isShowDetails;
         },
     }
 })

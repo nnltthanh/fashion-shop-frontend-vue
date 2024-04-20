@@ -1,8 +1,9 @@
 <template>
-    <ProductForm />
-    <div class="customer-management m-3">
+    <ProductForm @add-product-done="retriveProducts"/>
+    <ProductDetails :product-details="productDetails"/>
+    <div class="product-management m-3">
         <div class="w-full">
-            <div class="w-full">    
+            <div class="w-full">
                 <!-- Các thông báo -->
                 <div class="alerts">
                     <div v-if="isUpdatedOK"
@@ -27,28 +28,36 @@
                         <label class="text-gray-700" for="id">
                             ID:
                         </label>
-                        <input v-model="selectedProductDetail.id"
+                        <input v-model="selectedProduct.id"
                             class="input-id w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
                     </div>
                     <div class="mr-2">
                         <label class="text-gray-700" for="id">
                             Tên sản phẩm:
                         </label>
-                        <input v-model="selectedProductDetail.product.name"
+                        <input v-model="selectedProduct.name"
                             class="w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
                     </div>
-                    <div class="w-2/6 mr-2 flex items-end">
-                        <button @click="searchProductDetail"
+                    <div class="mr-2 flex items-end">
+                        <button @click=""
                             class="mr-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Tìm
                             kiếm
                         </button>
-                        <button @click="searchProductDetail"
+                        <button @click="activeAddForm"
                             class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             Thêm sản phẩm
                         </button>
+                        <button @click="showDetails"
+                            class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Xem chi tiết
+                        </button>
+                        <button @click="deteleProduct"
+                            class="mr-2 bg-gradient-to-b from-red-500 to-pink-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Xóa sản phẩm
+                        </button>
                     </div>
                 </div>
-                <div class="flex items-end mt-2">Tổng số: {{ currentTotalProductDetail }}</div>
+                <div class="flex items-end mt-2">Tổng số: {{ currentTotalProduct }}</div>
             </div>
         </div>
         <div class="relative overflow-x-auto custom-scrollbar" style="max-height: 500px;">
@@ -59,10 +68,10 @@
                         <th scope="col" class="px-4 py-3">
                             ID
                         </th>
-                        <th scope="col" class="px-4 py-3 w-1/10">
+                        <!-- <th scope="col" class="px-4 py-3 w-1/10">
                             ID Sản phẩm
-                        </th>
-                        <th scope="col" class="px-4 py-3 w-1/6">
+                        </th> -->
+                        <th scope="col" class="px-4 py-3">
                             Tên sản phẩm
                         </th>
                         <th scope="col" class="px-4 py-3">
@@ -80,7 +89,7 @@
                         <th scope="col" class="px-4 py-3">
                             Chất liệu
                         </th>
-                        <th scope="col" class="px-4 py-3">
+                        <!-- <th scope="col" class="px-4 py-3">
                             Màu
                         </th>
                         <th scope="col" class="px-4 py-3">
@@ -94,47 +103,42 @@
                         </th>
                         <th scope="col" class="px-4 py-3 text-center">
                             Ảnh
-                        </th>
+                        </th> -->
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in productDetails" :key="index" @click="selectProductDetail(item)"
+                    <tr v-for="(item, index) in products" :key="index" @click="selectProduct(item)"
                         class="row-data border-b dark:bg-gray-800 cursor-pointer">
                         <th scope="row" class="px-4 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             {{ item.id ? item.id :
-                                "Chưa cập nhật" }}
+        "Chưa cập nhật" }}
                         </th>
-                        <td class="px-4 py-4 w-1/10">
+                        <!-- <td class="px-4 py-4 w-1/10">
                             {{ item.product.id ? item.product.id :
-                                "Chưa cập nhật" }}
-                        </td>
-                        <!-- <td class="px-6 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px"> -->
-                        <td class="px-4 py-4 w-1/6">
-                            {{ item.product.name ? item.product.name :
-                                "Chưa cập nhật" }}
-                        </td>
-                        <td class="px-4 py-4">
-                            {{ item.product.price ? item.product.price :
-                                "Chưa cập nhật" }}
-                        </td>
-                        <!-- <td class="px-4 py-4 w-1/12">
-                            {{ item.product.cost ? item.product.cost :
                                 "Chưa cập nhật" }}
                         </td> -->
                         <!-- <td class="px-6 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px"> -->
+                        <td class="px-4 py-4">
+                            {{ item.name ? item.name :
+        "Chưa cập nhật" }}
+                        </td>
+                        <td class="px-4 py-4">
+                            {{ item.price ? item.price :
+        "Chưa cập nhật" }}
+                        </td>
                         <td class="px-4 py-4 w-1/10">
-                            {{ item.product.salePercent ? item.product.salePercent :
-                                0 }}
+                            {{ item.salePercent ? item.salePercent :
+        0 }}
                         </td>
                         <td class="px-4 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px">
-                            {{ item.product.type ? item.product.type :
-                                "Chưa cập nhật" }}
+                            {{ item.type ? item.type :
+                            "Chưa cập nhật" }}
                         </td>
                         <td class="px-4 py-4">
-                            {{ item.product.material ? item.product.material :
-                                "Chưa cập nhật" }}
+                            {{ item.material ? item.material :
+                            "Chưa cập nhật" }}
                         </td>
-                        <td class="px-4 py-4">
+                        <!-- <td class="px-4 py-4">
                             {{ item.color ? item.color :
                                 "Chưa cập nhật" }}
                         </td>
@@ -153,7 +157,7 @@
                         <td class="px-4 py-4">
                             <img :src="item.imageLinks[0] ? item.imageLinks[0] :
                                 'Chưa cập nhật'" alt="">
-                        </td>
+                        </td> -->
                     </tr>
                 </tbody>
             </table>
@@ -163,60 +167,128 @@
 
 <script setup lang="ts">
 import ProductForm from '@/components/manager/ProductForm.vue';
+import ProductDetails from '@/components/manager/ProductDetails.vue';
 import { ref, onBeforeMount } from 'vue';
+import { useProductStore } from '@/stores/productStore';
 import axios from 'axios';
+
+const productStore = useProductStore();
+
 interface ProductObject {
     id: number,
     name: String,
     price: number,
-    cost: number,
     salePercent: number,
     type: String,
     material: String,
-    imageData: {
-        id: number,
-        base64String: String,
-        type: String
-    },
-    createdAt: Date,
-    updatedAt: Date,
-    sold: number,
+    // sold: number,
 }
 interface ProductDetailObject {
     id: number,
-    size: String,
     color: String,
-    unit: String,
+    size: String,
     quantity: number,
-    product: ProductObject,
     imageLinks: string
 }
 
+const products = ref<ProductObject[] | null>(null);
 const productDetails = ref<ProductDetailObject[] | null>(null);
-const selectedProductDetail = ref<ProductDetailObject>({
-    id: '',
-    productId: '',
+const selectedProduct = ref<ProductObject>({
+    id: 0,
     name: '',
-    price: '',
-    cost: '',
-    salePercent: '',
+    price: 0,
+    salePercent: 0,
     type: '',
     material: '',
-    size: '',
-    color: '',
-    unit: '',
-    quantity: '',
-    sold: '',
-    product: '',
-    imageLinks: ''
 });
 
-const currentTotalProductDetail = ref<number>(0);
-onBeforeMount(async () => {
+const currentTotalProduct = ref<number>(0);
+
+const retriveProducts = async () => {
     try {
-        const response = await axios.get(`http://localhost:8080/products/details`);
+        const response = await axios.get(`http://localhost:8080/products`);
+        products.value = response.data;
+        currentTotalProduct.value = products.value?.length!;
+    } catch (error) {
+        console.error('Lỗi khi lấy thông tin sản phẩm', error);
+    }
+}
+
+onBeforeMount(async () => {
+    retriveProducts();
+});
+const isNotEnteredID = ref(false);
+const isUpdatedOK = ref(false);
+// const blockAndUnblock = async (employee: Employee) => {
+//     try {
+//         let idToSearch = parseInt(selectedEmployee.value.id);
+//         console.log(idToSearch);
+//         if (isNaN(idToSearch)) {
+//             isNotEnteredID.value = true;
+//             setTimeout(() => {
+//                 isNotEnteredID.value = false;
+//             }, 1500);
+//             return;
+//         }
+//         const response = await axios.put(`http://localhost:8080/users/${employee.id}/updateLockedStatus`);
+//         if (response.status === 200) {
+//             let index = employees.value?.findIndex((a) => a.id === employee.id)
+//             employee.locked = !employee.locked;
+//             if (index != undefined && index >= 0) {
+//                 employees.value?.splice(index, 1, employee)
+//                 isUpdatedOK.value = true;
+//                 setTimeout(() => {
+//                     isUpdatedOK.value = false;
+//                 }, 1500);
+//             } else {
+//                 return;
+//             }
+//         } else {
+//             console.error('Error updating lock status');
+//         }
+//     } catch (error) {
+//         console.error('Error updating lock status:', error);
+//     }
+// };
+
+const isNotFoundProductDetail = ref(false);
+// const" = () => {
+//     let idToSearch = parseInt(selectedProduct.value.id);
+//     console.log(idToSearch);
+//     if (isNaN(idToSearch)) {
+//         isNotEnteredID.value = true;
+//         setTimeout(() => {
+//             isNotEnteredID.value = false;
+//         }, 1500);
+//     } else {
+//         const index = productDetails.value?.findIndex(detail => parseInt(detail.id) === idToSearch);
+//         if (index !== undefined && index !== -1) {
+//             const element = document.querySelectorAll('.row-data')[index];
+//             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+//             element.classList.add('found');
+//             setTimeout(() => {
+//                 element.classList.remove('found');
+//             }, 4000);
+//         } else {
+//             isNotFoundProductDetail.value = true;
+//             setTimeout(() => {
+//                 isNotFoundProductDetail.value = false;
+//             }, 1500);
+//         }
+//     }
+// };
+
+const selectProduct = (product: ProductObject) => {
+    selectedProduct.value = { ...product };
+};
+
+const activeAddForm = () => {
+    productStore.setIsShowAddFormClick(true);
+}
+const showDetails = async () => {
+    try {
+        const response = await axios.get(`http://localhost:8080/products/${selectedProduct.value.id}/details`);
         productDetails.value = response.data;
-        currentTotalProductDetail.value = productDetails.value?.length!;
         productDetails.value.forEach(detail => {
             const imageLinksArray = detail.imageLinks.split(", ");
             detail.imageLinks = imageLinksArray;
@@ -224,99 +296,20 @@ onBeforeMount(async () => {
     } catch (error) {
         console.error('Lỗi khi lấy thông tin sản phẩm', error);
     }
-});
-const isNotEnteredID = ref(false);
-const isUpdatedOK = ref(false);
-const blockAndUnblock = async (employee: Employee) => {
+    productStore.setIsShowDetails(true);
+}
+
+const deteleProduct = async () => {
     try {
-        let idToSearch = parseInt(selectedEmployee.value.id);
-        console.log(idToSearch);
-        if (isNaN(idToSearch)) {
-            isNotEnteredID.value = true;
-            setTimeout(() => {
-                isNotEnteredID.value = false;
-            }, 1500);
-            return;
-        }
-        const response = await axios.put(`http://localhost:8080/users/${employee.id}/updateLockedStatus`);
-        if (response.status === 200) {
-            let index = employees.value?.findIndex((a) => a.id === employee.id)
-            employee.locked = !employee.locked;
-            if (index != undefined && index >= 0) {
-                employees.value?.splice(index, 1, employee)
-                isUpdatedOK.value = true;
-                setTimeout(() => {
-                    isUpdatedOK.value = false;
-                }, 1500);
-            } else {
-                return;
-            }
-        } else {
-            console.error('Error updating lock status');
-        }
+        const response = await axios.delete(`http://localhost:8080/products/${selectedProduct.value.id}`);
+        Object.keys(selectedProduct).forEach((i) => selectedProduct[i] = null);
+        retriveProducts();
+        return response;
     } catch (error) {
-        console.error('Error updating lock status:', error);
+        console.error('Lỗi khi xóa sản phẩm', error);
     }
-};
+}
 
-const isNotFoundProductDetail = ref(false);
-const searchProductDetail = () => {
-    let idToSearch = parseInt(selectedProductDetail.value.id);
-    console.log(idToSearch);
-    if (isNaN(idToSearch)) {
-        isNotEnteredID.value = true;
-        setTimeout(() => {
-            isNotEnteredID.value = false;
-        }, 1500);
-    } else {
-        const index = productDetails.value?.findIndex(detail => parseInt(detail.id) === idToSearch);
-        if (index !== undefined && index !== -1) {
-            const element = document.querySelectorAll('.row-data')[index];
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            element.classList.add('found');
-            setTimeout(() => {
-                element.classList.remove('found');
-            }, 4000);
-        } else {
-            isNotFoundProductDetail.value = true;
-            setTimeout(() => {
-                isNotFoundProductDetail.value = false;
-            }, 1500);
-        }
-    }
-};
-
-const selectProductDetail = (detail: ProductDetailObject) => {
-    selectedProductDetail.value = { ...detail };
-};
-
-// const selectedUserType = ref<string>('all');
-
-// const filterEmployeesByUserType = () => {
-//     currentTotalAccount.value = employees.value?.length!;
-//     const table = document.getElementById("table-data");
-//     const tr = table?.getElementsByTagName("tr");
-//     let tdContent;
-//     let temp = 0;
-//     if (tr !== undefined) {
-//         for (let i = 0; i < tr?.length; i++) {
-//             const td = tr[i].getElementsByTagName("td")[2];
-//             if (td) {
-//                 tdContent = td.textContent?.trim();
-//                 // console.log(tdContent);
-//                 if (tdContent !== selectedUserType.value && selectedUserType.value !== 'all' && tr != undefined) {
-//                     // --currentTotalAccount;
-//                     tr[i].style.display = "none";
-//                     temp++;
-//                 } else {
-//                     tr[i].style.display = "";
-//                 }
-//             }
-//         }
-//         currentTotalAccount.value = employees.value?.length! - temp;
-//         console.log(currentTotalAccount.value);
-//     }
-// };
 </script>
 <style scoped>
 .w-1\/8 {

@@ -1,47 +1,46 @@
 <template>
-    <div class="product-form__float">
+    <div class="product-form__float" :class="productStore.isShowAddFormClick ? 'is-active' : ''">
         <div class="container">
             <div class="product-form-container">
                 <div class="title text-center">Thông tin sản phẩm</div>
-                <form action="#" method="post">
+                <div>
                     <div id="customer-info-block">
                         <div class="grid-view">
                             <div class="grid-column">
                                 <label for="productName">Tên sản phẩm:</label>
-                                <input type="productName" name="productName" placeholder=""
-                                    class="form-control" />
+                                <input v-model="productForAdding.name" type="productName" name="productName" placeholder="" class="form-control" />
                             </div>
                         </div>
                         <div class="grid-view">
                             <div class="grid-column six-twelfths">
                                 <label for="productPrice">Giá:</label>
-                                <input type="number" id="productPrice" name="productPrice" required placeholder=""
+                                <input v-model="productForAdding.price" type="number" id="productPrice" name="productPrice" required placeholder=""
                                     class="form-control" />
                             </div>
                             <div class="grid-column six-twelfths">
                                 <label for="productSalePercent">Giảm giá (%):</label>
-                                <input type="number" id="productSalePercent" name="productSalePercent" required
+                                <input v-model="productForAdding.salePercent" type="number" id="productSalePercent" name="productSalePercent" required
                                     placeholder="" class="form-control" />
                             </div>
                         </div>
                         <div class="grid-view">
                             <div class="grid-column six-twelfths">
                                 <label for="productType">Chất liệu:</label>
-                                <input type="number" id="productType" name="productType" required placeholder=""
+                                <input v-model="productForAdding.material" type="text" id="productType" name="productType" required placeholder=""
                                     class="form-control" />
                             </div>
                             <div class="grid-column six-twelfths">
                                 <label for="productType">Loại:</label>
-                                <input type="number" id="productType" name="productType" required placeholder=""
+                                <input v-model="productForAdding.type" type="text" id="productType" name="productType" required placeholder=""
                                     class="form-control" />
                             </div>
                         </div>
                     </div>
-                    <button @click="searchProductDetail"
+                    <button @click.prevent="addProduct"
                         class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-3">
                         Thêm
                     </button>
-                </form>
+                </div>
                 <button class="product-form__close" style="z-index: 10;">
                     <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"
                         @click.prevent="closeForm">
@@ -57,15 +56,47 @@
                 </button>
             </div>
         </div>
-        <div class="product-form__background"></div>
+        <div class="product-form__background" @click="closeForm"></div>
     </div>
 
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useProductStore } from '@/stores/productStore';
+import ProductService from "@/services/product.service";
+import axios from 'axios';
 
-const isFormActive = ref(false)
+const emit = defineEmits(['add-product-done']);
+
+interface ProductObject {
+    name: String,
+    price: number,
+    salePercent: number,
+    type: String,
+    material: String,
+}
+
+const productForAdding = ref<ProductObject>({ name: '', price: 0, salePercent: 0, material: '', type: '' });
+
+const productStore = useProductStore();
+
+const closeForm = () => {
+    productStore.setIsShowAddFormClick(false);
+}
+
+const addProduct = async () => {
+    try {
+        // const response = await ProductService.create(productForAdding);
+        const response = await axios.post("http://localhost:8080/products", productForAdding.value);
+        closeForm();
+        emit('add-product-done');
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+
+}
 </script>
 
 <style>
@@ -148,7 +179,7 @@ body {
 
 .product-form-container {
     position: relative;
-    width: 400px;
+    width: 800px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 16px;
@@ -175,6 +206,7 @@ body {
 }
 
 .product-form__float {
+    display: none;
     top: 92px;
     position: fixed;
     width: 100%;
@@ -184,10 +216,17 @@ body {
     z-index: 2;
 }
 
+.product-form__float.is-active {
+    display: block;
+    opacity: 1;
+    pointer-events: visible;
+    visibility: visible;
+}
+
 .product-product-form-content {
     background: #fff;
     display: block;
-    width: 1000px;
+    width: 800px;
     overflow: hidden;
     border-radius: 10px;
     margin: 10px auto 0;
