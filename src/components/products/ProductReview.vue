@@ -145,7 +145,7 @@ const reviewFilters = reactive([
                                 :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 4 ? 'is-active' : Math.round(averageStar * 10) / 10 >= 4.5 ? 'is-half' : 'is-blank']">
                             </div>
                             <div
-                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 4 && Math.round(averageStar * 10) / 10 < 5 ? 'is-half' : Math.round(averageStar * 10) / 10 == 5 ? 'is-active' : 'is-blank']">
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 > 4 && Math.round(averageStar * 10) / 10 < 5 ? 'is-half' : Math.round(averageStar * 10) / 10 == 5 ? 'is-active' : 'is-blank']">
                             </div>
                         </div>
                         <div class="reviews-rating-mb__count">

@@ -30,5 +30,9 @@ class ProductService {
     async findProductsByTypes(types) {
         return (await this.api.get("/filtered/type")).data;
     }
+
+    async findRecommendedProducts(customerId) {
+        return (await this.api.get(`/${customerId}/recommendation`)).data;
+    }
 }
 export default new ProductService();

@@ -6,6 +6,7 @@ import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
 import ProductReview from '@/components/products/ProductReview.vue';
 import ProductService from "@/services/product.service";
+import ProductRecommended from '@/components/products/ProductRecommended.vue';
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
 
@@ -395,88 +396,6 @@ onBeforeMount(() => {
                                                         </div>
                                                     </div>
                                                 </label>
-                                                <!-- <label class="option-select__item option-size">
-                                                    <div class="option-select__inner">
-                                                        <input type="radio" name="shorts_size" value="m" data-title="M">
-                                                        <span class="checkmark">M</span>
-                                                    </div>
-                                                    <div class="option-size-tooltip">
-                                                        <div class="option-size-tooltip__arrow"></div>
-                                                        <div data-size-height="1m60 - 1m65"
-                                                            data-size-weight="55kg - 61kg" data-size-type=""
-                                                            class="option-size-tooltip__inner">
-                                                            <span> 1m60 - 1m65</span>
-                                                            <br>
-                                                            <span> 55kg - 61kg</span>
-                                                        </div>
-                                                    </div>
-                                                </label>
-                                                <label class="option-select__item option-size">
-                                                    <div class="option-select__inner">
-                                                        <input type="radio" name="shorts_size" value="l" data-title="L">
-                                                        <span class="checkmark">L</span>
-                                                    </div>
-                                                    <div class="option-size-tooltip">
-                                                        <div class="option-size-tooltip__arrow"></div>
-                                                        <div data-size-height="1m66 - 1m72"
-                                                            data-size-weight="62kg - 68kg" data-size-type=""
-                                                            class="option-size-tooltip__inner">
-                                                            <span> 1m66 - 1m72</span>
-                                                            <br>
-                                                            <span> 62kg - 68kg</span>
-                                                        </div>
-                                                    </div>
-                                                </label>
-                                                <label class="option-select__item option-size">
-                                                    <div class="option-select__inner">
-                                                        <input type="radio" name="shorts_size" value="xl"
-                                                            data-title="XL">
-                                                        <span class="checkmark">XL</span>
-                                                    </div>
-                                                    <div class="option-size-tooltip">
-                                                        <div class="option-size-tooltip__arrow"></div>
-                                                        <div data-size-height="1m72 - 1m77"
-                                                            data-size-weight="69kg - 75kg" data-size-type=""
-                                                            class="option-size-tooltip__inner">
-                                                            <span> 1m72 - 1m77</span>
-                                                            <br>
-                                                            <span> 69kg - 75kg</span>
-                                                        </div>
-                                                    </div>
-                                                </label>
-                                                <label class="option-select__item option-size">
-                                                    <div class="option-select__inner">
-                                                        <input type="radio" name="shorts_size" value="2xl"
-                                                            data-title="2XL">
-                                                        <span class="checkmark">2XL</span>
-                                                    </div>
-                                                    <div class="option-size-tooltip">
-                                                        <div class="option-size-tooltip__arrow"></div>
-                                                        <div data-size-height="1m77 - 1m83"
-                                                            data-size-weight="76kg - 82kg" data-size-type=""
-                                                            class="option-size-tooltip__inner">
-                                                            <span> 1m77 - 1m83</span>
-                                                            <br>
-                                                            <span> 76kg - 82kg</span>
-                                                        </div>
-                                                    </div>
-                                                </label> <label class="option-select__item option-size">
-                                                    <div class="option-select__inner">
-                                                        <input type="radio" name="shorts_size" value="3xl"
-                                                            data-title="3XL"> <span class="checkmark">3XL
-                                                        </span>
-                                                    </div>
-                                                    <div class="option-size-tooltip">
-                                                        <div class="option-size-tooltip__arrow"></div>
-                                                        <div data-size-height="1m83 - 1m90"
-                                                            data-size-weight="83kg - 89kg" data-size-type=""
-                                                            class="option-size-tooltip__inner">
-                                                            <span> 1m83 - 1m90</span>
-                                                            <br>
-                                                            <span> 83kg - 89kg</span>
-                                                        </div>
-                                                    </div>
-                                                </label> -->
                                             </div>
                                         </div>
                                     </div>
@@ -601,6 +520,7 @@ onBeforeMount(() => {
 
             </div>
         </section>
+        <ProductRecommended />
         <ProductReview :productId="productId" />
     </main>
     <Footer />
