@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onBeforeMount, inject } from 'vue';
+import { ref, reactive, computed, onBeforeMount, inject, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import _ from 'lodash';
 import Header from '@/components/common/Header.vue';
@@ -7,6 +7,7 @@ import Footer from '@/components/common/Footer.vue';
 import ProductReview from '@/components/products/ProductReview.vue';
 import ProductService from "@/services/product.service";
 import ProductRecommended from '@/components/products/ProductRecommended.vue';
+import { param } from 'jquery';
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
 
@@ -85,20 +86,16 @@ const sizeOrder = ["S", "M", "L", "XL", "2XL", "3XL"];
 
 const productSizes = ref([]);
 
-const productId = computed(() => {
-    return parseInt(route.params.id);
-});
+const productId = ref(+route.params.id)
 
-// const breadcrumbItems = [
-//     {
-//         text: 'Trang chủ',
-//         href: "#"
-//     },
-//     {
-//         text: 'Áo thể thao',
-//         active: true,
-//     }
-// ];
+watch(() => route.params.id, (newId, oldId) => {
+    productId.value = +newId;
+
+    retrieveProduct(productId.value);
+    retrieveAllProductDetails(productId.value);
+    retrieveProductDetail(productId.value, 1);
+
+})
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -237,13 +234,17 @@ const addToCart = async () => {
     await cartService.addProductDetailToCart(productDetailActive.value, count.value);
 };
 
-onBeforeMount(() => {
-    retrieveProduct(productId.value);
-    retrieveAllProductDetails(productId.value);
-    retrieveProductDetail(productId.value, 1);
+// onBeforeMount(() => {
+//     retrieveProduct(productId.value);
+//     retrieveAllProductDetails(productId.value);
+//     retrieveProductDetail(productId.value, 1);
+//     // productId.value = +route.params.id;
+//     // console.log(productId.value, route.params.id)
+// });
 
-});
-
+retrieveProduct(productId.value);
+retrieveAllProductDetails(productId.value);
+retrieveProductDetail(productId.value, 1);
 
 </script>
 

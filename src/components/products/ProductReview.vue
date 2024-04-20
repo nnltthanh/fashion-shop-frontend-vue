@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CartService } from '@/services/cart.service';
 import { ReviewService } from '@/services/review.service';
-import { inject, reactive, ref } from "vue";
+import { inject, reactive, ref, watch } from "vue";
 import type { Review } from '../profile/account-content/OrderCard.vue';
 
 const props = defineProps({
@@ -18,7 +18,17 @@ let overallRating = ref<number>(0);
 let averageStar = ref<number>(0);
 let reviewService = new ReviewService();
 
+watch(() => props.productId, async (newId, oldId) => {
+    await retrieveData();
+})
+
 setTimeout(async () => {
+    await retrieveData();
+}, 1000);
+
+const retrieveData = async () => {
+    overallRating.value = 0;
+    averageStar.value = 0;
     reviews.value = (await reviewService.getAllReviewsByProductId(props.productId)).data;
 
     reviews.value = reviews.value.reverse().reduce((accumulator: Review[], current: Review) => {
@@ -40,8 +50,7 @@ setTimeout(async () => {
     })
     averageStar.value = Number((averageStar.value / overallRating.value || 0).toFixed(1));
     isLoading.value = false;
-}, 1000);
-
+}
 
 
 const reviewFilters = reactive([
