@@ -1,44 +1,45 @@
 <template>
-    <div class="product-form__float" :class="productStore.isShowAddFormClick ? 'is-active' : ''">
+    <div class="product-form__float" :class="productStore.isShowUpdateDetailFormClick ? 'is-active' : ''">
         <div class="container">
             <div class="product-form-container">
-                <div class="title text-center">Thông tin sản phẩm</div>
+                <div class="title text-center">Cập nhật chi tiết</div>
                 <div>
                     <div id="customer-info-block">
                         <div class="grid-view">
-                            <div class="grid-column">
-                                <label for="productName">Tên sản phẩm:</label>
-                                <input v-model="productForAdding.name" type="productName" name="productName" placeholder="" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="grid-view">
                             <div class="grid-column six-twelfths">
-                                <label for="productPrice">Giá:</label>
-                                <input v-model="productForAdding.price" type="number" id="productPrice" name="productPrice" required placeholder=""
-                                    class="form-control" />
-                            </div>
-                            <div class="grid-column six-twelfths">
-                                <label for="productSalePercent">Giảm giá (%):</label>
-                                <input v-model="productForAdding.salePercent" type="number" id="productSalePercent" name="productSalePercent" required
+                                <label for="detailColor">Màu:</label>
+                                <input v-model="detailForUpdating.color" type="text" id="detailColor" name="detailColor"
                                     placeholder="" class="form-control" />
                             </div>
+                            <div class="grid-column six-twelfths">
+                                <label for="detailSize">Kích cỡ:</label>
+                                <input v-model="detailForUpdating.size" type="text" id="detailSize" name="detailSize"
+                                    required placeholder="" class="form-control" />
+                            </div>
                         </div>
                         <div class="grid-view">
                             <div class="grid-column six-twelfths">
-                                <label for="productType">Chất liệu:</label>
-                                <input v-model="productForAdding.material" type="text" id="productType" name="productType" required placeholder=""
-                                    class="form-control" />
+                                <label for="detailQuantity">Hiện có:</label>
+                                <input v-model="detailForUpdating.quantity" type="number" id="detailQuantity"
+                                    name="detailQuantity" required placeholder="" class="form-control" />
                             </div>
                             <div class="grid-column six-twelfths">
-                                <label for="productType">Loại:</label>
-                                <input v-model="productForAdding.type" type="text" id="productType" name="productType" required placeholder=""
-                                    class="form-control" />
+                                <label for="detailSold">Đã bán:</label>
+                                <input v-model="detailForUpdating.sold" type="number" id="detailSold" name="detailSold"
+                                    required placeholder="" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="grid-view">
+                            <div class="grid-column">
+                                <label for="detailImages">Ảnh:</label>
+                                <input v-model="imageLinksModel" type="text" id="detailImages"
+                                    name="detailImages" required placeholder="" class="form-control" />
                             </div>
                         </div>
                     </div>
-                    <button @click.prevent="addProduct"
-                        class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-3">
-                        Thêm
+                    <button @click.prevent="updateDetail"
+                        class="mr-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-3">
+                        Cập nhật
                     </button>
                 </div>
                 <button class="product-form__close" style="z-index: 10;">
@@ -67,35 +68,56 @@ import { useProductStore } from '@/stores/productStore';
 import ProductService from "@/services/product.service";
 import axios from 'axios';
 
-const emit = defineEmits(['add-product-done']);
+const emit = defineEmits(['update-detail-done']);
 
-interface ProductObject {
-    name: String,
-    price: number,
-    salePercent: number,
-    type: String,
-    material: String,
+const props = defineProps({
+    productId: {
+        type: Number
+    },
+    detailForUpdating: {
+        type: Object
+    }
+});
+
+interface ProductDetailObject {
+    id: number,
+    color: String,
+    size: String,
+    quantity: number,
+    sold: number,
+    imageLinks: String
 }
 
-const productForAdding = ref<ProductObject>({ name: '', price: 0, salePercent: 0, material: '', type: '' });
+const imageLinksModel = computed({
+    get: () => props.detailForUpdating.imageLinks.join(', '),
+    set: newValue => {
+        props.detailForUpdating.imageLinks = newValue.split(', ')
+    },
+})
+
+const productDetails = ref<ProductDetailObject[] | null>(null);
 
 const productStore = useProductStore();
 
 const closeForm = () => {
-    productStore.setIsShowAddFormClick(false);
+    productStore.setIsShowUpdateDetailFormClick(false);
 }
 
-const addProduct = async () => {
+const updateDetail = async () => {
     try {
-        // const response = await ProductService.create(productForAdding);
-        const response = await axios.post("http://localhost:8080/products", productForAdding.value);
+        if (!props.detailForUpdating) {
+            throw new Error('props.detailForUpdating.value is not assigned');
+        }
+        productDetails.value = {...props.detailForUpdating, imageLinks: props.detailForUpdating.imageLinks.join(', ')};
+        console.log(productDetails.value);
+        const response = await axios.put(`http://localhost:8080/products/${props.productId}/details/${productDetails.value.id}`, productDetails.value);
+        console.log(response);
         closeForm();
-        emit('add-product-done');
+        emit('update-detail-done');
         return response.data;
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
-
 }
 </script>
 
@@ -184,7 +206,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 16px;
     background-color: #f9f9f9;
-    z-index: 2;
+    z-index: 3;
 }
 
 .product-form-container label,
@@ -213,7 +235,7 @@ body {
     height: 100%;
     pointer-events: visible;
     transition: all .3s;
-    z-index: 2;
+    z-index: 3;
 }
 
 .product-form__float.is-active {

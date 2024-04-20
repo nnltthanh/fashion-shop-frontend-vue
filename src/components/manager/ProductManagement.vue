@@ -1,6 +1,7 @@
 <template>
-    <ProductForm @add-product-done="retriveProducts"/>
-    <ProductDetails :product-details="productDetails"/>
+    <ProductAddForm @add-product-done="retriveProducts"/>
+    <ProductUpdateForm @update-product="retriveProducts" :product-for-updating="selectedProduct"/>
+    <ProductDetails @add-detail-done="showDetails" @update-detail-done="showDetails" @reset-details="showDetails" :product-details="productDetails" :product-id="selectedProduct.id"/>
     <div class="product-management m-3">
         <div class="w-full">
             <div class="w-full">
@@ -31,25 +32,29 @@
                         <input v-model="selectedProduct.id"
                             class="input-id w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
                     </div>
-                    <div class="mr-2">
+                    <!-- <div class="mr-2">
                         <label class="text-gray-700" for="id">
                             Tên sản phẩm:
                         </label>
                         <input v-model="selectedProduct.name"
                             class="w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
-                    </div>
+                    </div> -->
                     <div class="mr-2 flex items-end">
-                        <button @click=""
+                        <!-- <button @click=""
                             class="mr-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Tìm
                             kiếm
+                        </button> -->
+                        <button @click="showDetails"
+                            class="mr-2 bg-gradient-to-b from-gray-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Xem chi tiết
                         </button>
                         <button @click="activeAddForm"
                             class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             Thêm sản phẩm
                         </button>
-                        <button @click="showDetails"
-                            class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Xem chi tiết
+                        <button @click="activeUpdateForm"
+                            class="mr-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Cập nhật sản phẩm
                         </button>
                         <button @click="deteleProduct"
                             class="mr-2 bg-gradient-to-b from-red-500 to-pink-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -166,7 +171,8 @@
 </template>
 
 <script setup lang="ts">
-import ProductForm from '@/components/manager/ProductForm.vue';
+import ProductAddForm from '@/components/manager/ProductAddForm.vue';
+import ProductUpdateForm from '@/components/manager/ProductUpdateForm.vue';
 import ProductDetails from '@/components/manager/ProductDetails.vue';
 import { ref, onBeforeMount } from 'vue';
 import { useProductStore } from '@/stores/productStore';
@@ -284,6 +290,11 @@ const selectProduct = (product: ProductObject) => {
 
 const activeAddForm = () => {
     productStore.setIsShowAddFormClick(true);
+}
+
+const activeUpdateForm = () => {
+    if (selectedProduct.value.id > 0)
+        productStore.setIsShowUpdateFormClick(true);
 }
 const showDetails = async () => {
     try {
