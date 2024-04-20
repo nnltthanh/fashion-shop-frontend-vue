@@ -25,10 +25,10 @@
                 <i class="bi bi-house-door-fill"></i>
                 <span class="text-[15px] ml-4 text-gray-200 font-bold">Thống kê</span>
             </div>
-            <div
+            <div @click="clickProduct()"
                 class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
                 <i class="bi bi-house-door-fill"></i>
-                <span class="text-[15px] ml-4 text-gray-200 font-bold">Sản phẩm</span>
+                <span class="text-[15px] ml-4 text-gray-200 font-bold">Quản lý sản phẩm</span>
             </div>
             <!-- <div
                 class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
@@ -78,6 +78,9 @@
                 <div v-if="showStatistic">
                     <Statistic />
                 </div>
+                <div v-if="showProduct">
+                    <ProductManagement />
+                </div>
             </div>
         </div>
     </div>
@@ -90,29 +93,41 @@ import router from '@/router';
 import PersonalInformation from '@/components/manager/PersonalInformation.vue';
 import StaffManagement from '@/components/manager/StaffManagement.vue';
 import Statistic from '@/components/manager/Statistic.vue';
+import ProductManagement from '@/components/manager/ProductManagement.vue';
 
 
 const showSidebar = ref(false);
 const showStatistic = ref(false);
 const showStaff = ref(false);
+const showProduct = ref(false);
 const showPersonalInfo = ref(true);
 
 const clickPersonalInfo = () => {
     showPersonalInfo.value = true;
     showStatistic.value = false;
     showStaff.value = false;
+    showProduct.value = false;
 }
 
 const clickStaff = () => {
     showPersonalInfo.value = false;
     showStatistic.value = false;
     showStaff.value = true;
+    showProduct.value = false;
 }
 
 const clickStatistic = () => {
     showPersonalInfo.value = false;
     showStatistic.value = true;
     showStaff.value = false;
+    showProduct.value = false;
+}
+
+const clickProduct = () => {
+    showPersonalInfo.value = false;
+    showStatistic.value = false;
+    showStaff.value = false;
+    showProduct.value = true;
 }
 
 interface AccountInfo {
