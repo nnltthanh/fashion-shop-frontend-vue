@@ -42,6 +42,30 @@ const retrieveProducts = async () => {
     }
 };
 
+const mapAllDetailsToProduct = () => {
+    products.value.forEach((product) => {
+        retrieveAllProductDetails(product.id);
+    });
+}
+
+
+const retrieveAllProductDetails = async (productId) => {
+    try {
+        const productDetails = await ProductService.getAllDetails(productId);
+        productDetails.value.forEach(detail => {
+            const imageLinksArray = detail.imageLinks.split(", ");
+            detail.imageLinks = imageLinksArray;
+        })
+        const product = products.value[productId - 1];
+        const detailsList = { 'details': productDetails };
+        Object.keys(detailsList || {})
+        Object.assign(product, detailsList);
+
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 const filteredProducts = computed(() => {
     if (!productStore.filteredType) return products.value;
     switch (productStore.filteredType) {
@@ -64,9 +88,11 @@ const leastSaleProducts = computed(() => {
     return [...products.value].sort((a, b) => a.salePercent - b.salePercent);
 });
 
-const refreshList = () => {
-    retrieveProducts();
+const refreshList = async () => {
+    await retrieveProducts();
+    mapAllDetailsToProduct();
 };
+
 
 refreshList();
 </script>
