@@ -1,7 +1,7 @@
 <template>
     <ProductAddForm @add-product-done="retriveProducts"/>
     <ProductUpdateForm @update-product="retriveProducts" :product-for-updating="selectedProduct"/>
-    <ProductDetails @add-detail-done="showDetails" @update-detail-done="showDetails" @reset-details="showDetails" :product-details="productDetails" :product-id="selectedProduct.id"/>
+    <ProductDetails @add-detail-done="showDetails" @update-detail-done="showDetails" @reset-details="reloadDetails" :product-details="productDetails" :product-id="selectedProduct.id"/>
     <div class="product-management m-3">
         <div class="w-full">
             <div class="w-full">
@@ -308,6 +308,19 @@ const showDetails = async () => {
         console.error('Lỗi khi lấy thông tin sản phẩm', error);
     }
     productStore.setIsShowDetails(true);
+}
+
+const reloadDetails = async () => {
+    try {
+        const response = await axios.get(`http://localhost:8080/products/${selectedProduct.value.id}/details`);
+        productDetails.value = response.data;
+        productDetails.value.forEach(detail => {
+            const imageLinksArray = detail.imageLinks.split(", ");
+            detail.imageLinks = imageLinksArray;
+        })
+    } catch (error) {
+        console.error('Lỗi khi lấy thông tin sản phẩm', error);
+    }
 }
 
 const deteleProduct = async () => {

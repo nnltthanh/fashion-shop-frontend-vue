@@ -8,7 +8,7 @@
                     <div class="title text-center fixed-header">Chi tiết sản phẩm</div>
                     <button class="product-detail-table__close" style="z-index: 10;">
                         <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"
-                            @click.prevent="closeForm">
+                            @click.prevent="closeDetailTable">
                             <g opacity="0.6">
                                 <path
                                     d="M0.710153 1.39081C1.10215 0.719768 1.8828 0.603147 2.4538 1.13033L20.9665 18.2226C21.5375 18.7498 21.6826 19.7211 21.2906 20.3922V20.3922C20.8986 21.0632 20.118 21.1798 19.547 20.6526L1.03426 3.56039C0.463267 3.0332 0.318158 2.06185 0.710153 1.39081V1.39081Z"
@@ -106,7 +106,7 @@
                 </div>
             </div>
         </div>
-        <div class="product-detail-table__background" @click="closeForm"></div>
+        <div class="product-detail-table__background" @click="closeDetailTable"></div>
     </div>
 
 </template>
@@ -164,7 +164,7 @@ const productDetailForAdding = ref<ProductObject>({ name: '', price: 0, salePerc
 
 const productStore = useProductStore();
 
-const closeForm = () => {
+const closeDetailTable = () => {
     productStore.setIsShowDetails(false);
 }
 

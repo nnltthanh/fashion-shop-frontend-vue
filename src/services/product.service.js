@@ -30,5 +30,22 @@ class ProductService {
     async findProductsByTypes(types) {
         return (await this.api.get("/filtered/type")).data;
     }
+    async postDetail(productId, postData, formData) {
+        const detail = await this.api.post(`/${productId}/details`, postData);
+        
+        if (formData) {
+            return await this.updateImages(productId, detail.data.id, formData)
+        }
+        else return detail;
+    }
+
+    async updateImages(productId, productDetailId, imageFiles) {
+        return await this.api.put(`/${productId}/details/${productDetailId}/upload`, imageFiles, 
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    }
 }
 export default new ProductService();
