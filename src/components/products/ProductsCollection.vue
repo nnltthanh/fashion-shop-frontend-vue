@@ -128,6 +128,10 @@ const mapAllDetailsToProduct = () => {
 const retrieveAllProductDetails = async (productId) => {
     try {
         const productDetails = await ProductService.getAllDetails(productId);
+        productDetails.value.forEach(detail => {
+            const imageLinksArray = detail.imageLinks.split(", ");
+            detail.imageLinks = imageLinksArray;
+        })
         const product = products.value[productId - 1];
         const detailsList = { 'details': productDetails };
         Object.keys(detailsList || {})

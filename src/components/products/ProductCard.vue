@@ -54,7 +54,7 @@ const formatedSalePrice = computed(() => {
                     {{ product.name }}
                 </router-link>
             </h3>
-            <p class="product-card__sub-title card-text">{{ product.material }} / Xanh dương</p>
+            <p class="product-card__sub-title card-text">{{ product.material }}</p>
             <div class="product-card__prices">
                 <div class="product-prices">
                     <span v-if="product.salePercent > 0" style="color: red;margin-left: 10px;">-{{ product.salePercent
