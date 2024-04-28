@@ -1,4 +1,6 @@
 <template>
+    <ProductDetailAddForm @add-detail-done="addDetailDone()" :product-id="props.productId" />
+    <ProductDetailUpdateForm @update-detail-done="updateDetailDone()" :detail-for-updating="selectedProductDetail" :product-id="props.productId"/>
     <div class="product-detail-table__float" :class="productStore.isShowDetails ? 'is-active' : ''">
         <div class="container" style="overflow-y: scroll;">
             <div class="product-detail-table-container">
@@ -6,7 +8,7 @@
                     <div class="title text-center fixed-header">Chi tiết sản phẩm</div>
                     <button class="product-detail-table__close" style="z-index: 10;">
                         <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"
-                            @click.prevent="closeForm">
+                            @click.prevent="closeDetailTable">
                             <g opacity="0.6">
                                 <path
                                     d="M0.710153 1.39081C1.10215 0.719768 1.8828 0.603147 2.4538 1.13033L20.9665 18.2226C21.5375 18.7498 21.6826 19.7211 21.2906 20.3922V20.3922C20.8986 21.0632 20.118 21.1798 19.547 20.6526L1.03426 3.56039C0.463267 3.0332 0.318158 2.06185 0.710153 1.39081V1.39081Z"
@@ -17,15 +19,31 @@
                             </g>
                         </svg>
                     </button>
-                    <div class="flex items-end mt-2">Tổng số: {{ productDetails?.length }}</div>
-                    <button @click="activeAddForm"
-                        class="mr-2 mb-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Thêm chi tiết
-                    </button>
-                    <button @click="deteleProduct"
-                        class="mr-2 mb-2 bg-gradient-to-b from-red-500 to-pink-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Xóa chi tiết
-                    </button>
+                    <div class="w-full flex">
+                        <div class="w-1/6 mr-2">
+                            <label class="text-gray-700" for="id">
+                                ID:
+                            </label>
+                            <input v-model="selectedProductDetail.id"
+                                class="input-id w-full bg-gray-200 text-gray-800 py-2 px-3 rounded-md focus:outline-none">
+                        </div>
+                        <div class="mr-2 flex items-end">
+                            <button @click="activeAddDetailForm"
+                                class="mr-2 mb-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Thêm chi tiết
+                            </button>
+                            <button @click="activeUpdateDetailForm"
+                                class="mr-2 mb-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Cập nhật chi tiết
+                            </button>
+                            <button @click="deteleDetail"
+                                class="mr-2 mb-2 bg-gradient-to-b from-red-500 to-pink-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Xóa chi tiết
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-end mt-2">Tổng số: {{ props.productDetails?.length }}</div>
+
                 </div>
                 <div class="relative overflow-x-auto custom-scrollbar" style="max-height: 400px;">
                     <table id="table-data"
@@ -54,44 +72,41 @@
                             </tr>
                         </thead>
                         <tbody class="text-center">
-                            <tr v-for="(item, index) in props.productDetails" :key="index" @click="selectProduct(item)"
+                            <tr v-for="(item, index) in props.productDetails" :key="index"
+                                @click="selectProductDetail(item)"
                                 class="row-data border-b dark:bg-gray-800 cursor-pointer">
                                 <th scope="row"
                                     class="px-4 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ item.id ? item.id :
-        "Chưa cập nhật" }}
+                                        "Chưa cập nhật" }}
                                 </th>
                                 <td class="px-4 py-4">
                                     {{ item.color ? item.color :
-        "Chưa cập nhật" }}
+                                        "Chưa cập nhật" }}
                                 </td>
                                 <td class="px-4 py-4">
                                     {{ item.size ? item.size :
-        "Chưa cập nhật" }}
+                                        "Chưa cập nhật" }}
                                 </td>
                                 <td class="px-4 py-4">
                                     {{ item.quantity ? item.quantity :
-        "Chưa cập nhật" }}
+                                        "Chưa cập nhật" }}
                                 </td>
                                 <td class="px-4 py-4">
                                     {{ item.sold ? item.sold :
-        "Chưa cập nhật" }}
+                                        "Chưa cập nhật" }}
                                 </td>
                                 <td class="px-4 py-4 d-flex justify-content-center align-items-center">
                                     <img width="80" :src="item.imageLinks[0] ? item.imageLinks[0] :
-        'Chưa cập nhật'" alt="">
+                                        'Chưa cập nhật'" alt="">
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <!-- <button @click.prevent="addProduct"
-                        class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-3">
-                        Thêm
-                    </button> -->
                 </div>
             </div>
         </div>
-        <div class="product-detail-table__background" @click="closeForm"></div>
+        <div class="product-detail-table__background" @click="closeDetailTable"></div>
     </div>
 
 </template>
@@ -101,6 +116,10 @@ import { ref, computed, onMounted } from 'vue';
 import { useProductStore } from '@/stores/productStore';
 import axios from 'axios';
 import { number } from 'yup';
+import ProductDetailAddForm from '@/components/manager/ProductDetailAddForm.vue'
+import ProductDetailUpdateForm from '@/components/manager/ProductDetailUpdateForm.vue'
+
+const emit = defineEmits(['add-detail-done', 'update-detail-done', 'reset-details']);
 
 interface ProductObject {
     name: String,
@@ -120,45 +139,75 @@ interface ProductDetailObject {
 }
 
 const props = defineProps({
+    productId: {
+        type: Number
+    },
     productDetails: {
         type: Array
     }
 });
 
-// const productDetails = ref<ProductObject[] | null>(null);
-// const currentTotalProductDetails = ref<number>(0);
-// onMounted(async () => {
-//     try {
-//         const response = await axios.get(`http://localhost:8080/products/${props.productId}/details`);
-//         productDetails.value = response.data;
-//         currentTotalProductDetails.value = productDetails.value?.length!;
-//         productDetails.value.forEach(detail => {
-//             const imageLinksArray = detail.imageLinks.split(", ");
-//             detail.imageLinks = imageLinksArray;
-//         })
-//     } catch (error) {
-//         console.error('Lỗi khi lấy thông tin chi tiết sản phẩm', error);
-//     }
-// });
+const selectedProductDetail = ref<ProductDetailObject>({
+    id: null,
+    color: '',
+    size: '',
+    quantity: null,
+    sold: null,
+    imageLinks: [],
+});
+
+const selectProductDetail = (detail: DetailObject) => {
+    selectedProductDetail.value = { ...detail };
+};
 
 const productDetailForAdding = ref<ProductObject>({ name: '', price: 0, salePercent: 0, material: '', type: '' });
 
 const productStore = useProductStore();
 
-const closeForm = () => {
+const closeDetailTable = () => {
     productStore.setIsShowDetails(false);
 }
 
-const addProduct = async () => {
+const productDetails = ref<ProductDetailObject[] | null>(null);
+
+const retrivedDetails = async () => {
     try {
-        // const response = await ProductService.create(productForAdding);
-        const response = await axios.post("http://localhost:8080/products", productForAdding.value);
-        console.log(productForAdding.value);
-        return response.data;
+        const response = await axios.get(`http://localhost:8080/products/${props.productId}/details`);
+        productDetails.value = response.data;
+        productDetails.value.forEach(detail => {
+            const imageLinksArray = detail.imageLinks.split(", ");
+            detail.imageLinks = imageLinksArray;
+        })
     } catch (error) {
         console.log(error);
     }
+}
 
+const addDetailDone = () => {
+    emit('add-detail-done');
+}
+
+const updateDetailDone = () => {
+    emit('update-detail-done');
+}
+
+const deteleDetail = async () => {
+    try {
+        const response = await axios.delete(`http://localhost:8080/products/${props.productId}/details/${selectedProductDetail.value.id}`);
+        Object.keys(selectedProductDetail).forEach((i) => selectedProductDetail[i] = null);
+        emit('reset-details');
+        return response;
+    } catch (error) {
+        console.error('Lỗi khi xóa sản phẩm', error);
+    }
+}
+
+const activeAddDetailForm = () => {
+    productStore.setIsShowAddDetailFormClick(true);
+}
+
+const activeUpdateDetailForm = () => {
+    productStore.setIsShowUpdateDetailFormClick(true);
 }
 </script>
 

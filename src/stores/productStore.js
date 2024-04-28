@@ -8,6 +8,9 @@ export const useProductStore = defineStore('product', {
         activeIndex: -1,
         productCount: Number,
         isShowAddFormClick: false,
+        isShowAddDetailFormClick: false,
+        isShowUpdateFormClick: false,
+        isShowUpdateDetailFormClick: false,
         isShowDetails: false,
     }),
     getters: {
@@ -40,6 +43,15 @@ export const useProductStore = defineStore('product', {
         },
         setIsShowAddFormClick(isShowAddFormClick) {
             this.isShowAddFormClick = isShowAddFormClick;
+        },
+        setIsShowAddDetailFormClick(isShowAddDetailFormClick) {
+            this.isShowAddDetailFormClick = isShowAddDetailFormClick;
+        },
+        setIsShowUpdateFormClick(isShowUpdateFormClick) {
+            this.isShowUpdateFormClick = isShowUpdateFormClick;
+        },
+        setIsShowUpdateDetailFormClick(isShowUpdateDetailFormClick) {
+            this.isShowUpdateDetailFormClick = isShowUpdateDetailFormClick;
         },
         setIsShowDetails(isShowDetails) {
             this.isShowDetails = isShowDetails;
