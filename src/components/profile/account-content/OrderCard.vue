@@ -142,7 +142,7 @@ const removeImage = (imageId) => {
 
 const saveReview = async (orderDetail: OrderDetail, idx: number) => {
     isLoading.value = true;
-    console.log(isLoading.value)
+    console.log(isLoading.value);
     let orderDetailId = orderDetail.id;
     let productId = orderDetail.productDetail.product.id;
 
@@ -225,8 +225,10 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
         </div>
         <div class="order-footer">
             <div class="order-footer-left">
-                <button type="button" class="btn btn--outline" data-bs-toggle="modal"
-                    :data-bs-target="`#order-${props.order.id}`" @click="getReviewByOrderId(props.order.id)">
+                <button v-show="props.order.status === 'DELIVERED'" 
+                    type="button" class="btn btn--outline" data-bs-toggle="modal"
+                    :data-bs-target="`#order-${props.order.id}`" @click="getReviewByOrderId(props.order.id)"
+                >
                     Đánh giá
                 </button>
             </div>
@@ -301,7 +303,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                         </div>
                                     </div>
                                     <div class="grid-column d-flex align-items-end flex-column">
-
+                                        <span class="loader" v-if="isLoading"></span>
                                         <div style="width: 100%;">
                                             <textarea v-for="(reviewInOrderDetail, index) in reviewsByOrderDetailId"
                                                 :class="[
@@ -331,7 +333,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
                                         <div v-if="!isReviewedInIndex[index]" :class="[
                                             'btn-review-save', `item-${index}`,
                                             isReviewedInIndex[index] ? 'btn-review-save-disable' : ''
-                                        ]" @click="saveReview(orderDetailReview, index)">Lưu đánh giá
+                                        ]" @click="isLoading = true; saveReview(orderDetailReview, index)">Lưu đánh giá
                                         </div>
                                     </div>
                                 </div>
@@ -354,7 +356,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
     </div>
 </template>
 
-<style>
+<style scoped>
 .loader {
     display: block;
     border-radius: 50%;
@@ -568,6 +570,7 @@ const saveReview = async (orderDetail: OrderDetail, idx: number) => {
 .btn--outline {
     background-color: transparent;
     color: #000;
+    border: 2px solid #000;
 }
 
 .btn--outline:hover {

@@ -167,54 +167,63 @@ export default {
 
     const getAddressFromAddressBook = async () => {
 
-      addressFromAddressBook.value = (await userService.getDefaultAddressOfCustomer(customerInfo.id)).data[0];
+      const address_response = (await userService.getDefaultAddressOfCustomer(customerInfo.id));
 
-      let city = await userService.getCityById(addressFromAddressBook.value.cityId);
-      let maxLength = 0;
-      city.NameExtension.forEach(province => {
-        if (province.length > maxLength) {
-          maxLength = province.length;
-          city.ProvinceName = province;
-        }
-      });
+      console.log(address_response.data)
 
-      let district = await userService.getDistrictById(addressFromAddressBook.value.cityId, addressFromAddressBook.value.districtId);
+      if (address_response.data.length > 0) {
+        addressFromAddressBook.value = address_response.data[0];
 
-      let ward = await userService.getWardById(addressFromAddressBook.value.districtId, addressFromAddressBook.value.wardId);
+        console.log(addressFromAddressBook.value)
 
-      activeCity.value = { name: city.ProvinceName, id: Number(addressFromAddressBook.value.cityId) };
-      activeDistrict.value = { name: district.DistrictName, id: Number(addressFromAddressBook.value.districtId) };
-      activeVillage.value = { name: ward.WardName, id: ward.id, code: addressFromAddressBook.value.wardId };
+        let city = await userService.getCityById(addressFromAddressBook.value.cityId);
+        let maxLength = 0;
+        city.NameExtension.forEach(province => {
+          if (province.length > maxLength) {
+            maxLength = province.length;
+            city.ProvinceName = province;
+          }
+        });
 
-      activeCityIndex.value = cities.findIndex(x => x.id.toString() == addressFromAddressBook.value.cityId);
+        let district = await userService.getDistrictById(addressFromAddressBook.value.cityId, addressFromAddressBook.value.districtId);
 
-      districts.value = (await userService.getDistrict(activeCity.value.id.toString())).data.data.map(
-        res => { return { name: res.DistrictName, id: res.DistrictID } }
-      );
+        let ward = await userService.getWardById(addressFromAddressBook.value.districtId, addressFromAddressBook.value.wardId);
 
-      districts.value.sort(sortByName);
+        activeCity.value = { name: city.ProvinceName, id: Number(addressFromAddressBook.value.cityId) };
+        activeDistrict.value = { name: district.DistrictName, id: Number(addressFromAddressBook.value.districtId) };
+        activeVillage.value = { name: ward.WardName, id: ward.id, code: addressFromAddressBook.value.wardId };
 
-      activeDistrictIndex.value = districts.value.findIndex(x => x.id.toString() == addressFromAddressBook.value.districtId);
+        activeCityIndex.value = cities.findIndex(x => x.id.toString() == addressFromAddressBook.value.cityId);
 
-      villages.value = (await userService.getWard(activeDistrict.value.id.toString())).data.data.map(
-        res => { return { name: res.WardName, id: res.WardID, code: res.WardCode } }
-      );
+        districts.value = (await userService.getDistrict(activeCity.value.id.toString())).data.data.map(
+          res => { return { name: res.DistrictName, id: res.DistrictID } }
+        );
 
-      villages.value.sort(sortByName);
+        districts.value.sort(sortByName);
 
-      activeVillageIndex.value = villages.value.findIndex(x => x.code.toString() == addressFromAddressBook.value.wardId);
+        activeDistrictIndex.value = districts.value.findIndex(x => x.id.toString() == addressFromAddressBook.value.districtId);
 
-      let response = await cartService.getShippingService(1572, activeDistrict.value.id); // 1572 : Quận Ninh Kiều
+        villages.value = (await userService.getWard(activeDistrict.value.id.toString())).data.data.map(
+          res => { return { name: res.WardName, id: res.WardID, code: res.WardCode } }
+        );
 
-      shippingServices.value = response.data.data;
-      console.log(shippingServices.value[0].service_id)
+        villages.value.sort(sortByName);
 
-      let feeResponse = await cartService.getShipCost(1572, "550113", shippingServices.value[0].service_id, activeDistrict.value.id, activeVillage.value.code);
+        activeVillageIndex.value = villages.value.findIndex(x => x.code.toString() == addressFromAddressBook.value.wardId);
 
-      console.log("fee: ", feeResponse.data.data.total);
+        let response = await cartService.getShippingService(1572, activeDistrict.value.id); // 1572 : Quận Ninh Kiều
 
-      cartService.shipCost.value = feeResponse.data.data.total;
-      cartService.subTotal.value = cartService.total.value + cartService.shipCost.value - cartService.discount.value;
+        shippingServices.value = response.data.data;
+        console.log(shippingServices.value[0].service_id)
+
+        let feeResponse = await cartService.getShipCost(1572, "550113", shippingServices.value[0].service_id, activeDistrict.value.id, activeVillage.value.code);
+
+        console.log("fee: ", feeResponse.data.data.total);
+
+        cartService.shipCost.value = feeResponse.data.data.total;
+        cartService.subTotal.value = cartService.total.value + cartService.shipCost.value - cartService.discount.value;
+
+      }
 
     }
 
@@ -318,7 +327,7 @@ export default {
 
       getAddressFromAddressBook();
       getAddressesByCustomerId();
-      
+
       setTimeout(() => {
         isLoading.value = false;
       }, 1500);
@@ -363,7 +372,7 @@ export default {
       getAddressesByCustomerId,
       addressFromAddressBook,
       addresses,
-      choseAddressOption
+      choseAddressOption,
     };
   },
 };
@@ -371,14 +380,36 @@ export default {
 
 <template>
   <div class="loader-container" v-if="isLoading"><span class="loader"></span></div>
-  <div class="title-with-actions">
+  <div class="title-with-actions backdrop" @click="">
     <div class="title">Thông tin vận chuyển</div>
     <div class="action">
-      <a data-bs-toggle="modal" :data-bs-target="`#address-modal`" @click=""
-        class="flex align--center"><img src="https://www.coolmate.me/images/address_book_icon.svg"
-          alt="address_book_icon" class="address_book_icon" />
+      <a data-bs-toggle="modal" :data-bs-target="`#address-modal`" @click="" class="flex align--center"
+        v-if="addresses.length > 0"
+        style="cursor: pointer;">
+        <img src="https://www.coolmate.me/images/address_book_icon.svg" alt="address_book_icon"
+          class="address_book_icon" />
         Chọn từ sổ địa chỉ
       </a>
+      <a data-bs-toggle="modal" :data-bs-target="`#none-address-modal`" @click="" class="flex align--center"
+        v-if="addresses.length == 0"
+        style="cursor: pointer;">
+        <img src="https://www.coolmate.me/images/address_book_icon.svg" alt="address_book_icon"
+          class="address_book_icon" />
+        Chọn từ sổ địa chỉ
+      </a>
+      <div class="modal fade" id="none-address-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        data-bs-backdrop="false" data-bs-focus="true" aria-hidden="false" data-bs-dismiss="modal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0">
+            <button type="button"
+              class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-100 text-red-700 p-6 text-center text-lg z-50 rounded-md">
+              Hiện không có địa chỉ nào trong sổ địa chỉ!
+            </button>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </div>
   <div id="customer-info-block">
@@ -526,6 +557,7 @@ export default {
   <!-- Modal -->
   <div class="modal fade" id="address-modal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="false"
     data-bs-focus="true" aria-hidden="false">
+
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header" style="z-index:1">
@@ -535,25 +567,23 @@ export default {
         <div class="modal-body" style="z-index:2">
           <div class="grid">
             <form style="width: 100%;">
-              <div v-for="(address, index) in addresses" v-if="!isLoading"
-              style=" margin-bottom: 0.75rem">
+              <div v-for="(address, index) in addresses" v-if="!isLoading" style=" margin-bottom: 0.75rem">
                 <label class="address-item custom-cursor-on-hover"
-                :class="{'active' : addressFromAddressBook.id == address.id}">
-                <span
-                  class="address-item-custom-checkbox custom-radio"><input type="radio"
-                    autocomplete="off" :value="index" @click="choseAddressOption" />
-                  <span class="address-checkmark"
-                    :style="{ 'display': addressFromAddressBook.id == address.id ? 'block' : 'none' }"></span>
-                </span>
-                <div class="address-item-content">
-                  <div class="d-flex">
-                    <span>{{ address.belongsTo }}</span>
-                    <span class="default-tag" v-if="address.isDefault">Mặc định</span> <br />
+                  :class="{ 'active': addressFromAddressBook.id == address.id }">
+                  <span class="address-item-custom-checkbox custom-radio"><input type="radio" autocomplete="off"
+                      :value="index" @click="choseAddressOption" />
+                    <span class="address-checkmark"
+                      :style="{ 'display': addressFromAddressBook.id == address.id ? 'block' : 'none' }"></span>
+                  </span>
+                  <div class="address-item-content">
+                    <div class="d-flex">
+                      <span>{{ address.belongsTo }}</span>
+                      <span class="default-tag" v-if="address.isDefault">Mặc định</span> <br />
+                    </div>
+                    {{ address.phone }} <br />
+                    {{ address.displayingAddress }}
                   </div>
-                  {{ address.phone }} <br />
-                  {{ address.displayingAddress }}
-                </div>
-              </label>
+                </label>
               </div>
             </form>
           </div>

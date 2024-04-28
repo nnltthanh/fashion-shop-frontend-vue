@@ -24,7 +24,8 @@ console.log(customerInfo)
           <p class="cart-coolcash-boxd-content-text">
             Tổng đơn
              <!-- (8 sản phẩm) -->
-            <span>{{ VND.format(cartService.subTotal.value) }}</span>
+            <span v-if="cartService.cartDetailsToOrder.value.length == 0">{{ VND.format(0) }}</span>
+            <span v-if="cartService.cartDetailsToOrder.value.length > 0">{{ VND.format(cartService.subTotal.value) }}</span>
           </p>
         </div>
         <div class="cart-coolcash-boxd-right"></div>

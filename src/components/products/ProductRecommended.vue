@@ -32,10 +32,6 @@ refreshList();
             <Slide v-for="product in products" :key="product">
                 <ProductCard :product="product"/>
             </Slide>
-            <template #addons>
-                <Navigation />
-                <Pagination />
-            </template>
         </Carousel>
     </div>
 </template>

@@ -47,15 +47,17 @@
     <div class="pricing-info-item">
       <p>Phí giao hàng</p>
       <p class="">
-        <span v-if="cartService.shipCost?.value == 0">Miễn phí</span>
-        <span v-if="cartService.shipCost?.value != 0"> {{ VND.format(cartService.shipCost!.value) }}</span>
+        <span v-if="cartService.cartDetailsToOrder?.value.length == 0">{{ VND.format(0) }}</span>
+        <span v-if="cartService.cartDetailsToOrder?.value.length > 0 && cartService.shipCost?.value == 0">Miễn phí</span>
+        <span v-if="cartService.cartDetailsToOrder?.value.length > 0 && cartService.shipCost?.value != 0"> {{ VND.format(cartService.shipCost!.value) }}</span>
       </p>
     </div>
     <div class="divider"></div>
     <div class="pricing-info-item pricing-info-total">
       <p style="align-items: center">Tổng</p>
       <p class="">
-        <span class="pricing-info-total total"> {{ VND.format(cartService.subTotal?.value) }}</span>
+        <span class="pricing-info-total total" v-if="cartService.cartDetailsToOrder?.value.length == 0">{{ VND.format(0) }}</span>
+        <span class="pricing-info-total total" v-if="cartService.cartDetailsToOrder?.value.length > 0"> {{ VND.format(cartService.subTotal?.value) }}</span>
         <span v-if="discount > 0" style="color: red; display: block; font-size: 12px">(Đã giảm 940k trên giá gốc)</span>
       </p>
     </div>

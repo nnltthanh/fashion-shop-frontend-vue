@@ -2,6 +2,9 @@
 import { ref, onMounted, inject } from 'vue';
 import { CartService } from "@/services/cart.service";
 import OrderCard from "./OrderCard.vue";
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
 
@@ -15,43 +18,47 @@ const getQueryParamByName = (name: string) => {
 const isLoading = ref(true)
 const orderItems = ref([]);
 
-// Call the function to get the value of the 'paramName' query parameter
 onMounted(async () => {
+
+  responseCode.value = getQueryParamByName('vnp_ResponseCode') || null;
+
+  if (responseCode.value == '00') {
+    await cartService.addOrderToSuccessful(+getQueryParamByName('orderId')!);
+    router.replace({'query': undefined});
+  }
+
+  if (responseCode.value != null && responseCode.value != '00') {
+    await cartService.addOrderToFailure(+getQueryParamByName('orderId')!);
+    router.replace({'query': undefined});
+  }
+
   orderItems.value = (await cartService.getAllOrders()).data;
 
-  responseCode.value = getQueryParamByName('vnp_ResponseCode');
-  if (responseCode.value == '00') {
-    console.log("Giao dịch thành công");
-    cartService.addOrderToSuccessful(+getQueryParamByName('orderId')!);
-    window.location.href = "http://localhost:8081/account/orders"
-  }
+  setTimeout(async () => {
+    isLoading.value = false;
+  }, 1000);
+
 });
-
-
-setTimeout(async () => {
-  isLoading.value = false;
-}, 1000);
 
 </script>
 
 <template>
   <span class="loader" v-show="isLoading"></span>
-  <div class="account-content my-50">
+  <div class="account-content my-50" v-show="!isLoading">
     <div id="info-tab" class="account-info">
       <h2 class="account-page-title">Lịch sử đơn hàng</h2>
-      <!-- <div class="account-page-label">
-        Đơn hàng của bạn
-        <span class="d-grid justify-content-center">
+      <div class="account-page-label" v-if="orderItems.length == 0">
+        <span class="d-grid">
           Bạn chưa có đơn hàng nào...
         </span>
-      </div> -->
-      <div>
+      </div>
+      <div v-if="orderItems.length > 0">
         <div class="account-page-label">
           Đơn hàng của bạn<span>: {{ orderItems.length }} đơn hàng</span>
         </div>
         <div class="orders-body mt-3">
           <div class="orders-wrapper">
-            <OrderCard v-for="(orderItem, idx) in orderItems" :key="idx" :order="orderItem"/>
+            <OrderCard v-for="(orderItem, idx) in orderItems" :key="idx" :order="orderItem" />
           </div>
         </div>
       </div>
@@ -60,7 +67,6 @@ setTimeout(async () => {
 </template>
 
 <style scoped>
-
 .loader {
   display: block;
   border-radius: 50%;

@@ -76,8 +76,7 @@ const placeOrder = async () => {
   <!-- <button class="checkout-btn fixed"> -->
   <button class="checkout-btn" @click="placeOrder"
     :disabled="cartService.cartDetailsToOrder.value.length == 0">
-    Thanh toán
-    <span> {{ VND.format(cartService.subTotal.value) }}</span>
+    Đặt hàng
   </button>
 </template>
 

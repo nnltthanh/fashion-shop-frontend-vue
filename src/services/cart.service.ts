@@ -114,6 +114,10 @@ export class CartService {
         localStorage.setItem('amount', this.subTotal.value);
 
         localStorage.setItem('cartDetails', this.cartDetailsToOrder.value.toString());
+           
+        const regularArray = localStorage.getItem('cartDetails')!.split(',');
+
+        await axios.post(`${baseUri}/customers/${this.customerId}/orders/${this.orderId.value}`, regularArray);
 
         return axios.post(`${baseUri}/payment/${orderId}/vnpay`, data, {
             headers: {
@@ -134,6 +138,10 @@ export class CartService {
         localStorage.setItem('amount', this.subTotal.value);
 
         localStorage.setItem('cartDetails', this.cartDetailsToOrder.value.toString());
+        
+        const regularArray = localStorage.getItem('cartDetails')!.split(',');
+
+        await axios.post(`${baseUri}/customers/${this.customerId}/orders/${this.orderId.value}`, regularArray);
 
         return axios.post(`${baseUri}/payment/${orderId}/cod`, data, {
             headers: {
@@ -148,15 +156,31 @@ export class CartService {
 
         this.orderId.value = orderId;
 
-        const regularArray = localStorage.getItem('cartDetails')!.split(',');
-
-        await axios.post(`${baseUri}/customers/${this.customerId}/orders/${this.orderId.value}`, regularArray);
-
         const order = await this.getOrderById(this.orderId.value);
 
         let data = {
             ...order,
             status: 'PROCESSING',
+            total: localStorage.getItem('amount')
+        }
+
+        localStorage.removeItem('amount');
+
+        // update payment
+        await axios.put(`${baseUri}/customers/${this.customerId}/orders/${this.orderId.value}`, data);
+
+    }
+
+    async addOrderToFailure(orderId: number) {
+        const baseUri = this.getBaseUri();
+
+        this.orderId.value = orderId;
+
+        const order = await this.getOrderById(this.orderId.value);
+
+        let data = {
+            ...order,
+            status: 'CANCELLED',
             total: localStorage.getItem('amount')
         }
 
