@@ -877,7 +877,6 @@ a:hover {
   color: #fff;
 }
 
-
 .loader {
   display: block;
   border-radius: 50%;

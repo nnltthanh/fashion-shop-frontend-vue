@@ -19,6 +19,10 @@ export type ProductObject = {
   },
   createdAt: Date,
   updatedAt: Date,
+  color: String,
+  size: String,
+  quantity: Number | null,
+  imageLinks: String,
 
   //thuộc tính này tự đặt, đại diện tổng sản phẩm đã mã của sản phẩm này
   sold: number,

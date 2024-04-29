@@ -1,4 +1,5 @@
 <template>
+    <div class="loader-container" v-if="isLoading"><span class="loader"></span></div>
     <div class="product-form__float" :class="productStore.isShowAddDetailFormClick ? 'is-active' : ''">
         <div class="container">
             <div class="product-form-container">
@@ -50,7 +51,7 @@
                             </div>
                         </div>
                     </div>
-                    <button @click.prevent="addDetail"
+                    <button @click.prevent="isLoading = true; addDetail()"
                         class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-3">
                         Thêm
                     </button>
@@ -83,6 +84,8 @@ import axios from 'axios';
 
 const emit = defineEmits(['add-detail-done']);
 
+const isLoading = ref(false);
+
 const props = defineProps({
     productId: {
         type: Number
@@ -100,7 +103,7 @@ interface ProductDetailObject {
 
 const productDetails = ref<ProductDetailObject[] | null>(null);
 
-const detailForAdding = ref<ProductObject>({ color: '', size: '', quantity: null, sold: 0, imageLinks: '' });
+const detailForAdding = ref<any>({ color: '', size: '', quantity: null, sold: 0, imageLinks: '' });
 const uploadedImages = ref<{ productDetailIndex: number, id: number, url: string }[]>([]);
 let changingProductDetailImages: { id: number, file: File }[] = [];
 const productStore = useProductStore();
@@ -116,12 +119,14 @@ const addDetail = async () => {
             const file = changingProductDetailImages[i].file;
             formData.append('images', file);
         }
-        await ProductService.postDetail(props.productId, detailForAdding.value, formData);
+        const response = await ProductService.postDetail(props.productId, detailForAdding.value, formData);
         closeDetailAddForm();
         emit('add-detail-done');
+        isLoading.value = false;
         return response.data;
     } catch (error) {
         console.log(error);
+        isLoading.value = false;
     }
 }
 
@@ -389,4 +394,5 @@ body {
     position: relative;
     padding-bottom: 100%;
 }
+
 </style>

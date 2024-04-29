@@ -1,4 +1,5 @@
 <template>
+    <div class="loader-container" v-if="isLoading"><span class="loader"></span></div>
     <div class="product-form__float" :class="productStore.isShowAddFormClick ? 'is-active' : ''">
         <div class="container">
             <div class="product-form-container">
@@ -43,13 +44,14 @@
                                     <div class="upload__btn-box">
                                         <label class="upload__btn">
                                             Upload images
-                                            <input type="file" multiple data-max_length="5" class="upload__inputfile"
-                                                @change="handleFileInputChange($event, index)">
+                                            <input type="file" 
+                                            data-max_length="1" class="upload__inputfile"
+                                                @change="handleFileInputChange($event)">
                                         </label>
                                     </div>
                                     <div class="upload__img-wrap">
                                         <div v-for="image in uploadedImages" :key="image.id">
-                                            <div class="upload__img-box" v-show="image.productIndex == index">
+                                            <div class="upload__img-box">
                                                 <div class="img-bg"
                                                     :style="{ backgroundImage: 'url(' + image.url + ')' }">
                                                     <div class="upload__img-close" @click="removeImage(image.id)"></div>
@@ -61,11 +63,12 @@
                             </div>
                         </div>
                     </div>
-                    <button v-if="productStore.isShowAddFormClick" @click.prevent="addProduct"
+                    <button v-if="productStore.isShowAddFormClick" 
+                        @click.prevent="isLoading = true; addProduct()"
                         class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-3">
                         Thêm
                     </button>
-                    <button v-else @click.prevent="addProduct"
+                    <button v-else @click.prevent="isLoading = true; addProduct()"
                         class="mr-2 bg-gradient-to-b from-green-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-3">
                         Sửa
                     </button>
@@ -91,12 +94,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useProductStore } from '@/stores/productStore';
 import ProductService from "@/services/product.service";
+import { useProductStore } from '@/stores/productStore';
 import axios from 'axios';
+import { ref } from 'vue';
 
 const emit = defineEmits(['add-product-done']);
+
+const isLoading = ref(false);
 
 interface ProductObject {
     name: String,
@@ -126,30 +131,33 @@ const addProduct = async () => {
         await ProductService.updateProductImages(response.data.id, formData);
         closeProductAddForm();
         emit('add-product-done');
+        isLoading.value = false;
         return response.data;
     } catch (error) {
         console.log(error);
+        isLoading.value = false;
     }
 }
 
-const handleFileInputChange = async (event, index) => {
+const handleFileInputChange = async (event) => {
     const files = event.target.files;
-    const newImages: { id: number | string, url: string }[] = [];
+    // const newImages: { id: number | string, url: string }[] = [];
 
     for (let i = 0; i < files.length; i++) {
-        if (uploadedImages.value.length + newImages.length > 1) break;
+        // if (uploadedImages.value.length + newImages.length > 1) break;
         const file = files[i];
         const imageUrl = URL.createObjectURL(file);
-        newImages.push({ id: i, url: imageUrl });
+        // newImages.push({ id: i, url: imageUrl });
 
-        changingProductImages.push({ id: i, file: file });
+        changingProductImages = [{ id: i, file: file }];
+        uploadedImages.value = [{ id: i, url: imageUrl }];
     }
-    uploadedImages.value = uploadedImages.value.concat(newImages);
+    // uploadedImages.value = uploadedImages.value.concat(newImages);
 };
 
 const removeImage = (imageId) => {
-    uploadedImages.value = uploadedImages.value.filter(image => image.id !== imageId);
-    changingProductImages = changingProductImages.filter(file => file.id !== imageId);
+    uploadedImages.value = [];
+    changingProductImages = [];
 };
 
 const updateProduct = async () => {
@@ -326,4 +334,70 @@ body {
     transition: all .3s;
     background: rgba(0, 0, 0, .6);
 }
+
+.loader {
+  display: block;
+  border-radius: 50%;
+  position: relative;
+  animation: rotate 1s linear infinite;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.5);
+  position: fixed;
+  top: 40%;
+  left: 40%;
+  z-index: 100;
+}
+
+.loader::before,
+.loader::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0px;
+  border-radius: 50%;
+  border: 20px solid #e5e3e3;
+  animation: prixClipFix 2s linear infinite;
+  z-index: 1000;
+}
+
+.loader::after {
+  border-color: #2424be;
+  animation: prixClipFix 2s linear infinite, rotate 0.5s linear infinite reverse;
+  inset: 6px;
+  z-index: 1000;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg)
+  }
+
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
+@keyframes prixClipFix {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+  }
+
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+  }
+
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+  }
+
+  75% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
+  }
+
+  100% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
+  }
+}
+
 </style>
