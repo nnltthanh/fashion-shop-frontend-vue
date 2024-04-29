@@ -8,31 +8,56 @@
                         <div class="grid-view">
                             <div class="grid-column">
                                 <label for="productName">Tên sản phẩm:</label>
-                                <input v-model="productForAdding.name" type="productName" name="productName" placeholder="" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="grid-view">
-                            <div class="grid-column six-twelfths">
-                                <label for="productPrice">Giá:</label>
-                                <input v-model="productForAdding.price" type="number" id="productPrice" name="productPrice" required placeholder=""
-                                    class="form-control" />
-                            </div>
-                            <div class="grid-column six-twelfths">
-                                <label for="productSalePercent">Giảm giá (%):</label>
-                                <input v-model="productForAdding.salePercent" type="number" id="productSalePercent" name="productSalePercent" required
+                                <input v-model="productForAdding.name" type="productName" name="productName"
                                     placeholder="" class="form-control" />
                             </div>
                         </div>
                         <div class="grid-view">
                             <div class="grid-column six-twelfths">
+                                <label for="productPrice">Giá:</label>
+                                <input v-model="productForAdding.price" type="number" id="productPrice"
+                                    name="productPrice" required placeholder="" class="form-control" />
+                            </div>
+                            <div class="grid-column six-twelfths">
+                                <label for="productSalePercent">Giảm giá (%):</label>
+                                <input v-model="productForAdding.salePercent" type="number" id="productSalePercent"
+                                    name="productSalePercent" required placeholder="" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="grid-view">
+                            <div class="grid-column six-twelfths">
                                 <label for="productType">Chất liệu:</label>
-                                <input v-model="productForAdding.material" type="text" id="productType" name="productType" required placeholder=""
-                                    class="form-control" />
+                                <input v-model="productForAdding.material" type="text" id="productType"
+                                    name="productType" required placeholder="" class="form-control" />
                             </div>
                             <div class="grid-column six-twelfths">
                                 <label for="productType">Loại:</label>
-                                <input v-model="productForAdding.type" type="text" id="productType" name="productType" required placeholder=""
-                                    class="form-control" />
+                                <input v-model="productForAdding.type" type="text" id="productType" name="productType"
+                                    required placeholder="" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="grid-view">
+                            <div class="grid-column">
+                                <label for="detailImages">Ảnh sản phẩm:</label>
+                                <div class="upload__box">
+                                    <div class="upload__btn-box">
+                                        <label class="upload__btn">
+                                            Upload images
+                                            <input type="file" multiple data-max_length="5" class="upload__inputfile"
+                                                @change="handleFileInputChange($event, index)">
+                                        </label>
+                                    </div>
+                                    <div class="upload__img-wrap">
+                                        <div v-for="image in uploadedImages" :key="image.id">
+                                            <div class="upload__img-box" v-show="image.productIndex == index">
+                                                <div class="img-bg"
+                                                    :style="{ backgroundImage: 'url(' + image.url + ')' }">
+                                                    <div class="upload__img-close" @click="removeImage(image.id)"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -82,7 +107,8 @@ interface ProductObject {
 }
 
 const productForAdding = ref<ProductObject>({ name: '', price: 0, salePercent: 0, material: '', type: '' });
-
+const uploadedImages = ref<{ id: string | number, url: string }[]>([]);
+let changingProductImages: { id: number, file: File }[] = [];
 const productStore = useProductStore();
 
 const closeProductAddForm = () => {
@@ -91,7 +117,13 @@ const closeProductAddForm = () => {
 
 const addProduct = async () => {
     try {
+        const formData = new FormData();
+        for (let i = 0; i < changingProductImages.length; i++) {
+            const file = changingProductImages[i].file;
+            formData.append('images', file);
+        }
         const response = await axios.post("http://localhost:8080/products", productForAdding.value);
+        await ProductService.updateProductImages(response.data.id, formData);
         closeProductAddForm();
         emit('add-product-done');
         return response.data;
@@ -99,6 +131,26 @@ const addProduct = async () => {
         console.log(error);
     }
 }
+
+const handleFileInputChange = async (event, index) => {
+    const files = event.target.files;
+    const newImages: { id: number | string, url: string }[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+        if (uploadedImages.value.length + newImages.length > 1) break;
+        const file = files[i];
+        const imageUrl = URL.createObjectURL(file);
+        newImages.push({ id: i, url: imageUrl });
+
+        changingProductImages.push({ id: i, file: file });
+    }
+    uploadedImages.value = uploadedImages.value.concat(newImages);
+};
+
+const removeImage = (imageId) => {
+    uploadedImages.value = uploadedImages.value.filter(image => image.id !== imageId);
+    changingProductImages = changingProductImages.filter(file => file.id !== imageId);
+};
 
 const updateProduct = async () => {
     try {

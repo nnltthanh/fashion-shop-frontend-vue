@@ -6,38 +6,51 @@
                 <div>
                     <div id="customer-info-block">
                         <div class="grid-view">
-                            <div class="grid-column six-twelfths">
+                            <div class="grid-column">
                                 <label for="detailColor">Màu:</label>
                                 <input v-model="detailForUpdating.color" type="text" id="detailColor" name="detailColor"
                                     placeholder="" class="form-control" />
                             </div>
+                        </div>
+                        <div class="grid-view">
                             <div class="grid-column six-twelfths">
                                 <label for="detailSize">Kích cỡ:</label>
                                 <input v-model="detailForUpdating.size" type="text" id="detailSize" name="detailSize"
                                     required placeholder="" class="form-control" />
                             </div>
-                        </div>
-                        <div class="grid-view">
                             <div class="grid-column six-twelfths">
                                 <label for="detailQuantity">Hiện có:</label>
                                 <input v-model="detailForUpdating.quantity" type="number" id="detailQuantity"
                                     name="detailQuantity" required placeholder="" class="form-control" />
                             </div>
-                            <div class="grid-column six-twelfths">
-                                <label for="detailSold">Đã bán:</label>
-                                <input v-model="detailForUpdating.sold" type="number" id="detailSold" name="detailSold"
-                                    required placeholder="" class="form-control" />
+                        </div>
+                        <div class="grid-view">
+                            <div class="grid-column">
+                                <label for="detailImages">Ảnh sản phẩm:</label>
+                                <div class="upload__box">
+                                    <div class="upload__btn-box">
+                                        <label class="upload__btn">
+                                            Upload images
+                                            <input type="file" multiple data-max_length="5" class="upload__inputfile"
+                                                @change="handleFileInputChange($event)">
+                                        </label>
+                                    </div>
+                                    <div class="upload__img-wrap">
+                                        <div v-for="(image, index) in uploadedImages" :key="index">
+                                            <div class="upload__img-box">
+                                                <div class="img-bg"
+                                                    :style="{ backgroundImage: 'url(' + image + ')' }">
+                                                    <div class="upload__img-close" @click="removeImage(index)"></div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <!-- <div class="grid-view">
-                            <div class="grid-column">
-                                <label for="detailImages">Ảnh:</label>
-                                <input v-model="imageLinksModel" type="text" id="detailImages"
-                                    name="detailImages" required placeholder="" class="form-control" />
-                            </div>
-                        </div> -->
                     </div>
-                    <button @click.prevent="updateDetail"
+                    <button @click.prevent="handleClickSaveDetail"
                         class="mr-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-3">
                         Cập nhật
                     </button>
@@ -57,13 +70,23 @@
                 </button>
             </div>
         </div>
+        <div v-if="confirmUpdateDetailModalVisible" class="modal container">
+            <div class="modal-content">
+                <span class="close" @click="handleCloseUpdateDetailModal">&times;</span>
+                <p>Bạn có chắc về việc lưu những thay đổi này không?</p>
+                <div class="d-flex justify-content-center">
+                    <button class="btn confirm" @click="handleConfirmUpdateDetailSaveChanges">Có</button>
+                    <button class="btn cancel" @click="handleCloseUpdateDetailModal">Không</button>
+                </div>
+            </div>
+        </div>
         <div class="product-form__background" @click="closeDetailUpdateForm"></div>
     </div>
 
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onBeforeMount, watchEffect } from 'vue';
 import { useProductStore } from '@/stores/productStore';
 import ProductService from "@/services/product.service";
 import axios from 'axios';
@@ -88,14 +111,13 @@ interface ProductDetailObject {
     imageLinks: String
 }
 
-const imageLinksModel = computed({
-    get: () => props.detailForUpdating.imageLinks.join(', '),
-    set: newValue => {
-        props.detailForUpdating.imageLinks = newValue.split(', ')
-    },
-})
+const imageLinksModel = computed(() => props.detailForUpdating.imageLinks);
 
 const productDetails = ref<ProductDetailObject[] | null>(null);
+
+const uploadedImages = ref<String[]>([]);
+
+let changingProductDetailImages: { id: number, file: File }[] = [];
 
 const productStore = useProductStore();
 
@@ -103,21 +125,69 @@ const closeDetailUpdateForm = () => {
     productStore.setIsShowUpdateDetailFormClick(false);
 }
 
+watchEffect(() => {
+    if(props.detailForUpdating.imageLinks) {
+        uploadedImages.value = [...props.detailForUpdating.imageLinks];
+    }
+});
+
 const updateDetail = async () => {
     try {
         if (!props.detailForUpdating) {
             throw new Error('props.detailForUpdating.value is not assigned');
         }
-        productDetails.value = {...props.detailForUpdating, imageLinks: props.detailForUpdating.imageLinks.join(', ')};
-        console.log(productDetails.value);
+        const formData = new FormData();
+        for (let i = 0; i < uploadedImages.value.length; i++) {
+            const response = await fetch(uploadedImages.value[i]);
+            const blob = await response.blob();
+            formData.append('images', blob);
+        }
+        for (let i = 0; i < changingProductDetailImages.length; i++) {
+            const file = changingProductDetailImages[i].file;
+            formData.append('images', file);
+        }
+        productDetails.value = { ...props.detailForUpdating, imageLinks: uploadedImages.value.join(', ') };
         const response = await axios.put(`http://localhost:8080/products/${props.productId}/details/${productDetails.value.id}`, productDetails.value);
-        console.log(response);
+        await ProductService.updateImages(props.productId, productDetails.value.id, formData);
         closeDetailUpdateForm();
         emit('update-detail-done');
         return response.data;
     } catch (error) {
         console.error(error);
     }
+}
+const handleFileInputChange = async (event) => {
+    const files = event.target.files;
+    const newImages: String[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+        // if (uploadedImages.value.length + newImages.length > 4) break;
+        const file = files[i];
+        const imageUrl = URL.createObjectURL(file);
+        newImages.push(imageUrl);
+        changingProductDetailImages.push({ id: i, file: file });
+    }
+    uploadedImages.value = uploadedImages.value.concat(newImages);
+};
+
+const removeImage = (imageId) => {
+    uploadedImages.value = uploadedImages.value.filter((image, index) => index !== imageId);
+    changingProductDetailImages = changingProductDetailImages.filter(file => file.id !== imageId);
+};
+
+const confirmUpdateDetailModalVisible = ref(false);
+
+const handleClickSaveDetail = () => {
+    confirmUpdateDetailModalVisible.value = true;
+}
+
+const handleConfirmUpdateDetailSaveChanges = async () => {
+    await updateDetail();
+    confirmUpdateDetailModalVisible.value = false;
+}
+
+const handleCloseUpdateDetailModal = () => {
+    confirmUpdateDetailModalVisible.value = false;
 }
 </script>
 
@@ -282,5 +352,75 @@ body {
     height: 100%;
     transition: all .3s;
     background: rgba(0, 0, 0, .6);
+}
+
+.modal {
+    display: flex;
+    position: absolute;
+    top: -16px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all .3s;
+    background: rgba(0, 0, 0, .6);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 36px 36px 12px 36px;
+    border: 1px solid #888;
+    width: 30%;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0 16px;
+    color: #aaa;
+    float: left;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.btn.confirm {
+    background-color: green;
+    /* Màu xanh lá */
+    color: white;
+    /* Màu chữ trắng */
+}
+
+.btn.confirm:hover {
+    background-color: darkgreen;
+    /* Màu xanh lá đậm khi hover */
+}
+
+.btn.cancel {
+    background-color: red;
+    /* Màu đỏ */
+    color: white;
+    /* Màu chữ trắng */
+}
+
+.btn.cancel:hover {
+    background-color: darkred;
+    /* Màu đỏ đậm khi hover */
 }
 </style>

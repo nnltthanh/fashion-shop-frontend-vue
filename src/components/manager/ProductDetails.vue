@@ -1,6 +1,7 @@
 <template>
     <ProductDetailAddForm @add-detail-done="addDetailDone()" :product-id="props.productId" />
-    <ProductDetailUpdateForm @update-detail-done="updateDetailDone()" :detail-for-updating="selectedProductDetail" :product-id="props.productId"/>
+    <ProductDetailUpdateForm @update-detail-done="updateDetailDone()" :detail-for-updating="selectedProductDetail"
+        :product-id="props.productId" />
     <div class="product-detail-table__float" :class="productStore.isShowDetails ? 'is-active' : ''">
         <div class="container" style="overflow-y: scroll;">
             <div class="product-detail-table-container">
@@ -36,7 +37,7 @@
                                 class="mr-2 mb-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Cập nhật chi tiết
                             </button>
-                            <button @click="deteleDetail"
+                            <button @click="handleClickDeleteDetail"
                                 class="mr-2 mb-2 bg-gradient-to-b from-red-500 to-pink-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Xóa chi tiết
                             </button>
@@ -78,31 +79,41 @@
                                 <th scope="row"
                                     class="px-4 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ item.id ? item.id :
-                                        "Chưa cập nhật" }}
+        "Chưa cập nhật" }}
                                 </th>
                                 <td class="px-4 py-4">
                                     {{ item.color ? item.color :
-                                        "Chưa cập nhật" }}
+        "Chưa cập nhật" }}
                                 </td>
                                 <td class="px-4 py-4">
                                     {{ item.size ? item.size :
-                                        "Chưa cập nhật" }}
+        "Chưa cập nhật" }}
                                 </td>
                                 <td class="px-4 py-4">
                                     {{ item.quantity ? item.quantity :
-                                        "Chưa cập nhật" }}
+        "Chưa cập nhật" }}
                                 </td>
                                 <td class="px-4 py-4">
-                                    {{ item.sold ? item.sold :
-                                        "Chưa cập nhật" }}
+                                    {{ item.sold >= 0 ? item.sold :
+        "Chưa cập nhật" }}
                                 </td>
                                 <td class="px-4 py-4 d-flex justify-content-center align-items-center">
                                     <img width="80" :src="item.imageLinks[0] ? item.imageLinks[0] :
-                                        'Chưa cập nhật'" alt="">
+        'Chưa cập nhật'" alt="">
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+        <div v-if="confirmDeleteDetailModalVisible" class="modal modal-delete container">
+            <div class="modal-content">
+                <span class="close" @click="handleCloseDeleteDetailModal">&times;</span>
+                <p>Bạn có chắc về việc xóa chi tiết này không?</p>
+                <div class="d-flex justify-content-center">
+                    <button class="btn confirm" @click="handleConfirmDeleteDetailSaveChanges">Có</button>
+                    <button class="btn cancel" @click="handleCloseDeleteDetailModal">Không</button>
                 </div>
             </div>
         </div>
@@ -130,7 +141,7 @@ interface ProductObject {
 }
 
 interface ProductDetailObject {
-    id: number,
+    id: number | String,
     color: String,
     size: String,
     quantity: number,
@@ -148,7 +159,7 @@ const props = defineProps({
 });
 
 const selectedProductDetail = ref<ProductDetailObject>({
-    id: null,
+    id: '',
     color: '',
     size: '',
     quantity: null,
@@ -194,7 +205,14 @@ const updateDetailDone = () => {
 const deteleDetail = async () => {
     try {
         const response = await axios.delete(`http://localhost:8080/products/${props.productId}/details/${selectedProductDetail.value.id}`);
-        Object.keys(selectedProductDetail).forEach((i) => selectedProductDetail[i] = null);
+        selectedProductDetail.value = {
+            id: '',
+            color: '',
+            size: '',
+            quantity: 0,
+            sold: 0,
+            imageLinks: [],
+        }
         emit('reset-details');
         return response;
     } catch (error) {
@@ -208,6 +226,21 @@ const activeAddDetailForm = () => {
 
 const activeUpdateDetailForm = () => {
     productStore.setIsShowUpdateDetailFormClick(true);
+}
+
+const confirmDeleteDetailModalVisible = ref(false);
+
+const handleClickDeleteDetail = () => {
+    confirmDeleteDetailModalVisible.value = true;
+}
+
+const handleConfirmDeleteDetailSaveChanges = async () => {
+    await deteleDetail();
+    confirmDeleteDetailModalVisible.value = false;
+}
+
+const handleCloseDeleteDetailModal = () => {
+    confirmDeleteDetailModalVisible.value = false;
 }
 </script>
 
@@ -405,5 +438,68 @@ body {
     height: 100%;
     transition: all .3s;
     background: rgba(0, 0, 0, .6);
+}
+
+.modal-delete {
+    top: 0;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 36px 36px 12px 36px;
+    border: 1px solid #888;
+    width: 30%;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0 16px;
+    color: #aaa;
+    float: left;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.btn.confirm {
+    background-color: green;
+    /* Màu xanh lá */
+    color: white;
+    /* Màu chữ trắng */
+}
+
+.btn.confirm:hover {
+    background-color: darkgreen;
+    /* Màu xanh lá đậm khi hover */
+}
+
+.btn.cancel {
+    background-color: red;
+    /* Màu đỏ */
+    color: white;
+    /* Màu chữ trắng */
+}
+
+.btn.cancel:hover {
+    background-color: darkred;
+    /* Màu đỏ đậm khi hover */
 }
 </style>

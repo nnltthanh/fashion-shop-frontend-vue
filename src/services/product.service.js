@@ -51,5 +51,14 @@ class ProductService {
             }
         });
     }
+
+    async updateProductImages(productId, imageFiles) {
+        return await this.api.put(`/${productId}/upload`, imageFiles, 
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    }
 }
 export default new ProductService();

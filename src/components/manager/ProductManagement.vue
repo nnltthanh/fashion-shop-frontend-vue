@@ -1,7 +1,8 @@
 <template>
-    <ProductAddForm @add-product-done="retriveProducts"/>
-    <ProductUpdateForm @update-product="retriveProducts" :product-for-updating="selectedProduct"/>
-    <ProductDetails @add-detail-done="showDetails" @update-detail-done="showDetails" @reset-details="reloadDetails" :product-details="productDetails" :product-id="selectedProduct.id"/>
+    <ProductAddForm @add-product-done="retriveProducts" />
+    <ProductUpdateForm @update-product="retriveProducts" :product-for-updating="selectedProduct" />
+    <ProductDetails @add-detail-done="showDetails" @update-detail-done="showDetails" @reset-details="reloadDetails"
+        :product-details="productDetails" :product-id="selectedProduct.id" />
     <div class="product-management m-3">
         <div class="w-full">
             <div class="w-full">
@@ -56,7 +57,7 @@
                             class="mr-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             Cập nhật sản phẩm
                         </button>
-                        <button @click="deteleProduct"
+                        <button @click="handleClickDelete"
                             class="mr-2 bg-gradient-to-b from-red-500 to-pink-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             Xóa sản phẩm
                         </button>
@@ -105,10 +106,10 @@
                         </th>
                         <th scope="col" class="7px-4 py-3">
                             Đã bán
-                        </th>
+                        </th> -->
                         <th scope="col" class="px-4 py-3 text-center">
                             Ảnh
-                        </th> -->
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -118,11 +119,6 @@
                             {{ item.id ? item.id :
         "Chưa cập nhật" }}
                         </th>
-                        <!-- <td class="px-4 py-4 w-1/10">
-                            {{ item.product.id ? item.product.id :
-                                "Chưa cập nhật" }}
-                        </td> -->
-                        <!-- <td class="px-6 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px"> -->
                         <td class="px-4 py-4">
                             {{ item.name ? item.name :
         "Chưa cập nhật" }}
@@ -137,37 +133,31 @@
                         </td>
                         <td class="px-4 py-4 overflow-x-auto custom-scrollbar-cell" style="max-width: 150px">
                             {{ item.type ? item.type :
-                            "Chưa cập nhật" }}
+        "Chưa cập nhật" }}
                         </td>
                         <td class="px-4 py-4">
                             {{ item.material ? item.material :
-                            "Chưa cập nhật" }}
+        "Chưa cập nhật" }}
                         </td>
-                        <!-- <td class="px-4 py-4">
-                            {{ item.color ? item.color :
-                                "Chưa cập nhật" }}
+                        <td class="px-4 py-4 d-flex justify-content-center align-items-center">
+                            <img width="80" :src="item.imageData.base64String" alt="">
                         </td>
-                        <td class="px-4 py-4">
-                            {{ item.size ? item.size :
-                                "Chưa cập nhật" }}
-                        </td>
-                        <td class="px-4 py-4">
-                            {{ item.quantity ? item.quantity :
-                                "Chưa cập nhật" }}
-                        </td>
-                        <td class="px-4 py-4">
-                            {{ item.sold ? item.sold :
-                                "Chưa cập nhật" }}
-                        </td>
-                        <td class="px-4 py-4">
-                            <img :src="item.imageLinks[0] ? item.imageLinks[0] :
-                                'Chưa cập nhật'" alt="">
-                        </td> -->
                     </tr>
                 </tbody>
             </table>
         </div>
+        <div v-if="confirmDeleteModalVisible" class="modal modal-delete">
+            <div class="modal-content">
+                <span class="close" @click="handleCloseDeleteModal">&times;</span>
+                <p>Bạn có chắc về việc xóa sản phẩm này không?</p>
+                <div class="d-flex justify-content-center">
+                    <button class="btn confirm" @click="handleConfirmDeleteSaveChanges">Có</button>
+                    <button class="btn cancel" @click="handleCloseDeleteModal">Không</button>
+                </div>
+            </div>
+        </div>
     </div>
+
 </template>
 
 <script setup lang="ts">
@@ -181,13 +171,17 @@ import axios from 'axios';
 const productStore = useProductStore();
 
 interface ProductObject {
-    id: number,
+    id: number | String,
     name: String,
     price: number,
     salePercent: number,
     type: String,
     material: String,
-    // sold: number,
+    imageData: {
+        id: number | String,
+        base64String: String
+        type: String
+    }
 }
 interface ProductDetailObject {
     id: number,
@@ -200,15 +194,22 @@ interface ProductDetailObject {
 const products = ref<ProductObject[] | null>(null);
 const productDetails = ref<ProductDetailObject[] | null>(null);
 const selectedProduct = ref<ProductObject>({
-    id: 0,
+    id: '',
     name: '',
     price: 0,
     salePercent: 0,
     type: '',
     material: '',
+    imageData: {
+        id: '',
+        base64String: '',
+        type: ''
+    }
 });
 
 const currentTotalProduct = ref<number>(0);
+
+const confirmDeleteModalVisible = ref(false);
 
 const retriveProducts = async () => {
     try {
@@ -225,64 +226,8 @@ onBeforeMount(async () => {
 });
 const isNotEnteredID = ref(false);
 const isUpdatedOK = ref(false);
-// const blockAndUnblock = async (employee: Employee) => {
-//     try {
-//         let idToSearch = parseInt(selectedEmployee.value.id);
-//         console.log(idToSearch);
-//         if (isNaN(idToSearch)) {
-//             isNotEnteredID.value = true;
-//             setTimeout(() => {
-//                 isNotEnteredID.value = false;
-//             }, 1500);
-//             return;
-//         }
-//         const response = await axios.put(`http://localhost:8080/users/${employee.id}/updateLockedStatus`);
-//         if (response.status === 200) {
-//             let index = employees.value?.findIndex((a) => a.id === employee.id)
-//             employee.locked = !employee.locked;
-//             if (index != undefined && index >= 0) {
-//                 employees.value?.splice(index, 1, employee)
-//                 isUpdatedOK.value = true;
-//                 setTimeout(() => {
-//                     isUpdatedOK.value = false;
-//                 }, 1500);
-//             } else {
-//                 return;
-//             }
-//         } else {
-//             console.error('Error updating lock status');
-//         }
-//     } catch (error) {
-//         console.error('Error updating lock status:', error);
-//     }
-// };
 
 const isNotFoundProductDetail = ref(false);
-// const" = () => {
-//     let idToSearch = parseInt(selectedProduct.value.id);
-//     console.log(idToSearch);
-//     if (isNaN(idToSearch)) {
-//         isNotEnteredID.value = true;
-//         setTimeout(() => {
-//             isNotEnteredID.value = false;
-//         }, 1500);
-//     } else {
-//         const index = productDetails.value?.findIndex(detail => parseInt(detail.id) === idToSearch);
-//         if (index !== undefined && index !== -1) {
-//             const element = document.querySelectorAll('.row-data')[index];
-//             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-//             element.classList.add('found');
-//             setTimeout(() => {
-//                 element.classList.remove('found');
-//             }, 4000);
-//         } else {
-//             isNotFoundProductDetail.value = true;
-//             setTimeout(() => {
-//                 isNotFoundProductDetail.value = false;
-//             }, 1500);
-//         }
-//     }
-// };
 
 const selectProduct = (product: ProductObject) => {
     selectedProduct.value = { ...product };
@@ -326,16 +271,43 @@ const reloadDetails = async () => {
 const deteleProduct = async () => {
     try {
         const response = await axios.delete(`http://localhost:8080/products/${selectedProduct.value.id}`);
-        Object.keys(selectedProduct).forEach((i) => selectedProduct[i] = null);
-        retriveProducts();
+        selectedProduct.value = {
+            id: '',
+            name: '',
+            price: 0,
+            salePercent: 0,
+            type: '',
+            material: '',
+        };
+        await retriveProducts();
         return response;
     } catch (error) {
         console.error('Lỗi khi xóa sản phẩm', error);
     }
 }
 
+const handleClickDelete = () => {
+    confirmDeleteModalVisible.value = true;
+}
+
+const handleConfirmDeleteSaveChanges = async () => {
+    await deteleProduct();
+    confirmDeleteModalVisible.value = false;
+}
+
+const handleCloseDeleteModal = () => {
+    confirmDeleteModalVisible.value = false;
+}
 </script>
 <style scoped>
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 88vh;
+    margin: 0;
+}
+
 .w-1\/8 {
     width: 12.5%;
 }
@@ -379,5 +351,68 @@ const deteleProduct = async () => {
 
 .found {
     background-color: rgb(196, 199, 199);
+}
+
+.modal-delete {
+    top: 0;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 36px 36px 12px 36px;
+    border: 1px solid #888;
+    width: 30%;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0 16px;
+    color: #aaa;
+    float: left;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.btn.confirm {
+    background-color: green;
+    /* Màu xanh lá */
+    color: white;
+    /* Màu chữ trắng */
+}
+
+.btn.confirm:hover {
+    background-color: darkgreen;
+    /* Màu xanh lá đậm khi hover */
+}
+
+.btn.cancel {
+    background-color: red;
+    /* Màu đỏ */
+    color: white;
+    /* Màu chữ trắng */
+}
+
+.btn.cancel:hover {
+    background-color: darkred;
+    /* Màu đỏ đậm khi hover */
 }
 </style>

@@ -8,38 +8,40 @@
                         <div class="grid-view">
                             <div class="grid-column">
                                 <label for="productName">Tên sản phẩm:</label>
-                                <input v-model="productForUpdating.name" type="productName" name="productName" placeholder="" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="grid-view">
-                            <div class="grid-column six-twelfths">
-                                <label for="productPrice">Giá:</label>
-                                <input v-model="productForUpdating.price" type="number" id="productPrice" name="productPrice" required placeholder=""
-                                    class="form-control" />
-                            </div>
-                            <div class="grid-column six-twelfths">
-                                <label for="productSalePercent">Giảm giá (%):</label>
-                                <input v-model="productForUpdating.salePercent" type="number" id="productSalePercent" name="productSalePercent" required
+                                <input v-model="productForUpdating.name" type="productName" name="productName"
                                     placeholder="" class="form-control" />
                             </div>
                         </div>
                         <div class="grid-view">
                             <div class="grid-column six-twelfths">
+                                <label for="productPrice">Giá:</label>
+                                <input v-model="productForUpdating.price" type="number" id="productPrice"
+                                    name="productPrice" required placeholder="" class="form-control" />
+                            </div>
+                            <div class="grid-column six-twelfths">
+                                <label for="productSalePercent">Giảm giá (%):</label>
+                                <input v-model="productForUpdating.salePercent" type="number" id="productSalePercent"
+                                    name="productSalePercent" required placeholder="" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="grid-view">
+                            <div class="grid-column six-twelfths">
                                 <label for="productType">Chất liệu:</label>
-                                <input v-model="productForUpdating.material" type="text" id="productType" name="productType" required placeholder=""
-                                    class="form-control" />
+                                <input v-model="productForUpdating.material" type="text" id="productType"
+                                    name="productType" required placeholder="" class="form-control" />
                             </div>
                             <div class="grid-column six-twelfths">
                                 <label for="productType">Loại:</label>
-                                <input v-model="productForUpdating.type" type="text" id="productType" name="productType" required placeholder=""
-                                    class="form-control" />
+                                <input v-model="productForUpdating.type" type="text" id="productType" name="productType"
+                                    required placeholder="" class="form-control" />
                             </div>
                         </div>
                     </div>
-                    <button @click.prevent="updateProduct"
+                    <button @click.prevent="handleClickSave"
                         class="mr-2 bg-gradient-to-b from-blue-500 to-sky-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-3">
                         Sửa
                     </button>
+
                 </div>
                 <button class="product-form__close" style="z-index: 10;">
                     <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -54,6 +56,16 @@
                         </g>
                     </svg>
                 </button>
+            </div>
+        </div>
+        <div v-if="confirmUpdateModalVisible" class="modal container">
+            <div class="modal-content">
+                <span class="close" @click="handleCloseUpdateModal">&times;</span>
+                <p>Bạn có chắc về việc lưu những thay đổi này không?</p>
+                <div class="d-flex justify-content-center">
+                    <button class="btn confirm" @click="handleConfirmUpdateSaveChanges">Có</button>
+                    <button class="btn cancel" @click="handleCloseUpdateModal">Không</button>
+                </div>
             </div>
         </div>
         <div class="product-form__background" @click="closeProductUpdateForm"></div>
@@ -85,6 +97,8 @@ interface ProductObject {
 
 const productStore = useProductStore();
 
+const confirmUpdateModalVisible = ref(false);
+
 const closeProductUpdateForm = () => {
     productStore.setIsShowUpdateFormClick(false);
 }
@@ -99,6 +113,19 @@ const updateProduct = async () => {
     } catch (error) {
         console.log(error);
     }
+}
+
+const handleClickSave = () => {
+    confirmUpdateModalVisible.value = true;
+}
+
+const handleConfirmUpdateSaveChanges = async () => {
+    await updateProduct();
+    confirmUpdateModalVisible.value = false;
+}
+
+const handleCloseUpdateModal = () => {
+    confirmUpdateModalVisible.value = false;
 }
 </script>
 
@@ -263,5 +290,75 @@ body {
     height: 100%;
     transition: all .3s;
     background: rgba(0, 0, 0, .6);
+}
+
+.modal {
+    display: flex;
+    position: absolute;
+    top: -16px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all .3s;
+    background: rgba(0, 0, 0, .6);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 36px 36px 12px 36px;
+    border: 1px solid #888;
+    width: 30%;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0 16px;
+    color: #aaa;
+    float: left;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.btn.confirm {
+    background-color: green;
+    /* Màu xanh lá */
+    color: white;
+    /* Màu chữ trắng */
+}
+
+.btn.confirm:hover {
+    background-color: darkgreen;
+    /* Màu xanh lá đậm khi hover */
+}
+
+.btn.cancel {
+    background-color: red;
+    /* Màu đỏ */
+    color: white;
+    /* Màu chữ trắng */
+}
+
+.btn.cancel:hover {
+    background-color: darkred;
+    /* Màu đỏ đậm khi hover */
 }
 </style>

@@ -6,27 +6,22 @@
                 <div>
                     <div id="customer-info-block">
                         <div class="grid-view">
-                            <div class="grid-column six-twelfths">
+                            <div class="grid-column">
                                 <label for="detailColor">Màu:</label>
                                 <input v-model="detailForAdding.color" type="text" id="detailColor" name="detailColor"
                                     placeholder="" class="form-control" />
                             </div>
+                        </div>
+                        <div class="grid-view">
                             <div class="grid-column six-twelfths">
                                 <label for="detailSize">Kích cỡ:</label>
                                 <input v-model="detailForAdding.size" type="text" id="detailSize" name="detailSize"
                                     required placeholder="" class="form-control" />
                             </div>
-                        </div>
-                        <div class="grid-view">
                             <div class="grid-column six-twelfths">
                                 <label for="detailQuantity">Hiện có:</label>
                                 <input v-model="detailForAdding.quantity" type="number" id="detailQuantity"
                                     name="detailQuantity" required placeholder="" class="form-control" />
-                            </div>
-                            <div class="grid-column six-twelfths">
-                                <label for="detailSold">Đã bán:</label>
-                                <input v-model="detailForAdding.sold" type="number" id="detailSold" name="detailSold"
-                                    required placeholder="" class="form-control" />
                             </div>
                         </div>
                         <div class="grid-view">
@@ -105,7 +100,7 @@ interface ProductDetailObject {
 
 const productDetails = ref<ProductDetailObject[] | null>(null);
 
-const detailForAdding = ref<ProductObject>({ color: '', size: '', quantity: null, sold: null, imageLinks: '' });
+const detailForAdding = ref<ProductObject>({ color: '', size: '', quantity: null, sold: 0, imageLinks: '' });
 const uploadedImages = ref<{ productDetailIndex: number, id: number, url: string }[]>([]);
 let changingProductDetailImages: { id: number, file: File }[] = [];
 const productStore = useProductStore();
