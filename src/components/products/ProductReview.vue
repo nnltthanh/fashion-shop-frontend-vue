@@ -43,7 +43,6 @@ const retrieveData = async () => {
 
     reviews.value.reverse();
 
-    console.log(reviews.value);
     overallRating.value = reviews.value.length;
     reviews.value.forEach(r => {
         averageStar.value += r.rate;
@@ -145,13 +144,13 @@ const reviewFilters = reactive([
                                 :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 1 ? 'is-active' : '']">
                             </div>
                             <div
-                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 2 ? 'is-active' : Math.round(averageStar * 10) / 10 <= 2.5 ? 'is-half' : 'is-blank']">
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 2 ? 'is-active' : Math.round(averageStar * 10) / 10 > 1 && Math.round(averageStar * 10) / 10 <= 3 ? 'is-half' : 'is-blank']">
                             </div>
                             <div
-                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 3 ? 'is-active' : Math.round(averageStar * 10) / 10 >= 3.5 ? 'is-half' : 'is-blank']">
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 3 ? 'is-active' : Math.round(averageStar * 10) / 10 > 2 && Math.round(averageStar * 10) / 10 < 4 ? 'is-half' : 'is-blank']">
                             </div>
                             <div
-                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 4 ? 'is-active' : Math.round(averageStar * 10) / 10 >= 4.5 ? 'is-half' : 'is-blank']">
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 4 ? 'is-active' : Math.round(averageStar * 10) / 10 > 3 && Math.round(averageStar * 10) / 10 < 5 ? 'is-half' : 'is-blank']">
                             </div>
                             <div
                                 :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 > 4 && Math.round(averageStar * 10) / 10 < 5 ? 'is-half' : Math.round(averageStar * 10) / 10 == 5 ? 'is-active' : 'is-blank']">

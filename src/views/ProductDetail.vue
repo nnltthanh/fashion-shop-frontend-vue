@@ -8,6 +8,9 @@ import ProductReview from '@/components/products/ProductReview.vue';
 import ProductService from "@/services/product.service";
 import ProductRecommended from '@/components/products/ProductRecommended.vue';
 import { param } from 'jquery';
+import type { CartService } from '@/services/cart.service';
+import type { Review } from '@/components/profile/account-content/OrderCard.vue';
+import { ReviewService } from '@/services/review.service';
 
 const { cartService }: { cartService: CartService } = inject('cartService')!;
 
@@ -86,7 +89,13 @@ const sizeOrder = ["S", "M", "L", "XL", "2XL", "3XL"];
 
 const productSizes = ref([]);
 
-const productId = ref(+route.params.id)
+const productId = ref(+route.params.id);
+
+const productSold = ref(0);
+
+let overallRating = ref<number>(0);
+let averageStar = ref<number>(0);
+let reviewService = new ReviewService();
 
 watch(() => route.params.id, (newId, oldId) => {
     productId.value = +newId;
@@ -94,8 +103,33 @@ watch(() => route.params.id, (newId, oldId) => {
     retrieveProduct(productId.value);
     retrieveAllProductDetails(productId.value);
     retrieveProductDetail(productId.value, 1);
-
 })
+
+const retrieveData = async () => {
+    overallRating.value = 0;
+    averageStar.value = 0;
+    let reviews = (await reviewService.getAllReviewsByProductId(productId.value)).data;
+
+    reviews = reviews.reverse().reduce((accumulator: Review[], current: Review) => {
+        let exists = accumulator.find(item => {
+            return item.orderDetail.id === current.orderDetail.id;
+        });
+        if (!exists) {
+            accumulator = accumulator.concat(current);
+        }
+        return accumulator;
+    }, []);
+
+    reviews.reverse();
+
+    overallRating.value = reviews.length;
+    reviews.forEach(r => {
+        averageStar.value += r.rate;
+    })
+    averageStar.value = Number((averageStar.value / overallRating.value || 0).toFixed(1));
+
+    console.log(productId.value, overallRating.value, averageStar.value)
+}
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -166,6 +200,8 @@ const getSizeActive = (index, sizeValue) => {
 }
 
 const retrieveProduct = async (id) => {
+    retrieveData();
+
     try {
         product.value = await ProductService.get(id);
     } catch (error) {
@@ -175,8 +211,13 @@ const retrieveProduct = async (id) => {
 
 const retrieveAllProductDetails = async (productId) => {
     try {
+        productSold.value = 0;
         productDetails.value = await ProductService.getAllDetails(productId);
-        retrieveProductDetail(productId.value, 0)
+        productDetails.value.forEach((pd) => {
+            productSold.value += pd.sold;
+        })
+
+        retrieveProductDetail(productId.value, 0);
         productColors.value = _.uniqWith(productDetails.value.map(({ color, imageLinks, colorImage }) =>
             ({ color, imageLinks, colorImage })
         ), _.isEqual);
@@ -306,21 +347,31 @@ retrieveProductDetail(productId.value, 1);
                                 <span class="product-grid__sub-title">Mỏng nhẹ</span>
                             </h1>
                             <a href="#" class="product-single__ratings scroll-to-step">
-                                <div class="reviews-rating">
-                                    <div class="reviews-rating__star is-active"></div>
-                                    <div class="reviews-rating__star is-active"></div>
-                                    <div class="reviews-rating__star is-active"></div>
-                                    <div class="reviews-rating__star is-active"></div>
-                                    <div class="reviews-rating__star is-half"></div>
-                                    <div class="reviews-rating__count">
-                                        (2)
-                                    </div>
+                                <div class="reviews-rating yellow">
+                                    <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 1 ? 'is-active' : '']">
+                            </div>
+                            <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 2 ? 'is-active' : Math.round(averageStar * 10) / 10 > 1 && Math.round(averageStar * 10) / 10 <= 3 ? 'is-half' : 'is-blank']">
+                            </div>
+                            <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 3 ? 'is-active' : Math.round(averageStar * 10) / 10 > 2 && Math.round(averageStar * 10) / 10 < 4 ? 'is-half' : 'is-blank']">
+                            </div>
+                            <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 >= 4 ? 'is-active' : Math.round(averageStar * 10) / 10 > 3 && Math.round(averageStar * 10) / 10 < 5 ? 'is-half' : 'is-blank']">
+                            </div>
+                            <div
+                                :class="['reviews-rating__star', Math.round(averageStar * 10) / 10 > 4 && Math.round(averageStar * 10) / 10 < 5 ? 'is-half' : Math.round(averageStar * 10) / 10 == 5 ? 'is-active' : 'is-blank']">
+                            </div>
+                            <div class="reviews-rating__count">
+                                ({{ overallRating }} đánh giá)
+                            </div>
                                 </div>
                                 <div style="margin: 0px 20px;">
                                     |
                                 </div>
                                 <div class="reviews-rating__label">
-                                    Đã bán (web): 20 </div>
+                                    Đã bán: {{ productSold }} </div>
                             </a>
                             <div class="product-single__price-infomation">
                                 <div class="product-single__prices">
@@ -810,6 +861,12 @@ body {
     align-items: center;
     margin-left: -3px;
     margin-right: -3px;
+}
+
+.reviews-rating.yellow .reviews-rating__star {
+    width: 14px;
+    height: 14px;
+    background-image: url(https://www.coolmate.me/images/star-yellow.svg?8f4d13b24f276e8a788250b192548210);
 }
 
 .reviews-rating__star.is-active,

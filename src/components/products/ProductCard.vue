@@ -36,7 +36,7 @@ const formatedSalePrice = computed(() => {
                         id: product.id,
                     },
                 }" :product-id="product.id">
-                    <img class="card-img-top" :src="product.imageData.base64String" alt="Card image" style="width:100%">
+                    <img class="card-img-top" :src="product.imageData.base64String" alt="Card image" style="width:100%; width: 260px; height: 390px;">
                 </router-link>
             </div>
             <span class="product-card__tags">New</span>
