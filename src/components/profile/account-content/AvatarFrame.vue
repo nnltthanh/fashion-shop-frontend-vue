@@ -4,7 +4,7 @@
             <div class="fs-5 text-secondary" v-if="!accountInfo?.avatar">Drop avatar here</div>
             <img v-if="accountInfo?.avatar" :src="avatar!" class="figure-img avatar-image" alt="Avatar">
         </figure>
-        <figcaption class="figure-caption fs-5 mt-1">{{ userInfo && userInfo.name! ? userInfo.name!
+        <figcaption class="figure-caption fs-5 mt-1">{{ userStore.user && userStore.user.name! ? userStore.user.name!
             : 'Chưa cập nhật!' }}
         </figcaption>
     </div>
@@ -15,6 +15,9 @@ import { ref } from 'vue';
 
 import { onMounted } from 'vue';
 import axios from 'axios';
+import { useUserStore } from '@/store/userStore';
+
+const userStore = useUserStore();
 
 interface AccountInfo {
     id: number,
