@@ -174,7 +174,7 @@ const submitUpdateInfo = async () => {
         if (response.status === 200) {
             isUpdatedOK.value = true;
             userInfo.value = response.data;
-            localStorage.setItem('account', JSON.stringify(userInfo.value));
+            localStorage.setItem('account', JSON.stringify(response.data));
             userStore.setUser(userInfo.value);
             setTimeout(() => {
                 isUpdatedOK.value = false;
@@ -201,10 +201,13 @@ interface AccountInfo {
 
 const accountInfo = ref<AccountInfo | null>(null);
 const userInfo = ref<AccountInfo | null>(null);
+
 onMounted(() => {
     const storedAccount = localStorage.getItem('account');
     if (storedAccount) {
         accountInfo.value = JSON.parse(storedAccount);
+        userStore.setUser(accountInfo.value);
+        console.log(userStore.user)
         if (accountInfo.value) {
             fetchUserInfo(accountInfo.value.account);
         }

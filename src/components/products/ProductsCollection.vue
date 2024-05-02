@@ -11,6 +11,7 @@ const products = ref([]);
 const filteredProducts = computed(() => {
     let result;
     const isInitialized = Object.values(productStore.filterList).some(value => {
+        console.log(value)
         if (Array.isArray(value)) {
             return value.length > 0;
         }
@@ -128,7 +129,7 @@ const mapAllDetailsToProduct = () => {
 const retrieveAllProductDetails = async (productId) => {
     try {
         const productDetails = await ProductService.getAllDetails(productId);
-        productDetails.value.forEach(detail => {
+        productDetails.forEach(detail => {
             const imageLinksArray = detail.imageLinks.split(", ");
             detail.imageLinks = imageLinksArray;
         })

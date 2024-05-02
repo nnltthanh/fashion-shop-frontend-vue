@@ -14,42 +14,7 @@
                         name: 'products',
                     }" class="nav-link">
                         SẢN PHẨM
-                        <i class="fa-solid fa-chevron-down dropdown-icon"></i>
                     </router-link>
-                    <div class="subnav">
-                        <ul class="subnav-list">
-                            <li class="subnav-item">
-                                <a href=""> Áo </a>
-                            </li>
-                            <li class="subnav-item">
-                                <a href=""> Quần </a>
-                            </li>
-                            <li class="subnav-item">
-                                <a href=""> Áo khoác </a>
-                            </li>
-                            <li class="subnav-item">
-                                <a href=""> Đồ thể thao </a>
-                            </li>
-                            <li class="subnav-item">
-                                <a href=""> Đồ lót </a>
-                            </li>
-                            <li class="subnav-item">
-                                <a href=""> Giày </a>
-                            </li>
-                            <li class="subnav-item">
-                                <a href=""> Phụ kiện </a>
-                            </li>
-                            <li class="subnav-item">
-                                <a href=""> Nước hoa </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="#">GIỚI THIỆU</a>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="#">LIÊN HỆ</a>
                 </div>
                 <div class="nav-item">
                     <router-link :to="{
@@ -59,7 +24,11 @@
                     </router-link>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="/branch">CHI NHÁNH</a>
+                    <router-link :to="{
+                        name: 'branches',
+                    }" class="nav-link">
+                        CHI NHÁNH
+                    </router-link>
                 </div>
             </div>
             <div class="header_actions">

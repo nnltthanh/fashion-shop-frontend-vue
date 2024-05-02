@@ -104,7 +104,7 @@ import axios from 'axios';
 import AInput from '@/components/AInput.vue';
 import { ref, inject } from 'vue';
 import bcrypt from 'bcryptjs';
-import useUserStore from '@/store/userStore.js';
+import { useUserStore } from '@/store/userStore.js';
 import CartService from '@/services/cart.service';
 
 const isLoginFailed = ref(false);
@@ -151,7 +151,6 @@ const login = async (data) => {
           cartService.customerId = response.data.id;
           console.log(cartService.customerId)
           localStorage.setItem('account', JSON.stringify(response.data));
-
           userStore.setUser(response.data);
           setTimeout(() => {
             router.push('/home');

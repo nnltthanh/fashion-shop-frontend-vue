@@ -56,7 +56,7 @@ const getReviewByOrderId = async (orderId) => {
                 highlightStars(review.rate, index);
                 isReviewedInIndex.value[index] = true;
 
-                review.imageUrls!.split(',').forEach((value, idx) => {
+                review.imageUrls?.split(',').forEach((value, idx) => {
                     console.log(index, idx, value)
                     uploadedImages.value.push({ reviewIndex: index, id: idx, url: value })
                 })

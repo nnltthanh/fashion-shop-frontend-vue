@@ -4,8 +4,8 @@
             <div class="fs-5 text-secondary" v-if="!accountInfo?.avatar">Drop avatar here</div>
             <img v-if="accountInfo?.avatar" :src="avatar!" class="figure-img avatar-image" alt="Avatar">
         </figure>
-        <figcaption class="figure-caption fs-5 mt-1">{{ userStore.user && userStore.user.name! ? userStore.user.name!
-            : 'Chưa cập nhật!' }}
+        <figcaption class="figure-caption fs-5 mt-1">{{ userStore.user && userStore.user.name! ? 
+        userStore.user.name! : 'Chưa cập nhật!' }}
         </figcaption>
     </div>
 </template>
@@ -84,6 +84,7 @@ onMounted(() => {
         accountInfo.value = JSON.parse(storedAccount);
         avatar.value = accountInfo.value!.avatar || null;
         console.log(accountInfo.value, "onmount", avatar.value)
+        console.log(userStore.user)
         // Gọi API để lấy thông tin người dùng dựa trên tên đăng nhập
         if (accountInfo.value) {
             fetchUserInfo(accountInfo.value.account);

@@ -9,7 +9,7 @@ export class ReviewService {
     public async postReview(productId, orderDetailId, postData, formData : any) {
         const baseUri = this.getBaseUri();
         const review = await axios.post(`${baseUri}/products/${productId}/reviews/order-details/${orderDetailId}`, postData);
-        
+        console.log(formData)
         if (formData) {
             return await this.updateImages(productId, review.data.id, formData)
         }

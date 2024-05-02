@@ -26,7 +26,8 @@ const router = createRouter({
       component: () => import("@/views/RegisterPage.vue"),
     },
     {
-      path: '/branch',
+      path: '/branches',
+      name: 'branches',
       component: () => import('@/views/BranchPage.vue'),
     },
     {
