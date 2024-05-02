@@ -10,7 +10,7 @@ const props = defineProps({
 
 const products = ref([]);
 
-const productPerRow = 'col-3';
+const productPerRow = 'col-2-4';
 
 const retrieveProducts = async () => {
     try {
@@ -21,7 +21,7 @@ const retrieveProducts = async () => {
 };
 
 const filteredProducts = computed(() => {
-    return products.value.filter((product) => product.material === props.collection.material).slice(0, 4);
+    return products.value.filter((product) => product.material === props.collection.material).slice(0, 5);
 });
 
 const refreshList = () => {
