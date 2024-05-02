@@ -147,6 +147,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { useUserStore } from '@/store/userStore';
+
+const userStore = useUserStore();
 
 const showUpdateModal = ref(false);
 const isUpdatedOK = ref(false);
@@ -166,13 +169,16 @@ const submitUpdateInfo = async () => {
             const year = date.getFullYear();
             userInfo.value.dob = `${year}-${month}-${day}`;
         }
-        
+
         const response = await axios.put(`${baseUrl}/customers/${userInfo.value?.id}/updateInfo`, userInfo.value);
         if (response.status === 200) {
             isUpdatedOK.value = true;
             userInfo.value = response.data;
+            localStorage.setItem('account', JSON.stringify(userInfo.value));
+            userStore.setUser(userInfo.value);
             setTimeout(() => {
                 isUpdatedOK.value = false;
+
             }, 2000);
             showUpdateModal.value = false;
         } else {

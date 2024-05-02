@@ -1,9 +1,9 @@
 // userStore.js
 import { defineStore } from 'pinia';
 
-export default defineStore('user', {
+export const useUserStore = defineStore('user', {
     state: () => ({
-      user: null,
+      user: any,
     }),
     actions: {
       setUser(user) {
