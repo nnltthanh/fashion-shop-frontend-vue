@@ -25,10 +25,18 @@
                 <i class="bi bi-house-door-fill"></i>
                 <span class="text-[15px] ml-4 text-gray-200 font-bold">Thống kê</span>
             </div>
-            <div @click="clickProduct()"
+            <transition class="mt-1" name="fade">
+                <div v-if="showReportDropdown" @click="clickReport()">
+                    <div
+                        class="p-2.5 flex items-center ml-5 rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
+                        <span class="text-[15px] ml-4 text-gray-200 font-bold">Báo cáo</span>
+                    </div>
+                </div>
+            </transition>
+            <div @click="clickProduct"
                 class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
                 <i class="bi bi-house-door-fill"></i>
-                <span class="text-[15px] ml-4 text-gray-200 font-bold">Quản lý sản phẩm</span>
+                <span class="text-[15px] ml-4 text-gray-200 font-bold">Sản phẩm</span>
             </div>
             <!-- <div
                 class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-yellow-600 text-white">
@@ -78,6 +86,9 @@
                 <div v-if="showStatistic">
                     <Statistic />
                 </div>
+                <div v-if="showReport">
+                    <Report />
+                </div>
                 <div v-if="showProduct">
                     <ProductManagement />
                 </div>
@@ -94,6 +105,7 @@ import PersonalInformation from '@/components/manager/PersonalInformation.vue';
 import StaffManagement from '@/components/manager/StaffManagement.vue';
 import Statistic from '@/components/manager/Statistic.vue';
 import ProductManagement from '@/components/manager/ProductManagement.vue';
+import Report from '@/components/manager/Report.vue';
 
 
 const showSidebar = ref(false);
@@ -101,6 +113,8 @@ const showStatistic = ref(false);
 const showStaff = ref(false);
 const showProduct = ref(false);
 const showPersonalInfo = ref(true);
+const showReportDropdown = ref(false);
+const showReport = ref(false);
 
 const clickPersonalInfo = () => {
     showPersonalInfo.value = true;
@@ -117,6 +131,7 @@ const clickStaff = () => {
 }
 
 const clickStatistic = () => {
+    showReportDropdown.value = !showReportDropdown.value;
     showPersonalInfo.value = false;
     showStatistic.value = true;
     showStaff.value = false;
@@ -128,6 +143,15 @@ const clickProduct = () => {
     showStatistic.value = false;
     showStaff.value = false;
     showProduct.value = true;
+    showReport.value = false;
+
+}
+
+const clickReport = () => {
+    showPersonalInfo.value = false;
+    showStatistic.value = false;
+    showStaff.value = false;
+    showReport.value = true;
 }
 
 interface AccountInfo {
