@@ -3,7 +3,7 @@
         <div>
             <div class="flex flex-row">
                 <div class="basis-1/4"></div>
-                <div class="basis-1/2 font-sans text-2xl mb-2 text-center">BẢNG THỐNG KÊ CÁC LOẠI THIẾT BỊ</div>
+                <div class="basis-1/2 font-sans text-2xl mb-2 text-center">BẢNG THỐNG KÊ CÁC LOẠI CÁC LOẠI SẢN PHẨM</div>
                 <div class="basis-1/4 flex justify-end">
                     <button @click="exportReport"
                         class="mr-3 mb-2 bg-gradient-to-b from-fuchsia-500 to-cyan-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -55,7 +55,7 @@
         </div>
         <div class="mt-5">
             <div class="flex justify-center">
-                <div class="font-sans text-2xl mb-2">BẢNG THỐNG KÊ SỐ LƯỢNG THIẾT BỊ THEO NHÀ CUNG CẤP</div>
+                <div class="font-sans text-2xl mb-2">BẢNG THỐNG KÊ SỐ LƯỢNG SẢN PHẨM THEO CHẤT LIỆU</div>
             </div>
             <div>
                 <table id="table2"
@@ -64,7 +64,7 @@
                         class="text-xs font-sans text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-5 py-3 text-center">
-                                Nhà cung cấp
+                                Chất liệu
                             </th>
                             <th scope="col" class="px-5 py-3 text-center">
                                 Số lượng
@@ -200,7 +200,7 @@ import autoTable from 'jspdf-autotable'
 const exportReport = async () => {
     const pdf = new jsPDF('p', 'pt', 'a4');
     const largeFontSize = 18;
-    const largeText = 'B&B COMPANY';
+    const largeText = 'B&T COMPANY';
     const largeTextWidth = pdf.getStringUnitWidth(largeText) * largeFontSize / pdf.internal.scaleFactor;
     const largeTextX = (pdf.internal.pageSize.width - largeTextWidth) / 2;
     const largeTextY = 85; // 5 là khoảng cách giữa các dòng
@@ -210,7 +210,7 @@ const exportReport = async () => {
     pdf.setFont('Helvetica', 'normal');
     pdf.setFontSize(15);
 
-    pdf.text('STATISTICAL TABLE OF DEVICE TYPES', 145, 110)
+    pdf.text('STATISTICAL TABLE OF PRODUCT TYPES', 145, 110)
 
     const dataTable1: any[] = [];
     groupedProductDetails.value.forEach(groupedProductDetail => {
@@ -233,7 +233,7 @@ const exportReport = async () => {
         columnStyles: {
             0: { cellWidth: 'auto' }
         },
-        head: [['Supplier', 'Quantity Sold', 'Inventory Number', 'Revenue', 'Profit']],
+        head: [['Type', 'Quantity Sold', 'Inventory Number', 'Revenue', 'Profit']],
         body: dataTable1,
     });
 
@@ -250,7 +250,7 @@ const exportReport = async () => {
         ];
         dataTable2.push(rowData);
     });
-    pdf.text('STATISTICAL TABLE OF NUMBER OF DEVICES BY SUPPLIER', 85, pdf.previousAutoTable.finalY + 50)
+    pdf.text('STATISTICAL TABLE OF QUANTITY OF PRODUCTS BY MATERIAL', 85, pdf.previousAutoTable.finalY + 50)
     autoTable(pdf, {
         startY: pdf.previousAutoTable.finalY + 60,
         styles: {
@@ -261,7 +261,7 @@ const exportReport = async () => {
         columnStyles: {
             0: { cellWidth: 'auto' }
         },
-        head: [['Supplier', 'Quantity', 'Quantity Sold', 'Inventory Number', 'Revenue', 'Profit']],
+        head: [['Material', 'Quantity', 'Quantity Sold', 'Inventory Number', 'Revenue', 'Profit']],
         body: dataTable2,
     })
     pdf.setFontSize(14);
